@@ -75,7 +75,8 @@
                                     <div class="card mt-4">
                                         <div class="card-header">Datos extraídos del XML</div>
                                         <div class="card-body">
-                                            <p><strong>Nombre del Receptor:</strong> ${data.data.nombre}</p>
+                                            <p><strong>Razón social:</strong> ${data.data.nombre}</p>
+                                           <!-- <p><strong>RFC del Receptor:</strong> ${data.data.rfc}</p> -->
                                             <p><strong>Estación:</strong> ${estacionNombre}</p>
                                             <p><strong>Cantidad:</strong> ${data.data.cantidad}</p>
                                             <p><strong>Importe:</strong> ${data.data.importe}</p>
