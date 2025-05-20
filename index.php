@@ -70,6 +70,10 @@
                                 const estacionId = select.value;
                                 const estacionNombre = select.options[select.selectedIndex].text;
 
+                                const importe = parseFloat(data.data.importe);
+                                const cantidad = parseFloat(data.data.cantidad);
+                                const precioUnitario = (importe / cantidad).toFixed(2);
+
                                 // Mostrar los datos completos solo después de confirmar estación
                                 document.getElementById('resultado').innerHTML = `
                                     <div class="card mt-4">
@@ -78,9 +82,11 @@
                                             <p><strong>Razón social:</strong> ${data.data.nombre}</p>
                                            <!-- <p><strong>RFC del Receptor:</strong> ${data.data.rfc}</p> -->
                                             <p><strong>Estación:</strong> ${estacionNombre}</p>
-                                            <p><strong>Cantidad:</strong> ${data.data.cantidad}</p>
-                                            <p><strong>Importe:</strong> ${data.data.importe}</p>
+                                           <!--  <p><strong>Cantidad:</strong> ${data.data.cantidad}</p> -->
+                                           <!-- <p><strong>Importe:</strong> ${data.data.importe}</p> -->
+                                            <p><strong>Precio Unitario:</strong> ${precioUnitario}</p>
                                             <p><strong>Combustible:</strong> ${tipo}</p>
+                                           <!-- <p><strong>UUID:</strong> ${data.data.uuid}</p> -->
                                         </div>
                                     </div>`;
 

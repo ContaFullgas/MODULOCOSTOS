@@ -17,12 +17,23 @@ function parse_xml($ruta) {
     $importe = (string) $concepto->attributes()['Importe'];
     $claveProdServ = (string) $concepto->attributes()['ClaveProdServ'];
 
+    // UUID desde TimbreFiscalDigital
+    $uuid = '';
+    $complemento = $xml->children($namespaces['cfdi'])->Complemento;
+    if ($complemento) {
+        $timbre = $complemento->children($namespaces['tfd'])->TimbreFiscalDigital;
+        if ($timbre) {
+            $uuid = (string) $timbre->attributes()['UUID'];
+        }
+    }
+
     return [
         'nombre' => $nombreReceptor,
         'rfc' => $rfcReceptor,
         'cantidad' => $cantidad,
         'importe' => $importe,
-        'claveProdServ' => $claveProdServ
+        'claveProdServ' => $claveProdServ,
+        'uuid' => $uuid
     ];
 }
 
