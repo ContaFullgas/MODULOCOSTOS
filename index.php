@@ -74,30 +74,64 @@
                                 const cantidad = parseFloat(data.data.cantidad);
                                 const precioUnitario = (importe / cantidad).toFixed(2);
 
-                                // Mostrar los datos completos solo después de confirmar estación
+                                const fechaCFDI = data.data.fecha.split('T')[0];
+
+                                // Mostrar los datos, conservando los comentarios HTML
                                 document.getElementById('resultado').innerHTML = `
                                     <div class="card mt-4">
                                         <div class="card-header">Datos extraídos del XML</div>
                                         <div class="card-body">
                                             <p><strong>Razón social:</strong> ${data.data.nombre}</p>
-                                           <!-- <p><strong>RFC del Receptor:</strong> ${data.data.rfc}</p> -->
+                                        <!-- <p><strong>Fecha del CFDI:</strong> ${data.data.fecha}</p> -->
+                                             <p><strong>Fecha del CFDI:</strong> ${fechaCFDI}</p> 
+                                        <!-- <p><strong>RFC del Receptor:</strong> ${data.data.rfc}</p> -->
                                             <p><strong>Estación:</strong> ${estacionNombre}</p>
-                                           <!--  <p><strong>Cantidad:</strong> ${data.data.cantidad}</p> -->
-                                           <!-- <p><strong>Importe:</strong> ${data.data.importe}</p> -->
+                                        <!-- <p><strong>Cantidad:</strong> ${data.data.cantidad}</p> -->
+                                        <!-- <p><strong>Importe:</strong> ${data.data.importe}</p> -->
                                             <p><strong>Precio Unitario:</strong> ${precioUnitario}</p>
                                             <p><strong>Combustible:</strong> ${tipo}</p>
-                                           <!-- <p><strong>UUID:</strong> ${data.data.uuid}</p> -->
+                                        <!-- <p><strong>UUID:</strong> ${data.data.uuid}</p> -->
                                         </div>
                                     </div>`;
 
                                 modal.hide();
+
+                                // Llamar a guardar_precio.php
+                                fetch('guardar_precio.php', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        razon_social: data.data.nombre,
+                                        estacion: estacionNombre,
+                                        precio: precioUnitario,
+                                        tipo: tipo,
+                                        uuid: data.data.uuid,
+                                        fecha: fechaCFDI  // <--- Agregar esto
+                                    })
+                                })
+                                .then(response => response.json())
+                                .then(res => {
+                                    console.log('Respuesta guardar_precio.php:', res);
+                                    if (res.success) {
+                                        // alert('Precio guardado exitosamente.');
+                                        
+                                    } else {
+                                        alert('Error al guardar: ' + res.error);
+                                    }
+                                    //Resetear input
+                                    document.getElementById('inputFile').value = '';
+                                })
+                                .catch(() => {
+                                    alert('Error al enviar los datos al servidor.');
+                                });
                             };
                         })
                         .catch(() => {
                             alert('Error al obtener estaciones.');
                         });
-                }
-                 else {
+                } else {
                     div.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
                 }
             })
@@ -124,7 +158,7 @@
         </div>
       </div>
     </div>
-  
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

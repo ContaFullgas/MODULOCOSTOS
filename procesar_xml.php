@@ -6,6 +6,11 @@ function parse_xml($ruta) {
     if (!$xml) return null;
 
     $namespaces = $xml->getNamespaces(true);
+
+    // Obtener atributos del nodo Comprobante
+    $atributosComprobante = $xml->attributes();
+    $fecha = isset($atributosComprobante['Fecha']) ? (string) $atributosComprobante['Fecha'] : null;
+
     $receptor = $xml->children($namespaces['cfdi'])->Receptor;
     $nombreReceptor = (string) $receptor->attributes()['Nombre'];
     $rfcReceptor = (string) $receptor->attributes()['Rfc'];
@@ -33,7 +38,8 @@ function parse_xml($ruta) {
         'cantidad' => $cantidad,
         'importe' => $importe,
         'claveProdServ' => $claveProdServ,
-        'uuid' => $uuid
+        'uuid' => $uuid,
+        'fecha' => $fecha // ✅ Fecha del CFDI
     ];
 }
 
