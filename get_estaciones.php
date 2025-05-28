@@ -8,11 +8,12 @@ if (!isset($_GET['rfc'])) {
 
 $rfc = $_GET['rfc'];
 
-$conn = new mysqli('localhost', 'root', '', 'costos_raul_garcia');
-if ($conn->connect_error) {
-    echo json_encode(['error' => 'Error de conexión a la base de datos']);
-    exit;
-}
+// $conn = new mysqli('localhost', 'root', '', 'costos_raul_garcia');
+// if ($conn->connect_error) {
+//     echo json_encode(['error' => 'Error de conexión a la base de datos']);
+//     exit;
+// }
+include 'db.php';
 
 $stmt = $conn->prepare("SELECT id, nombre FROM estaciones WHERE rfc_receptor = ?");
 $stmt->bind_param("s", $rfc);

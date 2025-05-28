@@ -16,7 +16,22 @@
 
     <div id="resultado"></div>
 
+    <!-- <h2>Precios Registrados</h2> -->
+    <div id="tablaPrecios"></div>
+
     <script>
+        function cargarTablaPrecios() {
+            fetch('tabla_precios.php')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('tablaPrecios').innerHTML = html;
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            cargarTablaPrecios(); // Cargar al iniciar
+        });
+
         document.getElementById('inputFile').addEventListener('change', function () {
             const fileInput = this;
             if (fileInput.files.length === 0) return;
@@ -39,7 +54,6 @@
                         '15101505': 'Diesel'
                     }[data.data.claveProdServ] || 'Desconocido';
 
-                    // Obtener estaciones y mostrar el modal primero
                     fetch(`get_estaciones.php?rfc=${encodeURIComponent(data.data.rfc)}`)
                         .then(response => response.json())
                         .then(estaciones => {
@@ -76,30 +90,21 @@
 
                                 const fechaCFDI = data.data.fecha.split('T')[0];
 
-                                // Mostrar los datos, conservando los comentarios HTML
-                                document.getElementById('resultado').innerHTML = `
-                                    <div class="card mt-4">
-                                        <div class="card-header">Datos extraídos del XML</div>
-                                        <div class="card-body">
-                                            <p><strong>Razón social:</strong> ${data.data.nombre}</p>
-                                            
-                                            <!-- Esta fecha es con la hora, no se utiliza, en su lugar se usa la siguiente -->
-                                        <!-- <p><strong>Fecha del CFDI:</strong> ${data.data.fecha}</p> -->
-                                        
-                                             <p><strong>Fecha del CFDI:</strong> ${fechaCFDI}</p> 
-                                        <!-- <p><strong>RFC del Receptor:</strong> ${data.data.rfc}</p> -->
-                                            <p><strong>Estación:</strong> ${estacionNombre}</p>
-                                        <!-- <p><strong>Cantidad:</strong> ${data.data.cantidad}</p> -->
-                                        <!-- <p><strong>Total:</strong> ${data.data.total}</p> -->
-                                            <p><strong>Precio Unitario:</strong> ${precioUnitario}</p>
-                                            <p><strong>Combustible:</strong> ${tipo}</p>
-                                            <p><strong>UUID:</strong> ${data.data.uuid}</p> 
-                                        </div>
-                                    </div>`;
+                                // document.getElementById('resultado').innerHTML = `
+                                //     <div class="card mt-4">
+                                //         <div class="card-header">Datos extraídos del XML</div>
+                                //         <div class="card-body">
+                                //             <p><strong>Razón social:</strong> ${data.data.nombre}</p>
+                                //             <p><strong>Fecha del CFDI:</strong> ${fechaCFDI}</p> 
+                                //             <p><strong>Estación:</strong> ${estacionNombre}</p>
+                                //             <p><strong>Precio Unitario:</strong> ${precioUnitario}</p>
+                                //             <p><strong>Combustible:</strong> ${tipo}</p>
+                                //             <p><strong>UUID:</strong> ${data.data.uuid}</p> 
+                                //         </div>
+                                //     </div>`;
 
                                 modal.hide();
 
-                                // Llamar a guardar_precio.php
                                 fetch('guardar_precio.php', {
                                     method: 'POST',
                                     headers: {
@@ -111,19 +116,17 @@
                                         precio: precioUnitario,
                                         tipo: tipo,
                                         uuid: data.data.uuid,
-                                        fecha: fechaCFDI  // <--- Agregar esto
+                                        fecha: fechaCFDI
                                     })
                                 })
                                 .then(response => response.json())
                                 .then(res => {
                                     console.log('Respuesta guardar_precio.php:', res);
                                     if (res.success) {
-                                        // alert('Precio guardado exitosamente.');
-                                        
+                                        cargarTablaPrecios(); // Recargar la tabla
                                     } else {
                                         alert('Error al guardar: ' + res.error);
                                     }
-                                    //Resetear input
                                     document.getElementById('inputFile').value = '';
                                 })
                                 .catch(() => {
