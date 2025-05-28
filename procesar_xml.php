@@ -19,7 +19,7 @@ function parse_xml($ruta) {
     $concepto = $conceptos->children($namespaces['cfdi'])->Concepto[0];
 
     $cantidad = (string) $concepto->attributes()['Cantidad'];
-    $importe = (string) $concepto->attributes()['Importe'];
+    $total = isset($atributosComprobante['Total']) ? (string) $atributosComprobante['Total'] : null;
     $claveProdServ = (string) $concepto->attributes()['ClaveProdServ'];
 
     // UUID desde TimbreFiscalDigital
@@ -36,7 +36,7 @@ function parse_xml($ruta) {
         'nombre' => $nombreReceptor,
         'rfc' => $rfcReceptor,
         'cantidad' => $cantidad,
-        'importe' => $importe,
+        'total' => $total,
         'claveProdServ' => $claveProdServ,
         'uuid' => $uuid,
         'fecha' => $fecha // ✅ Fecha del CFDI

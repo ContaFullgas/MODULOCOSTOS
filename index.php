@@ -70,9 +70,9 @@
                                 const estacionId = select.value;
                                 const estacionNombre = select.options[select.selectedIndex].text;
 
-                                const importe = parseFloat(data.data.importe);
+                                const total = parseFloat(data.data.total);
                                 const cantidad = parseFloat(data.data.cantidad);
-                                const precioUnitario = (importe / cantidad).toFixed(2);
+                                const precioUnitario = (total / cantidad).toFixed(2);
 
                                 const fechaCFDI = data.data.fecha.split('T')[0];
 
@@ -82,15 +82,18 @@
                                         <div class="card-header">Datos extraídos del XML</div>
                                         <div class="card-body">
                                             <p><strong>Razón social:</strong> ${data.data.nombre}</p>
+                                            
+                                            <!-- Esta fecha es con la hora, no se utiliza, en su lugar se usa la siguiente -->
                                         <!-- <p><strong>Fecha del CFDI:</strong> ${data.data.fecha}</p> -->
+                                        
                                              <p><strong>Fecha del CFDI:</strong> ${fechaCFDI}</p> 
                                         <!-- <p><strong>RFC del Receptor:</strong> ${data.data.rfc}</p> -->
                                             <p><strong>Estación:</strong> ${estacionNombre}</p>
                                         <!-- <p><strong>Cantidad:</strong> ${data.data.cantidad}</p> -->
-                                        <!-- <p><strong>Importe:</strong> ${data.data.importe}</p> -->
+                                        <!-- <p><strong>Total:</strong> ${data.data.total}</p> -->
                                             <p><strong>Precio Unitario:</strong> ${precioUnitario}</p>
                                             <p><strong>Combustible:</strong> ${tipo}</p>
-                                        <!-- <p><strong>UUID:</strong> ${data.data.uuid}</p> -->
+                                            <p><strong>UUID:</strong> ${data.data.uuid}</p> 
                                         </div>
                                     </div>`;
 
