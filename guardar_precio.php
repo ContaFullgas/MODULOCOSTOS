@@ -43,23 +43,26 @@ if ($tipo === 'Diesel') {
 // Buscar registro existente en precios_combustible
 // $sqlBuscar = "SELECT * FROM precios_combustible WHERE razon_social = '$razon_social' AND estacion = '$estacion'";
 // $resBuscar = $conn->query($sqlBuscar);
+$sqlBuscar = "SELECT * FROM precios_combustible WHERE razon_social = '$razon_social' AND estacion = '$estacion' AND fecha = '$fecha'";
+$resBuscar = $conn->query($sqlBuscar);
 
-// if ($resBuscar->num_rows > 0) {
-//     // Existe registro
-//     $row = $resBuscar->fetch_assoc();
-//     $precioId = $row['id'];
 
-//     // Actualizar solo si el campo está vacío o diferente
-//     if (is_null($row[$campo]) || floatval($row[$campo]) != $precio) {
-//         $conn->query("UPDATE precios_combustible SET $campo = $precio WHERE id = $precioId");
-//     }
-// } else {
+if ($resBuscar->num_rows > 0) {
+    // Existe registro
+    $row = $resBuscar->fetch_assoc();
+    $precioId = $row['id'];
+
+    // Actualizar solo si el campo está vacío o diferente
+    if (is_null($row[$campo]) || floatval($row[$campo]) != $precio) {
+        $conn->query("UPDATE precios_combustible SET $campo = $precio WHERE id = $precioId");
+    }
+} else {
     // Insertar nuevo registro
     // $conn->query("INSERT INTO precios_combustible (razon_social, estacion, $campo) VALUES ('$razon_social', '$estacion', $precio)");
     // Insertar nuevo registro con fecha
     $conn->query("INSERT INTO precios_combustible (razon_social, estacion, fecha, $campo) VALUES ('$razon_social', '$estacion', '$fecha', $precio)");
     $precioId = $conn->insert_id;
-// }
+}
 
 // Insertar UUID con referencia a precio_id
 $conn->query("INSERT INTO precios_uuid (uuid, precio_id) VALUES ('$uuid', $precioId)");
