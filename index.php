@@ -24,7 +24,7 @@ date_default_timezone_set('America/Mexico_City');
     <!-- Selector de fecha para filtrar precios -->
     <form id="formFecha" class="mb-3">
         <label for="fecha">Selecciona fecha:</label>
-        <input type="date" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" class="form-control" style="max-width: 200px;">
+        <input type="date" id="fecha" name="fecha" value="" class="form-control" style="max-width: 200px;">
     </form>
 
     <div id="tablaPrecios"></div>
@@ -44,11 +44,15 @@ date_default_timezone_set('America/Mexico_City');
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            // Cargar tabla con fecha actual al inicio
             const fechaInput = document.getElementById('fecha');
-            cargarTablaPrecios(fechaInput.value);
 
-            // Escuchar cambios en el selector de fecha
+            if (!fechaInput.value) {
+                // Si no hay fecha seleccionada, cargar últimos 3 meses
+                cargarTablaPrecios();
+            } else {
+                cargarTablaPrecios(fechaInput.value);
+            }
+
             fechaInput.addEventListener('change', function () {
                 cargarTablaPrecios(this.value);
             });
