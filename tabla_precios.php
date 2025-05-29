@@ -1,27 +1,9 @@
 <?php
 include 'db.php';
 
-// $fecha_sel = $_GET['fecha'] ?? date('Y-m-d');
-// if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_sel)) {
-//     $fecha_sel = date('Y-m-d');
-// }
-
-// $sql = "
-//     SELECT 
-//         razon_social,
-//         estacion,
-//         diesel,
-//         magna,
-//         premium,
-//         fecha
-//     FROM precios_combustible
-//     WHERE DATE(fecha) = '$fecha_sel'
-//     ORDER BY razon_social, estacion
-// ";
-
 $fecha_sel = $_GET['fecha'] ?? null;
 
-if ($fecha_sel && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_sel)) {
+// if ($fecha_sel && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_sel)) {
     // Si el usuario seleccionó una fecha válida
     $sql = "
         SELECT 
@@ -35,22 +17,22 @@ if ($fecha_sel && preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_sel)) {
         WHERE DATE(fecha) = '$fecha_sel'
         ORDER BY razon_social, estacion
     ";
-} else {
-    // Si no hay fecha (primera carga): mostrar últimos 3 meses
-    $fechaLimite = date('Y-m-d', strtotime('-3 months'));
-    $sql = "
-        SELECT 
-            razon_social,
-            estacion,
-            diesel,
-            magna,
-            premium,
-            fecha
-        FROM precios_combustible
-        WHERE fecha >= '$fechaLimite'
-        ORDER BY fecha DESC, razon_social, estacion
-    ";
-}
+// } else {
+//     // Si no hay fecha (primera carga): mostrar últimos 3 meses
+//     $fechaLimite = date('Y-m-d', strtotime('-3 months'));
+//     $sql = "
+//         SELECT 
+//             razon_social,
+//             estacion,
+//             diesel,
+//             magna,
+//             premium,
+//             fecha
+//         FROM precios_combustible
+//         WHERE fecha >= '$fechaLimite'
+//         ORDER BY fecha DESC, razon_social, estacion
+//     ";
+// }
 
 
 $result = $conn->query($sql);
