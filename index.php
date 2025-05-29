@@ -1,3 +1,7 @@
+<?php
+date_default_timezone_set('America/Mexico_City');
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -16,12 +20,22 @@
 
     <div id="resultado"></div>
 
-    <!-- <h2>Precios Registrados</h2> -->
+    <!-- Selector de fecha para filtrar precios -->
+    <form id="formFecha" class="mb-3">
+        <label for="fecha">Selecciona fecha:</label>
+        <input type="date" id="fecha" name="fecha" value="<?= date('Y-m-d') ?>" class="form-control" style="max-width: 200px;">
+    </form>
+
     <div id="tablaPrecios"></div>
 
     <script>
-        function cargarTablaPrecios() {
-            fetch('tabla_precios.php')
+        // Función para cargar la tabla con la fecha seleccionada
+        function cargarTablaPrecios(fecha = null) {
+            let url = 'tabla_precios.php';
+            if (fecha) {
+                url += '?fecha=' + fecha;
+            }
+            fetch(url)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('tablaPrecios').innerHTML = html;
@@ -29,7 +43,14 @@
         }
 
         document.addEventListener('DOMContentLoaded', function () {
-            cargarTablaPrecios(); // Cargar al iniciar
+            // Cargar tabla con fecha actual al inicio
+            const fechaInput = document.getElementById('fecha');
+            cargarTablaPrecios(fechaInput.value);
+
+            // Escuchar cambios en el selector de fecha
+            fechaInput.addEventListener('change', function () {
+                cargarTablaPrecios(this.value);
+            });
         });
 
         document.getElementById('inputFile').addEventListener('change', function () {
@@ -90,19 +111,6 @@
 
                                 const fechaCFDI = data.data.fecha.split('T')[0];
 
-                                // document.getElementById('resultado').innerHTML = `
-                                //     <div class="card mt-4">
-                                //         <div class="card-header">Datos extraídos del XML</div>
-                                //         <div class="card-body">
-                                //             <p><strong>Razón social:</strong> ${data.data.nombre}</p>
-                                //             <p><strong>Fecha del CFDI:</strong> ${fechaCFDI}</p> 
-                                //             <p><strong>Estación:</strong> ${estacionNombre}</p>
-                                //             <p><strong>Precio Unitario:</strong> ${precioUnitario}</p>
-                                //             <p><strong>Combustible:</strong> ${tipo}</p>
-                                //             <p><strong>UUID:</strong> ${data.data.uuid}</p> 
-                                //         </div>
-                                //     </div>`;
-
                                 modal.hide();
 
                                 fetch('guardar_precio.php', {
@@ -123,7 +131,8 @@
                                 .then(res => {
                                     console.log('Respuesta guardar_precio.php:', res);
                                     if (res.success) {
-                                        cargarTablaPrecios(); // Recargar la tabla
+                                        // Recargar la tabla para la fecha actual o seleccionada
+                                        cargarTablaPrecios(document.getElementById('fecha').value);
                                     } else {
                                         alert('Error al guardar: ' + res.error);
                                     }

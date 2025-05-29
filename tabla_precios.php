@@ -1,11 +1,10 @@
 <?php
-// $conn = new mysqli('localhost', 'root', '', 'costos_raul_garcia');
-// if ($conn->connect_error) {
-//     echo json_encode(['success' => false, 'error' => 'Error de conexión a la base de datos']);
-//     exit;
-// }
-
 include 'db.php';
+
+$fecha_sel = $_GET['fecha'] ?? date('Y-m-d');
+if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_sel)) {
+    $fecha_sel = date('Y-m-d');
+}
 
 $sql = "
     SELECT 
@@ -13,8 +12,10 @@ $sql = "
         estacion,
         diesel,
         magna,
-        premium
+        premium,
+        fecha
     FROM precios_combustible
+    WHERE DATE(fecha) = '$fecha_sel'
     ORDER BY razon_social, estacion
 ";
 
@@ -24,12 +25,14 @@ if ($result === false) {
     echo "Error en la consulta: " . $conn->error;
     exit;
 }
+?>
 
-if ($result->num_rows > 0): ?>
+<?php if ($result->num_rows > 0): ?>
     <div class="table-responsive">
         <table class="table table-striped table-bordered">
             <thead class="table-dark">
                 <tr>
+                    <th>Fecha</th>
                     <th>Razón Social</th>
                     <th>Estación</th>
                     <th>Diesel</th>
@@ -40,6 +43,7 @@ if ($result->num_rows > 0): ?>
             <tbody>
                 <?php while($row = $result->fetch_assoc()): ?>
                 <tr>
+                    <td><?= htmlspecialchars(substr($row['fecha'], 0, 10)) ?></td>
                     <td><?= htmlspecialchars($row['razon_social']) ?></td>
                     <td><?= htmlspecialchars($row['estacion']) ?></td>
                     <td><?= $row['diesel'] !== null ? '$' . number_format($row['diesel'], 2) : '-' ?></td>
@@ -51,9 +55,8 @@ if ($result->num_rows > 0): ?>
         </table>
     </div>
 <?php else: ?>
-    <div class="alert alert-info">No hay registros de precios aún.</div>
+    <div class="alert alert-info">No hay registros de precios para la fecha seleccionada.</div>
 <?php endif;
 
 $conn->close();
-
 ?>
