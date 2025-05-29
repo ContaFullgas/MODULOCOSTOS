@@ -1,0 +1,24 @@
+.Estacion { 
+  background-color: #1F4E79; 
+  color: white; }
+
+    .Magna {
+       background-color: #4CAF50; 
+       color: white; }
+
+    .Diesel { 
+      background-color: #616161; 
+      color: white; }
+
+    .Premium {
+      background-color: #F44336; 
+      color: white; }
+
+    .RazonSocial {
+       background-color: #00BCD4; 
+       color: white; }
+
+    .table thead th {
+       text-align: center; }
+
+      

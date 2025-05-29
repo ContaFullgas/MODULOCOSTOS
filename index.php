@@ -8,6 +8,7 @@ date_default_timezone_set('America/Mexico_City');
     <meta charset="UTF-8">
     <title>Subida de Documentos</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="container py-4">
     <h1>Subir Facturas (XML)</h1>

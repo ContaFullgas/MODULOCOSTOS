@@ -28,27 +28,31 @@ if ($result === false) {
 ?>
 
 <?php if ($result->num_rows > 0): ?>
-    <div class="table-responsive">
-        <table class="table table-striped table-bordered">
-            <thead class="table-dark">
+    <div class="table-responsive rounded-4">
+        <table class="table table-bordered table-hover align-middle  text-center table-hover">
+            <thead>
                 <tr>
-                    <th>Fecha</th>
-                    <th>Razón Social</th>
-                    <th>Estación</th>
-                    <th>Diesel</th>
-                    <th>Magna</th>
-                    <th>Premium</th>
+                    <th class="table-dark" rowspan="2">Fecha</th>
+                    <th class="RazonSocial border border-white" style="background-color: #4F1C51; color: white;" rowspan="2">RAZÓN SOCIAL</th>
+                    <th class="Estacion border border-white" style="background-color: #A55B4B; color: white;" rowspan="2">ESTACIÓN</th>
+                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PRECIO COSTO</th>
+                </tr>
+                <tr>
+                    <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
+                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PREMIUM</th>
+                    <th class="Diesel border border-white" style="background-color: black; color: white;">DIESEL</th>
                 </tr>
             </thead>
+
             <tbody>
                 <?php while($row = $result->fetch_assoc()): ?>
                 <tr>
                     <td><?= htmlspecialchars(substr($row['fecha'], 0, 10)) ?></td>
                     <td><?= htmlspecialchars($row['razon_social']) ?></td>
                     <td><?= htmlspecialchars($row['estacion']) ?></td>
-                    <td><?= $row['diesel'] !== null ? '$' . number_format($row['diesel'], 2) : '-' ?></td>
                     <td><?= $row['magna'] !== null ? '$' . number_format($row['magna'], 2) : '-' ?></td>
                     <td><?= $row['premium'] !== null ? '$' . number_format($row['premium'], 2) : '-' ?></td>
+                    <td><?= $row['diesel'] !== null ? '$' . number_format($row['diesel'], 2) : '-' ?></td>
                 </tr>
                 <?php endwhile; ?>
             </tbody>
