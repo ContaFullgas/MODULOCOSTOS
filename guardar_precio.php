@@ -79,7 +79,7 @@ if ($resBuscar->num_rows > 0) {
         echo json_encode(['success' => false, 'error' => 'Error al insertar en precios_combustible: ' . $conn->error]);
         exit;
     }
-
+//
     // Guarda el ID del nuevo registro insertado
     $precioId = $conn->insert_id;
 }
