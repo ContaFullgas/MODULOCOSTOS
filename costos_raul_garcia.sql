@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost
--- Tiempo de generación: 31-05-2025 a las 17:45:39
+-- Tiempo de generación: 31-05-2025 a las 19:59:39
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -130,26 +130,30 @@ INSERT INTO `estaciones` (`id`, `nombre`, `rfc_receptor`) VALUES
 
 CREATE TABLE `precios_combustible` (
   `id` int(11) NOT NULL,
+  `fecha` date DEFAULT NULL,
+  `siic` varchar(20) DEFAULT NULL,
+  `zona` varchar(100) DEFAULT NULL,
   `razon_social` varchar(255) NOT NULL,
   `estacion` varchar(255) NOT NULL,
-  `fecha` date DEFAULT NULL,
-  `diesel` decimal(10,2) DEFAULT NULL,
-  `magna` decimal(10,2) DEFAULT NULL,
-  `premium` decimal(10,2) DEFAULT NULL
+  `vu_magna` decimal(10,2) DEFAULT NULL,
+  `vu_premium` decimal(10,2) DEFAULT NULL,
+  `vu_diesel` decimal(10,2) DEFAULT NULL,
+  `costo_flete` decimal(10,2) DEFAULT NULL,
+  `pf_magna` decimal(10,2) DEFAULT NULL,
+  `pf_premium` decimal(10,2) DEFAULT NULL,
+  `pf_diesel` decimal(10,2) DEFAULT NULL,
+  `precio_magna` decimal(10,2) DEFAULT NULL,
+  `precio_premium` decimal(10,2) DEFAULT NULL,
+  `precio_diesel` decimal(10,2) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Volcado de datos para la tabla `precios_combustible`
 --
 
-INSERT INTO `precios_combustible` (`id`, `razon_social`, `estacion`, `fecha`, `diesel`, `magna`, `premium`) VALUES
-(65, 'ALIANZA EMPRESARIAL DE TECAMAC', 'SIERRA HERMOSA', '2025-05-15', NULL, 21.41, NULL),
-(66, 'ALIANZA EMPRESARIAL DE TECAMAC', 'TECAMAC MP', '2025-05-14', NULL, 21.41, NULL),
-(67, 'ALIANZA EMPRESARIAL DE TECAMAC', 'SIERRA HERMOSA', '2025-05-14', 22.32, NULL, NULL),
-(68, 'ALIANZA EMPRESARIAL DE TECAMAC', 'TECAMAC MP', '2025-05-20', NULL, 21.41, NULL),
-(69, 'SERVICIOS ECOLOGICOS DE CIUDAD DEL CARMEN', 'RAMOS ARIZPE', '2025-03-07', NULL, 20.30, NULL),
-(70, 'SERVICIOS ECOLOGICOS DE CIUDAD DEL CARMEN', 'RAMOS ARIZPE', '2025-02-10', NULL, 20.40, 21.80),
-(71, 'SERVICIOS ECOLOGICOS DE CIUDAD DEL CARMEN', 'RAMOS ARIZPE', '2025-04-23', NULL, 22.35, NULL);
+INSERT INTO `precios_combustible` (`id`, `fecha`, `siic`, `zona`, `razon_social`, `estacion`, `vu_magna`, `vu_premium`, `vu_diesel`, `costo_flete`, `pf_magna`, `pf_premium`, `pf_diesel`, `precio_magna`, `precio_premium`, `precio_diesel`) VALUES
+(72, '2025-05-31', '117311', 'CAMPECHE', 'RAZÓN SOCIAL DE PRUEBA', 'PALMIRA', 21.82, 22.86, 24.01, 0.25, 21.07, 22.11, 23.26, 23.99, 25.99, 25.99),
+(77, '2025-04-28', NULL, NULL, 'SERVICIOS ECOLOGICOS DE CIUDAD DEL CARMEN', 'RAMOS ARIZPE', 22.01, NULL, NULL, 0.25, 22.26, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -168,16 +172,7 @@ CREATE TABLE `precios_uuid` (
 --
 
 INSERT INTO `precios_uuid` (`id`, `uuid`, `precio_id`) VALUES
-(81, '1d4f371b-6d1c-4a67-9bcb-148c9c3ebbf1', 65),
-(82, '7b585033-47bf-4b26-9990-269b9e9e8fc1', 66),
-(83, '5ecde881-306f-4a54-866c-6284a545d0d7', 67),
-(84, 'b5a69a84-3535-4596-b47e-d1f46055739e', 68),
-(85, '3E7B22FB-D987-42B3-8832-7327591BC58D', 69),
-(86, 'E47A58FE-AFD9-4F0A-8EA2-C6819405702D', 69),
-(87, '7F0FFE88-6AA4-4B0C-B926-63601329F922', 70),
-(88, '0176A895-81ED-4F46-B35A-2DF907073FFD', 70),
-(89, 'DC06B84A-2417-4F9A-800A-FBDB49CAF66A', 70),
-(90, '12b5b684-b450-42aa-9bec-7494f352d641', 71);
+(99, '807b06b6-5f74-4ea9-93cd-9e1abc600417', 77);
 
 --
 -- Índices para tablas volcadas
@@ -217,13 +212,13 @@ ALTER TABLE `estaciones`
 -- AUTO_INCREMENT de la tabla `precios_combustible`
 --
 ALTER TABLE `precios_combustible`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=78;
 
 --
 -- AUTO_INCREMENT de la tabla `precios_uuid`
 --
 ALTER TABLE `precios_uuid`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
 
 --
 -- Restricciones para tablas volcadas
