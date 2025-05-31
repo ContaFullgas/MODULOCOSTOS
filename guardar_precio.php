@@ -30,11 +30,11 @@ if ($check->num_rows > 0) {
 // Definir campo según tipo de combustible
 $campo = '';
 if ($tipo === 'Diesel') {
-    $campo = 'diesel';
+    $campo = 'vu_diesel';
 } elseif ($tipo === 'Magna') {
-    $campo = 'magna';
+    $campo = 'vu_magna';
 } elseif ($tipo === 'Premium') {
-    $campo = 'premium';
+    $campo = 'vu_premium';
 } else {
     echo json_encode(['success' => false, 'error' => 'Tipo de combustible no válido']);
     exit;
@@ -60,11 +60,24 @@ if ($resBuscar->num_rows > 0) {
     // Insertar nuevo registro
     // $conn->query("INSERT INTO precios_combustible (razon_social, estacion, $campo) VALUES ('$razon_social', '$estacion', $precio)");
     // Insertar nuevo registro con fecha
-    $conn->query("INSERT INTO precios_combustible (razon_social, estacion, fecha, $campo) VALUES ('$razon_social', '$estacion', '$fecha', $precio)");
+    // $conn->query("INSERT INTO precios_combustible (razon_social, estacion, fecha, $campo) VALUES ('$razon_social', '$estacion', '$fecha', $precio)");
+    // $precioId = $conn->insert_id;
+    $sqlInsert = "INSERT INTO precios_combustible (razon_social, estacion, fecha, $campo) VALUES ('$razon_social', '$estacion', '$fecha', $precio)";
+    if (!$conn->query($sqlInsert)) {
+        echo json_encode(['success' => false, 'error' => 'Error al insertar en precios_combustible: ' . $conn->error]);
+        exit;
+    }
     $precioId = $conn->insert_id;
+
 }
 
 // Insertar UUID con referencia a precio_id
-$conn->query("INSERT INTO precios_uuid (uuid, precio_id) VALUES ('$uuid', $precioId)");
+// $conn->query("INSERT INTO precios_uuid (uuid, precio_id) VALUES ('$uuid', $precioId)");
+$sqlUuid = "INSERT INTO precios_uuid (uuid, precio_id) VALUES ('$uuid', $precioId)";
+if (!$conn->query($sqlUuid)) {
+    echo json_encode(['success' => false, 'error' => 'Error al insertar UUID: ' . $conn->error]);
+    exit;
+}
+
 
 echo json_encode(['success' => true]);

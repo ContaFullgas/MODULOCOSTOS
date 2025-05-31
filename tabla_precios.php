@@ -7,12 +7,22 @@ $fecha_sel = $_GET['fecha'] ?? null;
     // Si el usuario seleccionó una fecha válida
     $sql = "
         SELECT 
+            fecha,
+            siic,
+            zona,
             razon_social,
             estacion,
-            diesel,
-            magna,
-            premium,
-            fecha
+            vu_magna,
+            vu_premium,
+            vu_diesel,
+            costo_flete,
+            pf_magna,
+            pf_premium,
+            pf_diesel,
+            precio_magna,
+            precio_premium,
+            precio_diesel
+
         FROM precios_combustible
         WHERE DATE(fecha) = '$fecha_sel'
         ORDER BY razon_social, estacion
@@ -48,15 +58,26 @@ if ($result === false) {
         <table class="table table-bordered table-hover align-middle  text-center table-hover">
             <thead>
                 <tr>
-                    <th class="table-dark" rowspan="2">Fecha</th>
+                    <th class="table-dark" rowspan="2">FECHA</th>
+                    <th class="table-dark" rowspan="2">SIIC</th>
+                    <th class="table-dark" rowspan="2">ZONA</th>
                     <th class="RazonSocial border border-white" style="background-color: #4F1C51; color: white;" rowspan="2">RAZÓN SOCIAL</th>
                     <th class="Estacion border border-white" style="background-color: #A55B4B; color: white;" rowspan="2">ESTACIÓN</th>
                     <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PRECIO COSTO</th>
+                    <th class="" style="background-color: #A55B4B; color: white;" rowspan="2">COSTO DE FLETE</th>
+                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">COSTO + FLETE</th>
+                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PRECIO VENTA</th>
                 </tr>
                 <tr>
                     <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
                     <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PREMIUM</th>
                     <th class="Diesel border border-white" style="background-color: black; color: white;">DIESEL</th>
+                    <th class="Magna border border-white" style="background-color: #399918; color: white;">P+F MAGNA</th>
+                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">P+F PREMIUM</th>
+                    <th class="Diesel border border-white" style="background-color: black; color: white;">P+F DIESEL</th>
+                    <th class="Magna border border-white" style="background-color: #399918; color: white;">PRECIO MAGNA</th>
+                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PRECIO PREMIUM</th>
+                    <th class="Diesel border border-white" style="background-color: black; color: white;">PRECIO DIESEL</th>
                 </tr>
             </thead>
 
@@ -64,11 +85,23 @@ if ($result === false) {
                 <?php while($row = $result->fetch_assoc()): ?>
                 <tr>
                     <td><?= htmlspecialchars(substr($row['fecha'], 0, 10)) ?></td>
+                    <td><?= htmlspecialchars($row['siic']) ?></td>
+                    <td><?= htmlspecialchars($row['zona']) ?></td>
                     <td><?= htmlspecialchars($row['razon_social']) ?></td>
                     <td><?= htmlspecialchars($row['estacion']) ?></td>
-                    <td><?= $row['magna'] !== null ? '$' . number_format($row['magna'], 2) : '-' ?></td>
-                    <td><?= $row['premium'] !== null ? '$' . number_format($row['premium'], 2) : '-' ?></td>
-                    <td><?= $row['diesel'] !== null ? '$' . number_format($row['diesel'], 2) : '-' ?></td>
+
+                    <td><?= $row['vu_magna'] !== null ? '$' . number_format($row['vu_magna'], 2) : '-' ?></td>
+                    <td><?= $row['vu_premium'] !== null ? '$' . number_format($row['vu_premium'], 2) : '-' ?></td>
+                    <td><?= $row['vu_diesel'] !== null ? '$' . number_format($row['vu_diesel'], 2) : '-' ?></td>
+                    <td><?= $row['costo_flete'] !== null ? '$' . number_format($row['costo_flete'], 2) : '-' ?></td>
+
+                    <td><?= $row['pf_magna'] !== null ? '$' . number_format($row['pf_magna'], 2) : '-' ?></td>
+                    <td><?= $row['pf_premium'] !== null ? '$' . number_format($row['pf_premium'], 2) : '-' ?></td>
+                    <td><?= $row['pf_diesel'] !== null ? '$' . number_format($row['pf_diesel'], 2) : '-' ?></td>
+
+                    <td><?= $row['precio_magna'] !== null ? '$' . number_format($row['precio_magna'], 2) : '-' ?></td>
+                    <td><?= $row['precio_premium'] !== null ? '$' . number_format($row['precio_premium'], 2) : '-' ?></td>
+                    <td><?= $row['precio_diesel'] !== null ? '$' . number_format($row['precio_diesel'], 2) : '-' ?></td>
                 </tr>
                 <?php endwhile; ?>
             </tbody>
