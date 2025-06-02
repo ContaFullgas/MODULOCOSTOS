@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost
--- Tiempo de generación: 31-05-2025 a las 19:59:39
+-- Servidor: localhost:3306
+-- Tiempo de generación: 02-06-2025 a las 21:14:05
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.0.30
 
@@ -152,8 +152,8 @@ CREATE TABLE `precios_combustible` (
 --
 
 INSERT INTO `precios_combustible` (`id`, `fecha`, `siic`, `zona`, `razon_social`, `estacion`, `vu_magna`, `vu_premium`, `vu_diesel`, `costo_flete`, `pf_magna`, `pf_premium`, `pf_diesel`, `precio_magna`, `precio_premium`, `precio_diesel`) VALUES
-(72, '2025-05-31', '117311', 'CAMPECHE', 'RAZÓN SOCIAL DE PRUEBA', 'PALMIRA', 21.82, 22.86, 24.01, 0.25, 21.07, 22.11, 23.26, 23.99, 25.99, 25.99),
-(77, '2025-04-28', NULL, NULL, 'SERVICIOS ECOLOGICOS DE CIUDAD DEL CARMEN', 'RAMOS ARIZPE', 22.01, NULL, NULL, 0.25, 22.26, NULL, NULL, NULL, NULL, NULL);
+(72, '2025-06-02', '117311', 'CAMPECHE', 'RAZÓN SOCIAL DE PRUEBA', 'PALMIRA', 21.82, 22.86, 24.01, 0.25, 21.07, 22.11, 23.26, 23.99, 25.99, 25.99),
+(77, '2025-06-02', NULL, NULL, 'SERVICIOS ECOLOGICOS DE CIUDAD DEL CARMEN', 'RAMOS ARIZPE', 22.01, NULL, NULL, 0.25, 22.26, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
