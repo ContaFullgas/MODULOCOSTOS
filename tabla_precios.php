@@ -25,7 +25,7 @@ $fecha_sel = $_GET['fecha'] ?? null;
 
         FROM precios_combustible
         WHERE DATE(fecha) = '$fecha_sel'
-        ORDER BY razon_social, estacion
+        ORDER BY id
     ";
 // } else {
 //     // Si no hay fecha (primera carga): mostrar últimos 3 meses

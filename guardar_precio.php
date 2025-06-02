@@ -61,8 +61,8 @@ $precioVenta = ($precio_flete * (1 + $iva)) + $ieps;
 // Inicialización de variables que almacenarán los nombres de las columnas según el tipo de combustible
 $campo = '';
 $campo_flete = '';
-$campo_vu = '';
-$campo_pf = '';
+// $campo_vu = '';
+// $campo_pf = '';
 $campo_pv = '';
 
 // if ($tipo === 'Diesel') {
