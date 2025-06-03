@@ -100,8 +100,10 @@ if ($tipo === 'Diesel') {
 }
 
 
-// Se busca si ya existe un registro con la misma razón social, estación y fecha
-$sqlBuscar = "SELECT * FROM precios_combustible WHERE razon_social = '$razon_social' AND estacion = '$estacion' AND fecha = '$fecha'";
+//De momento busca el registro para modificar de acuerdo a la fecha y el nombre de la estación    
+//Se debe checar que en la base de datos las dos tablas coincidan con los nombres de estación
+$sqlBuscar = "SELECT * FROM precios_combustible WHERE estacion = '$estacion' AND fecha = '$fecha'";
+
 $resBuscar = $conn->query($sqlBuscar);
 
 // Si ya existe el registro
@@ -112,14 +114,14 @@ if ($resBuscar->num_rows > 0) {
     // Solo actualizar si el valor existente es nulo o diferente del nuevo precio
     if (is_null($row[$campo]) || floatval($row[$campo]) != $precio) {
         $conn->query("UPDATE precios_combustible 
-                      SET $campo = $precio, $campo_flete = $precio_flete, costo_flete = $flete, $campo_pv = $precioVenta
+                      SET $campo = $precio, $campo_flete = $precio_flete, costo_flete = $flete, $campo_pv = $precioVenta, modificado = 1, razon_social = '$razon_social'
                       WHERE id = $precioId");
     }
 } else {
     // Si no existe registro, se inserta uno nuevo con los datos y precios correspondientes
     $sqlInsert = "INSERT INTO precios_combustible 
-                  (razon_social, estacion, fecha, $campo, $campo_flete, costo_flete, $campo_pv)
-                  VALUES ('$razon_social', '$estacion', '$fecha', $precio, $precio_flete, $flete, $precioVenta)";
+                  (razon_social, estacion, fecha, $campo, $campo_flete, costo_flete, $campo_pv, modificado)
+                  VALUES ('$razon_social', '$estacion', '$fecha', $precio, $precio_flete, $flete, $precioVenta, 1)";
     
     // Verifica si la inserción falló
     if (!$conn->query($sqlInsert)) {

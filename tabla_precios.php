@@ -21,7 +21,8 @@ $fecha_sel = $_GET['fecha'] ?? null;
             pf_diesel,
             precio_magna,
             precio_premium,
-            precio_diesel
+            precio_diesel,
+            modificado
 
         FROM precios_combustible
         WHERE DATE(fecha) = '$fecha_sel'
@@ -83,7 +84,11 @@ if ($result === false) {
 
             <tbody>
                 <?php while($row = $result->fetch_assoc()): ?>
-                <tr>
+                    <?php
+                        // Si modificado = 1, agregamos clase CSS para resaltar
+                        $clase = ($row['modificado'] == 1) ? 'registro-modificado' : '';
+                    ?>
+                <tr class="<?= $clase ?>">
                     <td><?= htmlspecialchars(substr($row['fecha'], 0, 10)) ?></td>
                     <td><?= htmlspecialchars($row['siic']) ?></td>
                     <td><?= htmlspecialchars($row['zona']) ?></td>
@@ -113,3 +118,12 @@ if ($result === false) {
 
 $conn->close();
 ?>
+
+<!-- Estilos para remarcar los registros que se modificaron -->
+<style>
+    .registro-modificado,
+        .registro-modificado td {
+            background-color:rgb(254, 197, 10) !important; /* Amarillo claro */
+            font-weight: bold;
+        }
+</style>
