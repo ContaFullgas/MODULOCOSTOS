@@ -1,0 +1,46 @@
+<?php
+require 'db.php'; // Asegúrate de tener tu conexión
+
+if (!isset($_POST['fecha']) || empty($_POST['fecha'])) {
+    echo 'Fecha no válida.';
+    exit;
+}
+
+$fechaNueva = $_POST['fecha'];
+
+// Verificar si ya existe
+$check = $conn->prepare("SELECT COUNT(*) FROM precios_combustible WHERE fecha = ?");
+$check->bind_param("s", $fechaNueva);
+$check->execute();
+$check->bind_result($existe);
+$check->fetch();
+$check->close();
+
+if ($existe > 0) {
+    echo "Ya existe un registro para la fecha $fechaNueva.";
+    exit;
+}
+
+// Obtener la última fecha existente
+$res = $conn->query("SELECT fecha FROM precios_combustible ORDER BY fecha DESC LIMIT 1");
+if ($row = $res->fetch_assoc()) {
+    $ultimaFecha = $row['fecha'];
+
+    // Copiar datos de la última fecha con nueva fecha
+    $sql = "INSERT INTO precios_combustible (fecha, siic, zona, razon_social, estacion, vu_magna, vu_premium, vu_diesel, costo_flete, pf_magna, pf_premium, pf_diesel, precio_magna, precio_premium, precio_diesel)
+            SELECT ?, siic, zona, razon_social, estacion, vu_magna, vu_premium, vu_diesel, costo_flete, pf_magna, pf_premium, pf_diesel, precio_magna, precio_premium, precio_diesel
+            FROM precios_combustible
+            WHERE fecha = ?";
+
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("ss", $fechaNueva, $ultimaFecha);
+    if ($stmt->execute()) {
+        echo "Nuevo día generado correctamente con fecha $fechaNueva.";
+    } else {
+        echo "Error al generar el nuevo día.";
+    }
+    $stmt->close();
+} else {
+    echo "No hay datos anteriores para copiar.";
+}
+?>

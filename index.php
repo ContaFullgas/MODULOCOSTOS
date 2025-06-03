@@ -21,11 +21,22 @@ date_default_timezone_set('America/Mexico_City');
 
     <div id="resultado"></div>
 
-    <!-- Selector de fecha para filtrar precios -->
-    <form id="formFecha" class="mb-3">
-        <label for="fecha">Selecciona fecha:</label>
-        <input type="date" id="fecha" name="fecha" value="" class="form-control" style="max-width: 200px;">
-    </form>
+    <div class="d-flex align-items-end gap-3 mb-3 flex-wrap">
+        <div>
+            <label for="fecha" class="form-label">Selecciona fecha:</label>
+            <input type="date" id="fecha" name="fecha" class="form-control">
+        </div>
+
+        <div>
+            <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
+            <div class="input-group">
+                <input type="date" id="nueva_fecha" class="form-control">
+                <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar Día</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="resultado_generacion" class="mb-3"></div>
 
     <div id="tablaPrecios"></div>
 
@@ -152,15 +163,62 @@ date_default_timezone_set('America/Mexico_City');
                             alert('Error al obtener estaciones.');
                         });
                 } else {
-                    div.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    div.innerHTML = 
+                    `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        Error de red o servidor.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>`;
                 }
             })
             .catch(err => {
                 document.getElementById('resultado').innerHTML =
-                    '<div class="alert alert-danger">Error de red o servidor.</div>';
+                    `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${data.error}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>`;
                 console.error(err);
             });
         });
+
+    function generarNuevoDia() {
+        const fecha = document.getElementById('nueva_fecha').value;
+        if (!fecha) {
+            alert('Selecciona una fecha válida para generar el nuevo día.');
+            return;
+        }
+
+        fetch('generar_dia.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'fecha=' + encodeURIComponent(fecha)
+        })
+        .then(response => response.text())
+        // .then(data => {
+        //     document.getElementById('resultado_generacion').innerHTML =
+        //         '<div class="alert alert-info">' + data + '</div>';
+        .then(data => {
+        document.getElementById('resultado_generacion').innerHTML =
+            `<div class="alert alert-info alert-dismissible fade show" role="alert">
+                ${data}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+            // Recargar la tabla si la fecha actual coincide con la generada
+            if (document.getElementById('fecha').value === fecha) {
+                cargarTablaPrecios(fecha);
+            }
+        })
+        .catch(error => {
+            document.getElementById('resultado_generacion').innerHTML =
+                `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    Error en la solicitud.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>`;
+            console.error(error);
+        });
+    }
+
     </script>
 
     <!-- Modal -->

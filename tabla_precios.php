@@ -61,7 +61,7 @@ if ($result === false) {
                     <th class="table-dark" rowspan="2">FECHA</th>
                     <th class="table-dark" rowspan="2">SIIC</th>
                     <th class="table-dark" rowspan="2">ZONA</th>
-                    <th class="RazonSocial border border-white" style="background-color: #4F1C51; color: white;" rowspan="2">RAZÓN SOCIAL</th>
+                    <!-- <th class="RazonSocial border border-white" style="background-color: #4F1C51; color: white;" rowspan="2">RAZÓN SOCIAL</th> -->
                     <th class="Estacion border border-white" style="background-color: #A55B4B; color: white;" rowspan="2">ESTACIÓN</th>
                     <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PRECIO COSTO</th>
                     <th class="" style="background-color: #A55B4B; color: white;" rowspan="2">COSTO DE FLETE</th>
@@ -87,7 +87,7 @@ if ($result === false) {
                     <td><?= htmlspecialchars(substr($row['fecha'], 0, 10)) ?></td>
                     <td><?= htmlspecialchars($row['siic']) ?></td>
                     <td><?= htmlspecialchars($row['zona']) ?></td>
-                    <td><?= htmlspecialchars($row['razon_social']) ?></td>
+                    <!-- <td><?= htmlspecialchars($row['razon_social']) ?></td> -->
                     <td><?= htmlspecialchars($row['estacion']) ?></td>
 
                     <td><?= $row['vu_magna'] !== null ? '$' . number_format($row['vu_magna'], 2) : '-' ?></td>
