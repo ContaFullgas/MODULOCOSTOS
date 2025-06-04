@@ -21,26 +21,63 @@ date_default_timezone_set('America/Mexico_City');
 
     <div id="resultado"></div>
 
-    <div class="d-flex align-items-end gap-3 mb-3 flex-wrap">
+    <!-- <div class="d-flex align-items-end gap-3 mb-3 flex-wrap">
+    <div>
+        <label for="fecha" class="form-label">Selecciona fecha:</label>
+        <input type="date" id="fecha" name="fecha" class="form-control">
+    </div>
+
+    <div>
+        <label class="form-label  d-block">Exportar cambios:</label>
+        <button class="btn btn-primary" onclick="exportarExcel()" id="btnExportar">
+            Exportar
+        </button>
+    </div>
+
+    <div>
+        <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
+        <div class="input-group">
+            <input type="date" id="nueva_fecha" class="form-control">
+            <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar Día</button>
+        </div>
+    </div>
+</div>
+
+<div id="resultado_exportacion" class="mb-2"></div>
+<div id="resultado_generacion" class="mb-3"></div>
+<div id="tablaPrecios"></div> -->
+
+<div class="d-flex align-items-end justify-content-between gap-3 mb-3 flex-wrap">
+    <div class="d-flex align-items-end gap-3 flex-wrap">
         <div>
             <label for="fecha" class="form-label">Selecciona fecha:</label>
             <input type="date" id="fecha" name="fecha" class="form-control">
         </div>
 
         <div>
-            <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
-            <div class="input-group">
-                <input type="date" id="nueva_fecha" class="form-control">
-                <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar Día</button>
-            </div>
+            <label class="form-label d-block">Exportar cambios:</label>
+            <button class="btn btn-outline-primary" onclick="exportarExcel()" id="btnExportar">
+                Exportar
+            </button>
         </div>
     </div>
 
-    <div id="resultado_generacion" class="mb-3"></div>
+    <div>
+        <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
+        <div class="input-group">
+            <input type="date" id="nueva_fecha" class="form-control">
+            <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar Día</button>
+        </div>
+    </div>
+</div>
 
-    <div id="tablaPrecios"></div>
+<div id="resultado_exportacion" class="mb-2"></div>
+<div id="resultado_generacion" class="mb-3"></div>
+<div id="tablaPrecios"></div>
 
-    <script>
+
+
+<script>
         // Función para cargar la tabla con la fecha seleccionada
         function cargarTablaPrecios(fecha = null) {
             let url = 'tabla_precios.php';
@@ -218,6 +255,49 @@ date_default_timezone_set('America/Mexico_City');
             console.error(error);
         });
     }
+
+    
+    function exportarExcel() {
+    const fecha = document.getElementById('fecha').value;
+    const btn = document.getElementById('btnExportar');
+
+    if (!fecha) {
+        alert('Selecciona una fecha para exportar los cambios.');
+        return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = 'Generando...';
+
+    fetch(`exportar_excel.php?fecha=${encodeURIComponent(fecha)}`)
+        .then(response => {
+            if (response.headers.get('Content-Type').includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                return response.blob();
+            } else {
+                return response.text().then(text => { throw new Error(text); });
+            }
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cambios_${fecha}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        })
+        .catch(error => {
+            document.getElementById('resultado_exportacion').innerHTML = `
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${error.message || 'No hay datos para exportar o ocurrió un error.'}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>`;
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = 'Exportar cambios a Excel';
+        });
+}
 
     </script>
 
