@@ -1,3 +1,6 @@
 De momento el sistema sube el XML, extrae la información y acomoda los registros de acuerdo a si es magna, premium o diesel
 verifica que la razón social, el combustible y la fecha no sean iguales, si son iguales no agrega el registro
 si el combustible es diferente, edita el mismo registro, si la fecha es diferente, agrega un nuevo registro.
+
+
+Quitar las estaciones que no tienen promedio al final de la base de datos, de todos los registros de la base de datos para poder agruparlas después

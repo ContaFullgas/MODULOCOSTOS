@@ -47,7 +47,7 @@ date_default_timezone_set('America/Mexico_City');
 <div id="resultado_generacion" class="mb-3"></div>
 <div id="tablaPrecios"></div> -->
 
-<div class="d-flex align-items-end justify-content-between gap-3 mb-3 flex-wrap">
+<!-- <div class="d-flex align-items-end justify-content-between gap-3 mb-3 flex-wrap">
     <div class="d-flex align-items-end gap-3 flex-wrap">
         <div>
             <label for="fecha" class="form-label">Selecciona fecha:</label>
@@ -59,6 +59,12 @@ date_default_timezone_set('America/Mexico_City');
             <button class="btn btn-outline-primary" onclick="exportarExcel()" id="btnExportar">
                 Exportar
             </button>
+
+            <label class="form-label d-block">Borrar día:</label>
+            <button class="btn btn-outline-danger" onclick="eliminarRegistrosPorFecha()">
+                Borrar
+            </button>
+
         </div>
     </div>
 
@@ -66,15 +72,88 @@ date_default_timezone_set('America/Mexico_City');
         <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
         <div class="input-group">
             <input type="date" id="nueva_fecha" class="form-control">
-            <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar Día</button>
+            <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar día</button>
         </div>
     </div>
 </div>
 
 <div id="resultado_exportacion" class="mb-2"></div>
 <div id="resultado_generacion" class="mb-3"></div>
-<div id="tablaPrecios"></div>
+<div id="tablaPrecios"></div> -->
 
+<!-- <div class="d-flex align-items-end justify-content-between gap-3 mb-3 flex-wrap">
+    <div class="d-flex align-items-end gap-3 flex-wrap">
+        <div>
+            <label for="fecha" class="form-label">Selecciona fecha:</label>
+            <input type="date" id="fecha" name="fecha" class="form-control">
+        </div>
+
+        <div class="d-flex gap-3">
+            <div>
+                <label class="form-label">Exportar cambios:</label>
+                <button class="btn btn-outline-primary w-100" onclick="exportarExcel()" id="btnExportar">
+                    Exportar
+                </button>
+            </div>
+
+            <div>
+                <label class="form-label">Borrar día:</label>
+                <button class="btn btn-outline-danger w-100" onclick="eliminarRegistrosPorFecha()">
+                    Borrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
+        <div class="input-group">
+            <input type="date" id="nueva_fecha" class="form-control">
+            <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar día</button>
+        </div>
+    </div>
+</div> -->
+
+<div class="d-flex flex-wrap gap-3 mb-3">
+    <!-- Campo de fecha -->
+    <div class="d-flex flex-column">
+        <label for="fecha" class="form-label">Selecciona fecha:</label>
+        <input type="date" id="fecha" name="fecha" class="form-control" style="min-width: 200px;">
+    </div>
+
+    <!-- Botones agrupados -->
+    <div class="d-flex flex-wrap gap-3">
+        <!-- Exportar -->
+        <div class="d-flex flex-column">
+            <label class="form-label">Exportar cambios:</label>
+            <button class="btn btn-outline-primary" style="width: 130px;" onclick="exportarExcel()" id="btnExportar">
+                Exportar
+            </button>
+        </div>
+
+        <!-- Borrar -->
+        <div class="d-flex flex-column">
+            <label class="form-label">Borrar día:</label>
+            <button class="btn btn-outline-danger" style="width: 130px;" onclick="eliminarRegistrosPorFecha()">
+                Borrar
+            </button>
+        </div>
+
+        <!-- Generar nuevo día -->
+        <div class="d-flex flex-column">
+            <label class="form-label">Generar nuevo día:</label>
+            <button class="btn btn-outline-success" style="width: 130px;" type="button" onclick="generarNuevoDia()">
+                Generar día
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="resultado_exportacion" class="mb-2"></div>
+<div id="resultado_generacion" class="mb-3"></div>
+<div id="tablaPrecios"></div>
 
 
 <script>
@@ -218,7 +297,7 @@ date_default_timezone_set('America/Mexico_City');
         });
 
     function generarNuevoDia() {
-        const fecha = document.getElementById('nueva_fecha').value;
+        const fecha = document.getElementById('fecha').value;
         if (!fecha) {
             alert('Selecciona una fecha válida para generar el nuevo día.');
             return;
@@ -295,9 +374,43 @@ date_default_timezone_set('America/Mexico_City');
         })
         .finally(() => {
             btn.disabled = false;
-            btn.innerHTML = 'Exportar cambios a Excel';
+            btn.innerHTML = 'Exportar';
         });
 }
+
+function eliminarRegistrosPorFecha() {
+    const fecha = document.getElementById('fecha').value;
+
+    if (!fecha) {
+        alert('Selecciona una fecha para borrar los registros.');
+        return;
+    }
+
+    if (!confirm(`¿Estás seguro de que deseas eliminar todos los registros del día ${fecha}? Esta acción no se puede deshacer.`)) {
+        return;
+    }
+
+    fetch('eliminar_dia.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'fecha=' + encodeURIComponent(fecha)
+    })
+    .then(response => response.text())
+    .then(data => {
+        document.getElementById('resultado_generacion').innerHTML =
+            `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ${data}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+
+        cargarTablaPrecios(fecha); // Recargar tabla
+    })
+    .catch(error => {
+        console.error('Error al eliminar registros:', error);
+        alert('Ocurrió un error al intentar eliminar los registros.');
+    });
+}
+
 
     </script>
 
