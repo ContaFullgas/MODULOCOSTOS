@@ -89,11 +89,11 @@ if ($result === false) {
                         $clase = ($row['modificado'] == 1) ? 'registro-modificado' : '';
                     ?>
                 <tr class="<?= $clase ?>">
-                    <td><?= htmlspecialchars(substr($row['fecha'], 0, 10)) ?></td>
-                    <td><?= htmlspecialchars($row['siic']) ?></td>
-                    <td><?= htmlspecialchars($row['zona']) ?></td>
+                    <td><?= htmlspecialchars(substr($row['fecha'] ?? '', 0, 10)) ?></td>
+                    <td><?= htmlspecialchars($row['siic'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars($row['zona'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                     <!-- <td><?= htmlspecialchars($row['razon_social']) ?></td> -->
-                    <td><?= htmlspecialchars($row['estacion']) ?></td>
+                    <td><?= htmlspecialchars($row['estacion'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
 
                     <td><?= $row['vu_magna'] !== null ? '$' . number_format($row['vu_magna'], 2) : '-' ?></td>
                     <td><?= $row['vu_premium'] !== null ? '$' . number_format($row['vu_premium'], 2) : '-' ?></td>

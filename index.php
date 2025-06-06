@@ -219,9 +219,26 @@ date_default_timezone_set('America/Mexico_City');
                             } else {
                                 const options = estaciones.map(est =>
                                     `<option value="${est.id}">${est.nombre}</option>`).join('');
+                                // modalBody.innerHTML = `
+                                //     <p><strong>Seleccione una estación:</strong></p>
+                                //     <select id="selectEstacion" class="form-select">${options}</select>`;
                                 modalBody.innerHTML = `
-                                    <p><strong>Seleccione una estación:</strong></p>
-                                    <select id="selectEstacion" class="form-select">${options}</select>`;
+                                <p><strong>Razón social:</strong> ${data.data.nombre}</p>
+                                <!-- <p><strong>RFC receptor:</strong> ${data.data.rfc}</p> -->
+                                <p><strong>Tipo de combustible:</strong> ${tipo}</p>
+                                <!-- <p><strong>Cantidad:</strong> ${data.data.cantidad}</p> -->
+                                <!-- <p><strong>Total:</strong> $${data.data.total}</p> -->
+                                <p><strong>Precio unitario:</strong> $${(parseFloat(data.data.total) / parseFloat(data.data.cantidad)).toFixed(2)}</p>
+                                <p><strong>UUID:</strong> ${data.data.uuid}</p>
+                                <hr>
+                                <p><strong>Seleccione una estación:</strong></p>
+                                <select id="selectEstacion" class="form-select">
+                                    <option value="" disabled selected>Seleccione una estación</option>
+                                    ${options}
+                                </select>
+
+                            `;
+
                             }
 
                             const modal = new bootstrap.Modal(document.getElementById('modalEstacion'));
@@ -229,8 +246,14 @@ date_default_timezone_set('America/Mexico_City');
 
                             document.getElementById('btnConfirmarEstacion').onclick = () => {
                                 const select = document.getElementById('selectEstacion');
+
                                 if (!select) {
                                     alert('No hay estación para seleccionar.');
+                                    return;
+                                }
+
+                                if (!select || select.value === "") {
+                                    alert('Por favor, seleccione una estación antes de continuar.');
                                     return;
                                 }
 
@@ -301,6 +324,11 @@ date_default_timezone_set('America/Mexico_City');
         if (!fecha) {
             alert('Selecciona una fecha válida para generar el nuevo día.');
             return;
+        }
+
+        const confirmar = confirm(`¿Estás seguro de que deseas generar el nuevo día para la fecha ${fecha}?`);
+        if (!confirmar) {
+            return; // El usuario canceló la operación
         }
 
         fetch('generar_dia.php', {
@@ -411,6 +439,16 @@ function eliminarRegistrosPorFecha() {
     });
 }
 
+document.addEventListener('DOMContentLoaded', function () {
+    const modal = document.getElementById('modalEstacion');
+    const inputArchivo = document.getElementById('inputFile');
+
+    // Cuando el modal se cierra
+    modal.addEventListener('hidden.bs.modal', function () {
+      // Limpiar input de archivo
+      inputArchivo.value = '';
+    });
+  });
 
     </script>
 
@@ -423,7 +461,18 @@ function eliminarRegistrosPorFecha() {
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
           <div class="modal-body"></div>
+
+          <!-- Datos del XML
+            <div class="mb-3 border rounded p-3 bg-light">
+            <h6 class="text-secondary">Datos extraídos del XML</h6>
+            <p><strong>Razón Social:</strong> <span id="razonSocial">-</span></p>
+            <p><strong>Tipo de Combustible:</strong> <span id="tipoCombustible">-</span></p>
+            <p><strong>Precio Unitario:</strong> <span id="precioUnitario">-</span></p>
+            <p><strong>UUID:</strong> <span id="uuidFactura">-</span></p>
+            </div> -->
+
           <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
             <button type="button" id="btnConfirmarEstacion" class="btn btn-primary">Confirmar</button>
           </div>
         </div>
