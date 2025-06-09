@@ -8,7 +8,7 @@ $fecha_sel = $_GET['fecha'] ?? null;
     $sql = "
         SELECT 
             fecha,
-            siic,
+            siic_inteligas,
             zona,
             razon_social,
             estacion,
@@ -90,7 +90,7 @@ if ($result === false) {
                     ?>
                 <tr class="<?= $clase ?>">
                     <td><?= htmlspecialchars(substr($row['fecha'] ?? '', 0, 10)) ?></td>
-                    <td><?= htmlspecialchars($row['siic'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                    <td><?= htmlspecialchars($row['siic_inteligas'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                     <td><?= htmlspecialchars($row['zona'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                     <!-- <td><?= htmlspecialchars($row['razon_social']) ?></td> -->
                     <td><?= htmlspecialchars($row['estacion'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>

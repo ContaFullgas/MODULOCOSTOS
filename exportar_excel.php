@@ -16,7 +16,7 @@ if (!$fecha) {
 }
 
 // Consulta registros modificados de esa fecha
-$query = "SELECT siic, zona, estacion, precio_magna, precio_premium, precio_diesel 
+$query = "SELECT siic_inteligas, zona, estacion, precio_magna, precio_premium, precio_diesel 
           FROM precios_combustible 
           WHERE modificado = 1 AND fecha = ?";
 $stmt = $conn->prepare($query);
@@ -85,7 +85,7 @@ $sheet->getStyle('F4')->applyFromArray([
 // Insertar datos
 $row = 5;
 while ($data = $result->fetch_assoc()) {
-    $sheet->setCellValue("A{$row}", $data['siic']);
+    $sheet->setCellValue("A{$row}", $data['siic_inteligas']);
     $sheet->setCellValue("B{$row}", $data['zona']);
     $sheet->setCellValue("C{$row}", $data['estacion']);
     $sheet->setCellValue("D{$row}", $data['precio_magna']);
