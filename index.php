@@ -15,7 +15,8 @@ date_default_timezone_set('America/Mexico_City');
 
     <form id="formUpload" class="mb-4">
         <div class="mb-3">
-            <input type="file" name="documento" class="form-control" accept=".xml" required id="inputFile" />
+            <input type="file" name="documento" class="form-control" accept=".xml" required id="inputFile" disabled/>
+            <small id="mensaje_fecha" class="text-danger">Seleccione una fecha para cargar archivos XML.</small>
         </div>
     </form>
 
@@ -348,6 +349,11 @@ date_default_timezone_set('America/Mexico_City');
                 ${data}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>`;
+
+            // Desbloquear el input después de generar el nuevo día
+            document.getElementById("inputFile").disabled = false;
+            mensaje_fecha.textContent = ""; // borrar mensaje si hay registros
+
             // Recargar la tabla si la fecha actual coincide con la generada
             if (document.getElementById('fecha').value === fecha) {
                 cargarTablaPrecios(fecha);
@@ -431,6 +437,10 @@ function eliminarRegistrosPorFecha() {
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>`;
 
+        // Bloquear el input después de eliminar el día
+        document.getElementById("inputFile").disabled = true;
+        mensaje_fecha.textContent = "No hay registros para esta fecha. Genera un nuevo día antes de cargar XML.";
+
         cargarTablaPrecios(fecha); // Recargar tabla
     })
     .catch(error => {
@@ -449,6 +459,30 @@ document.addEventListener('DOMContentLoaded', function () {
       inputArchivo.value = '';
     });
   });
+
+  //Evaluar que el input solo este desbloqueado cuando existan registros
+
+  document.getElementById("fecha").addEventListener("change", function () {
+    const fecha = this.value;
+
+    fetch("verificar_registros.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "fecha=" + encodeURIComponent(fecha)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.existe) {
+            document.getElementById("inputFile").disabled = false;
+            mensaje_fecha.textContent = ""; // borrar mensaje si hay registros
+        } else {
+            document.getElementById("inputFile").disabled = true;
+            // alert("No hay registros para esta fecha. Genera un nuevo día antes de cargar XML.");
+            mensaje_fecha.textContent = "No hay registros para esta fecha. Genera un nuevo día antes de cargar XML.";
+        }
+    });
+});
+
 
     </script>
 
