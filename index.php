@@ -154,171 +154,172 @@ date_default_timezone_set('America/Mexico_City');
 
 <div id="resultado_exportacion" class="mb-2"></div>
 <div id="resultado_generacion" class="mb-3"></div>
+<div id="resultado_verificar_registros" class="mb-3"></div>
 <div id="tablaPrecios"></div>
 
 
 <script>
-        // Función para cargar la tabla con la fecha seleccionada
-        function cargarTablaPrecios(fecha = null) {
-            let url = 'tabla_precios.php';
-            if (fecha) {
-                url += '?fecha=' + fecha;
-            }
-            fetch(url)
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('tablaPrecios').innerHTML = html;
-                });
+    // Función para cargar la tabla con la fecha seleccionada
+    function cargarTablaPrecios(fecha = null) {
+        let url = 'tabla_precios.php';
+        if (fecha) {
+            url += '?fecha=' + fecha;
+        }
+        fetch(url)
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('tablaPrecios').innerHTML = html;
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const fechaInput = document.getElementById('fecha');
+
+        if (!fechaInput.value) {
+            // Si no hay fecha seleccionada, cargar últimos 3 meses
+            cargarTablaPrecios();
+        } else {
+            cargarTablaPrecios(fechaInput.value);
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const fechaInput = document.getElementById('fecha');
-
-            if (!fechaInput.value) {
-                // Si no hay fecha seleccionada, cargar últimos 3 meses
-                cargarTablaPrecios();
-            } else {
-                cargarTablaPrecios(fechaInput.value);
-            }
-
-            fechaInput.addEventListener('change', function () {
-                cargarTablaPrecios(this.value);
-            });
+        fechaInput.addEventListener('change', function () {
+            cargarTablaPrecios(this.value);
         });
+    });
 
-        document.getElementById('inputFile').addEventListener('change', function () {
-            const fileInput = this;
-            if (fileInput.files.length === 0) return;
+    document.getElementById('inputFile').addEventListener('change', function () {
+        const fileInput = this;
+        if (fileInput.files.length === 0) return;
 
-            const formData = new FormData();
-            formData.append('documento', fileInput.files[0]);
+        const formData = new FormData();
+        formData.append('documento', fileInput.files[0]);
 
-            fetch('procesar_xml.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                const div = document.getElementById('resultado');
+        fetch('procesar_xml.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            const div = document.getElementById('resultado');
 
-                if (data.success) {
-                    const tipo = {
-                        '15101514': 'Magna',
-                        '15101515': 'Premium',
-                        '15101505': 'Diesel'
-                    }[data.data.claveProdServ] || 'Desconocido';
+            if (data.success) {
+                const tipo = {
+                    '15101514': 'Magna',
+                    '15101515': 'Premium',
+                    '15101505': 'Diesel'
+                }[data.data.claveProdServ] || 'Desconocido';
 
-                    fetch(`get_estaciones.php?rfc=${encodeURIComponent(data.data.rfc)}`)
-                        .then(response => response.json())
-                        .then(estaciones => {
-                            const modalBody = document.querySelector('#modalEstacion .modal-body');
+                fetch(`get_estaciones.php?rfc=${encodeURIComponent(data.data.rfc)}`)
+                    .then(response => response.json())
+                    .then(estaciones => {
+                        const modalBody = document.querySelector('#modalEstacion .modal-body');
 
-                            if (estaciones.error) {
-                                modalBody.innerHTML = `<p class="text-danger">Error: ${estaciones.error}</p>`;
-                            } else if (estaciones.length === 0) {
-                                modalBody.innerHTML = '<p>No se encontraron estaciones para este RFC.</p>';
-                            } else {
-                                const options = estaciones.map(est =>
-                                    `<option value="${est.id}">${est.nombre}</option>`).join('');
-                                // modalBody.innerHTML = `
-                                //     <p><strong>Seleccione una estación:</strong></p>
-                                //     <select id="selectEstacion" class="form-select">${options}</select>`;
-                                modalBody.innerHTML = `
-                                <p><strong>Razón social:</strong> ${data.data.nombre}</p>
-                                <!-- <p><strong>RFC receptor:</strong> ${data.data.rfc}</p> -->
-                                <p><strong>Tipo de combustible:</strong> ${tipo}</p>
-                                <!-- <p><strong>Cantidad:</strong> ${data.data.cantidad}</p> -->
-                                <!-- <p><strong>Total:</strong> $${data.data.total}</p> -->
-                                <p><strong>Precio unitario:</strong> $${(parseFloat(data.data.total) / parseFloat(data.data.cantidad)).toFixed(2)}</p>
-                                <p><strong>UUID:</strong> ${data.data.uuid}</p>
-                                <hr>
-                                <p><strong>Seleccione una estación:</strong></p>
-                                <select id="selectEstacion" class="form-select">
-                                    <option value="" disabled selected>Seleccione una estación</option>
-                                    ${options}
-                                </select>
+                        if (estaciones.error) {
+                            modalBody.innerHTML = `<p class="text-danger">Error: ${estaciones.error}</p>`;
+                        } else if (estaciones.length === 0) {
+                            modalBody.innerHTML = '<p>No se encontraron estaciones para este RFC.</p>';
+                        } else {
+                            const options = estaciones.map(est =>
+                                `<option value="${est.id}">${est.nombre}</option>`).join('');
+                            // modalBody.innerHTML = `
+                            //     <p><strong>Seleccione una estación:</strong></p>
+                            //     <select id="selectEstacion" class="form-select">${options}</select>`;
+                            modalBody.innerHTML = `
+                            <p><strong>Razón social:</strong> ${data.data.nombre}</p>
+                            <!-- <p><strong>RFC receptor:</strong> ${data.data.rfc}</p> -->
+                            <p><strong>Tipo de combustible:</strong> ${tipo}</p>
+                            <!-- <p><strong>Cantidad:</strong> ${data.data.cantidad}</p> -->
+                            <!-- <p><strong>Total:</strong> $${data.data.total}</p> -->
+                            <p><strong>Precio unitario:</strong> $${(parseFloat(data.data.total) / parseFloat(data.data.cantidad)).toFixed(2)}</p>
+                            <p><strong>UUID:</strong> ${data.data.uuid}</p>
+                            <hr>
+                            <p><strong>Seleccione una estación:</strong></p>
+                            <select id="selectEstacion" class="form-select">
+                                <option value="" disabled selected>Seleccione una estación</option>
+                                ${options}
+                            </select>
 
-                            `;
+                        `;
 
+                        }
+
+                        const modal = new bootstrap.Modal(document.getElementById('modalEstacion'));
+                        modal.show();
+
+                        document.getElementById('btnConfirmarEstacion').onclick = () => {
+                            const select = document.getElementById('selectEstacion');
+
+                            if (!select) {
+                                alert('No hay estación para seleccionar.');
+                                return;
                             }
 
-                            const modal = new bootstrap.Modal(document.getElementById('modalEstacion'));
-                            modal.show();
+                            if (!select || select.value === "") {
+                                alert('Por favor, seleccione una estación antes de continuar.');
+                                return;
+                            }
 
-                            document.getElementById('btnConfirmarEstacion').onclick = () => {
-                                const select = document.getElementById('selectEstacion');
+                            const estacionId = select.value;
+                            const estacionNombre = select.options[select.selectedIndex].text;
 
-                                if (!select) {
-                                    alert('No hay estación para seleccionar.');
-                                    return;
-                                }
+                            const total = parseFloat(data.data.total);
+                            const cantidad = parseFloat(data.data.cantidad);
+                            const precioUnitario = (total / cantidad).toFixed(2);
 
-                                if (!select || select.value === "") {
-                                    alert('Por favor, seleccione una estación antes de continuar.');
-                                    return;
-                                }
+                            const fechaCFDI = data.data.fecha.split('T')[0];
 
-                                const estacionId = select.value;
-                                const estacionNombre = select.options[select.selectedIndex].text;
+                            modal.hide();
 
-                                const total = parseFloat(data.data.total);
-                                const cantidad = parseFloat(data.data.cantidad);
-                                const precioUnitario = (total / cantidad).toFixed(2);
-
-                                const fechaCFDI = data.data.fecha.split('T')[0];
-
-                                modal.hide();
-
-                                fetch('guardar_precio.php', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        razon_social: data.data.nombre,
-                                        estacion: estacionNombre,
-                                        precio: precioUnitario,
-                                        tipo: tipo,
-                                        uuid: data.data.uuid,
-                                        fecha: fechaCFDI
-                                    })
+                            fetch('guardar_precio.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    razon_social: data.data.nombre,
+                                    estacion: estacionNombre,
+                                    precio: precioUnitario,
+                                    tipo: tipo,
+                                    uuid: data.data.uuid,
+                                    fecha: fechaCFDI
                                 })
-                                .then(response => response.json())
-                                .then(res => {
-                                    console.log('Respuesta guardar_precio.php:', res);
-                                    if (res.success) {
-                                        // Recargar la tabla para la fecha actual o seleccionada
-                                        cargarTablaPrecios(document.getElementById('fecha').value);
-                                    } else {
-                                        alert('Error al guardar: ' + res.error);
-                                    }
-                                    document.getElementById('inputFile').value = '';
-                                })
-                                .catch(() => {
-                                    alert('Error al enviar los datos al servidor.');
-                                });
-                            };
-                        })
-                        .catch(() => {
-                            alert('Error al obtener estaciones.');
-                        });
-                } else {
-                    div.innerHTML = 
-                    `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        Error de red o servidor.
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                    </div>`;
-                }
-            })
-            .catch(err => {
-                document.getElementById('resultado').innerHTML =
-                    `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        ${data.error}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                    </div>`;
-                console.error(err);
-            });
+                            })
+                            .then(response => response.json())
+                            .then(res => {
+                                console.log('Respuesta guardar_precio.php:', res);
+                                if (res.success) {
+                                    // Recargar la tabla para la fecha actual o seleccionada
+                                    cargarTablaPrecios(document.getElementById('fecha').value);
+                                } else {
+                                    alert('Error al guardar: ' + res.error);
+                                }
+                                document.getElementById('inputFile').value = '';
+                            })
+                            .catch(() => {
+                                alert('Error al enviar los datos al servidor.');
+                            });
+                        };
+                    })
+                    .catch(() => {
+                        alert('Error al obtener estaciones.');
+                    });
+            } else {
+                div.innerHTML = 
+                `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    Error de red o servidor.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>`;
+            }
+        })
+        .catch(err => {
+            document.getElementById('resultado').innerHTML =
+                `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ${data.error}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>`;
+            console.error(err);
         });
+    });
 
     function generarNuevoDia() {
         const fecha = document.getElementById('fecha').value;
@@ -412,6 +413,43 @@ date_default_timezone_set('America/Mexico_City');
         });
 }
 
+// function eliminarRegistrosPorFecha() {
+//     const fecha = document.getElementById('fecha').value;
+
+//     if (!fecha) {
+//         alert('Selecciona una fecha para borrar los registros.');
+//         return;
+//     }
+
+//     if (!confirm(`¿Estás seguro de que deseas eliminar todos los registros del día ${fecha}? Esta acción no se puede deshacer.`)) {
+//         return;
+//     }
+
+//     fetch('eliminar_dia.php', {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+//         body: 'fecha=' + encodeURIComponent(fecha)
+//     })
+//     .then(response => response.text())
+//     .then(data => {
+//         document.getElementById('resultado_generacion').innerHTML =
+//             `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+//                 ${data}
+//                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//             </div>`;
+
+//         // Bloquear el input después de eliminar el día
+//         document.getElementById("inputFile").disabled = true;
+//         mensaje_fecha.textContent = "No hay registros para esta fecha. Genera un nuevo día antes de cargar XML.";
+
+//         cargarTablaPrecios(fecha); // Recargar tabla
+//     })
+//     .catch(error => {
+//         console.error('Error al eliminar registros:', error);
+//         alert('Ocurrió un error al intentar eliminar los registros.');
+//     });
+// }
+
 function eliminarRegistrosPorFecha() {
     const fecha = document.getElementById('fecha').value;
 
@@ -420,34 +458,61 @@ function eliminarRegistrosPorFecha() {
         return;
     }
 
-    if (!confirm(`¿Estás seguro de que deseas eliminar todos los registros del día ${fecha}? Esta acción no se puede deshacer.`)) {
-        return;
-    }
-
-    fetch('eliminar_dia.php', {
+    // Paso 1: Verificar si existen registros para esa fecha
+    fetch('verificar_registros.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: 'fecha=' + encodeURIComponent(fecha)
     })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
-        document.getElementById('resultado_generacion').innerHTML =
-            `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                ${data}
+        if (!data.existe) {
+            // alert('No hay registros para esta fecha.');
+            document.getElementById('resultado_verificar_registros').innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                No hay registros para esta fecha.
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>`;
+            return;
+        }
 
-        // Bloquear el input después de eliminar el día
-        document.getElementById("inputFile").disabled = true;
-        mensaje_fecha.textContent = "No hay registros para esta fecha. Genera un nuevo día antes de cargar XML.";
+        // Confirmación antes de borrar
+        if (!confirm(`¿Estás seguro de que deseas eliminar todos los registros del día ${fecha}? Esta acción no se puede deshacer.`)) {
+            return;
+        }
 
-        cargarTablaPrecios(fecha); // Recargar tabla
+        // Paso 2: Eliminar registros
+        fetch('eliminar_dia.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'fecha=' + encodeURIComponent(fecha)
+        })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('resultado_generacion').innerHTML =
+                `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${data}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>`;
+
+            // Bloquear input y actualizar mensaje
+            document.getElementById("inputFile").disabled = true;
+            document.getElementById("mensaje_fecha").textContent = "No hay registros para esta fecha. Genera un nuevo día antes de cargar XML.";
+
+            cargarTablaPrecios(fecha); // Recargar tabla
+        })
+        .catch(error => {
+            console.error('Error al eliminar registros:', error);
+            alert('Ocurrió un error al intentar eliminar los registros.');
+        });
+
     })
     .catch(error => {
-        console.error('Error al eliminar registros:', error);
-        alert('Ocurrió un error al intentar eliminar los registros.');
+        console.error('Error al verificar registros:', error);
+        alert('Ocurrió un error al verificar si hay registros.');
     });
 }
+
 
 document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('modalEstacion');
@@ -461,7 +526,6 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   //Evaluar que el input solo este desbloqueado cuando existan registros
-
   document.getElementById("fecha").addEventListener("change", function () {
     const fecha = this.value;
 
@@ -482,7 +546,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
-
 
     </script>
 
