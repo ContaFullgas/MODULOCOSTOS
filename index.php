@@ -11,60 +11,116 @@ date_default_timezone_set('America/Mexico_City');
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="container py-4">
-    <h1>Subir Facturas (XML)</h1>
+<h1>PRECIOS COMBUSTIBLES FULLGAS</h1>
+<ul class="nav nav-tabs mt-4" id="myTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="diario-tab" data-bs-toggle="tab" data-bs-target="#diario" type="button" role="tab">Vista Diaria</button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="mensual-tab" data-bs-toggle="tab" data-bs-target="#mensual" type="button" role="tab">Vista Mensual</button>
+  </li>
+</ul>
+
+<div class="tab-content" id="myTabsContent">
+  <!-- TAB DIARIO -->
+  <div class="tab-pane fade show active" id="diario" role="tabpanel">
+    <!-- Aquí va tu contenido existente de vista diaria -->
+    <br>
+    <h3>Subir Facturas (XML)</h3>
 
     <form id="formUpload" class="mb-4">
         <div class="mb-3">
-            <input type="file" name="documento" class="form-control" accept=".xml" required id="inputFile" disabled/>
+            <input type="file" name="documento" class="form-control w-50" accept=".xml" required id="inputFile" disabled/>
             <small id="mensaje_fecha" class="text-danger">Seleccione una fecha para cargar archivos XML.</small>
         </div>
     </form>
 
     <div id="resultado"></div>
 
-    
+        
 
-<div class="d-flex flex-wrap gap-3 mb-3">
-    <!-- Campo de fecha -->
-    <div class="d-flex flex-column">
-        <label for="fecha" class="form-label">Selecciona fecha:</label>
-        <input type="date" id="fecha" name="fecha" class="form-control" style="min-width: 200px;">
+    <div class="d-flex flex-wrap gap-3 mb-3">
+        <!-- Campo de fecha -->
+        <div class="d-flex flex-column">
+            <label for="fecha" class="form-label">Selecciona fecha:</label>
+            <input type="date" id="fecha" name="fecha" class="form-control" style="min-width: 200px;">
+        </div>
+
+        <!-- Botones agrupados -->
+        <div class="d-flex flex-wrap gap-3">
+            <!-- Exportar -->
+            <div class="d-flex flex-column">
+                <label class="form-label">Exportar cambios:</label>
+                <button class="btn btn-outline-primary" style="width: 130px;" onclick="exportarExcel()" id="btnExportar">
+                    Exportar
+                </button>
+            </div>
+
+            <!-- Borrar -->
+            <div class="d-flex flex-column">
+                <label class="form-label">Borrar día:</label>
+                <button class="btn btn-outline-danger" style="width: 130px;" onclick="eliminarRegistrosPorFecha()">
+                    Borrar
+                </button>
+            </div>
+
+            <!-- Generar nuevo día -->
+            <div class="d-flex flex-column">
+                <label class="form-label">Generar nuevo día:</label>
+                <button class="btn btn-outline-success" style="width: 130px;" type="button" onclick="generarNuevoDia()">
+                    Generar día
+                </button>
+            </div>
+        </div>
     </div>
 
-    <!-- Botones agrupados -->
-    <div class="d-flex flex-wrap gap-3">
-        <!-- Exportar -->
-        <div class="d-flex flex-column">
-            <label class="form-label">Exportar cambios:</label>
-            <button class="btn btn-outline-primary" style="width: 130px;" onclick="exportarExcel()" id="btnExportar">
-                Exportar
-            </button>
-        </div>
 
-        <!-- Borrar -->
-        <div class="d-flex flex-column">
-            <label class="form-label">Borrar día:</label>
-            <button class="btn btn-outline-danger" style="width: 130px;" onclick="eliminarRegistrosPorFecha()">
-                Borrar
-            </button>
-        </div>
 
-        <!-- Generar nuevo día -->
-        <div class="d-flex flex-column">
-            <label class="form-label">Generar nuevo día:</label>
-            <button class="btn btn-outline-success" style="width: 130px;" type="button" onclick="generarNuevoDia()">
-                Generar día
-            </button>
-        </div>
+    <div id="resultado_exportacion" class="mb-2"></div>
+    <div id="resultado_generacion" class="mb-3"></div>
+    <div id="resultado_verificar_registros" class="mb-3"></div>
+    <div id="tablaPrecios"></div>
+  </div>
+
+  <!-- TAB MENSUAL -->
+  <div class="tab-pane fade" id="mensual" role="tabpanel">
+    <div class="p-3">
+      <h3>Consulta Mensual de Promedios</h3>
+      <div class="form-group">
+        <label for="mes">Seleccionar mes:</label>
+        <input type="month" id="mes" class="form-control w-25" />
+        <button onclick="cargarPromedios()" class="btn btn-primary mt-2">Consultar</button>
+      </div>
+
+      <div id="mensajePromedios" class="alert alert-info mt-4">
+        Selecciona un mes para consultar los promedios.
+      </div>
+
+    <div class="table-responsive mt-3" id="tablaPromediosContainer" style="display: none;">
+        <table class="table table-bordered table-hover align-middle text-center mt-4" id="tablaPromedios">
+            <thead>
+                <tr>
+                <th class="table-dark" rowspan="2">SIIC</th>
+                <th class="table-dark" rowspan="2">ZONA</th>
+                <th class="Estacion border border-white" style="background-color: #A55B4B; color: white;" rowspan="2">ESTACIÓN</th>
+                <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PROMEDIO PRECIO COSTO</th>
+            
+                </tr>
+                <tr>
+                <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
+                <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PREMIUM</th>
+                <th class="Diesel border border-white" style="background-color: black; color: white;">DIESEL</th>
+                
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
+
+    </div>
+  </div>
 </div>
 
-
-
-<div id="resultado_exportacion" class="mb-2"></div>
-<div id="resultado_generacion" class="mb-3"></div>
-<div id="resultado_verificar_registros" class="mb-3"></div>
-<div id="tablaPrecios"></div>
 
 
 <script>
@@ -336,43 +392,6 @@ date_default_timezone_set('America/Mexico_City');
         });
 }
 
-// function eliminarRegistrosPorFecha() {
-//     const fecha = document.getElementById('fecha').value;
-
-//     if (!fecha) {
-//         alert('Selecciona una fecha para borrar los registros.');
-//         return;
-//     }
-
-//     if (!confirm(`¿Estás seguro de que deseas eliminar todos los registros del día ${fecha}? Esta acción no se puede deshacer.`)) {
-//         return;
-//     }
-
-//     fetch('eliminar_dia.php', {
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-//         body: 'fecha=' + encodeURIComponent(fecha)
-//     })
-//     .then(response => response.text())
-//     .then(data => {
-//         document.getElementById('resultado_generacion').innerHTML =
-//             `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-//                 ${data}
-//                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-//             </div>`;
-
-//         // Bloquear el input después de eliminar el día
-//         document.getElementById("inputFile").disabled = true;
-//         mensaje_fecha.textContent = "No hay registros para esta fecha. Genera un nuevo día antes de cargar XML.";
-
-//         cargarTablaPrecios(fecha); // Recargar tabla
-//     })
-//     .catch(error => {
-//         console.error('Error al eliminar registros:', error);
-//         alert('Ocurrió un error al intentar eliminar los registros.');
-//     });
-// }
-
 //Eliminar registros en la fecha seleccionada
 function eliminarRegistrosPorFecha() {
     const fecha = document.getElementById('fecha').value;
@@ -470,6 +489,93 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+//Funcion para cargar promedios de estaciones
+// function cargarPromedios() {
+//   const mes = document.getElementById('mes').value;
+//   if (!mes) return alert('Selecciona un mes');
+
+//   fetch('api_promedios_mes.php', {
+//     method: 'POST',
+//     body: JSON.stringify({ mes }),
+//     headers: { 'Content-Type': 'application/json' }
+//   })
+//   .then(res => res.json())
+//   .then(data => {
+//     const tbody = document.querySelector('#tablaPromedios tbody');
+//     tbody.innerHTML = '';
+
+//     if (data.length === 0) {
+//       tbody.innerHTML = '<tr><td colspan="14" class="text-center">No hay datos para el mes seleccionado</td></tr>';
+//       return;
+//     }
+
+//     data.forEach(row => {
+//       const tr = document.createElement('tr');
+//       tr.innerHTML = `
+//         <td>${row.siic_inteligas ?? ''}</td>
+//         <td>${row.zona ?? ''}</td>
+//         <td>${row.estacion ?? ''}</td>
+//         <td>${row.vu_magna !== null ? '$' + Number(row.vu_magna).toFixed(2) : '-'}</td>
+//         <td>${row.vu_premium !== null ? '$' + Number(row.vu_premium).toFixed(2) : '-'}</td>
+//         <td>${row.vu_diesel !== null ? '$' + Number(row.vu_diesel).toFixed(2) : '-'}</td>
+        
+//       `;
+//       tbody.appendChild(tr);
+//     });
+//   });
+// }
+
+function cargarPromedios() {
+  const mes = document.getElementById('mes').value;
+  const mensaje = document.getElementById('mensajePromedios');
+  const tabla = document.getElementById('tablaPromedios');
+  const contenedorTabla = document.getElementById('tablaPromediosContainer');
+
+  if (!mes) {
+    mensaje.textContent = 'Por favor selecciona un mes válido.';
+    mensaje.classList.replace('d-none', 'alert-info');
+    contenedorTabla.style.display = 'none';
+    return;
+  }
+
+  fetch('api_promedios_mes.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mes })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.length === 0) {
+      mensaje.textContent = 'No hay registros de precios para el mes seleccionado.';
+      mensaje.classList.replace('d-none', 'alert-info');
+      contenedorTabla.style.display = 'none';
+    } else {
+      const tbody = tabla.querySelector('tbody');
+      tbody.innerHTML = '';
+      data.forEach(row => {
+        tbody.innerHTML += `
+          <tr>
+            <td>${row.siic_inteligas ?? ''}</td>
+            <td>${row.zona ?? ''}</td>
+            <td>${row.estacion ?? ''}</td>
+            <td>${row.vu_magna !== null ? '$' + Number(row.vu_magna).toFixed(2) : '-'}</td>
+            <td>${row.vu_premium !== null ? '$' + Number(row.vu_premium).toFixed(2) : '-'}</td>
+            <td>${row.vu_diesel !== null ? '$' + Number(row.vu_diesel).toFixed(2) : '-'}</td>
+          </tr>
+        `;
+      });
+      mensaje.classList.add('d-none');
+      contenedorTabla.style.display = 'block';
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    mensaje.textContent = 'Error al cargar los datos.';
+    mensaje.classList.replace('d-none', 'alert-danger');
+    contenedorTabla.style.display = 'none';
+  });
+}
 
     </script>
 
