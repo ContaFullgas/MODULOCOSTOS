@@ -177,12 +177,18 @@ date_default_timezone_set('America/Mexico_City');
 
                             const estacionId = select.value;
                             const estacionNombre = select.options[select.selectedIndex].text;
-
                             const total = parseFloat(data.data.total);
                             const cantidad = parseFloat(data.data.cantidad);
                             const precioUnitario = (total / cantidad).toFixed(2);
-
                             const fechaCFDI = data.data.fecha.split('T')[0];
+                            const fechaSeleccionada = document.getElementById('fecha').value;
+
+                            if (fechaCFDI !== fechaSeleccionada) {
+                                alert(`La fecha del XML (${fechaCFDI}) no coincide con la fecha seleccionada (${fechaSeleccionada}), no es posible subir la información.`);
+                                // modal.hide();
+                                document.getElementById('inputFile').value = '';
+                                return;
+                            }
 
                             modal.hide();
 
@@ -205,6 +211,7 @@ date_default_timezone_set('America/Mexico_City');
                                 console.log('Respuesta guardar_precio.php:', res);
                                 if (res.success) {
                                     // Recargar la tabla para la fecha actual o seleccionada
+                                    alert('Acción: ' + res.accion);
                                     cargarTablaPrecios(document.getElementById('fecha').value);
                                 } else {
                                     alert('Error al guardar: ' + res.error);

@@ -12,12 +12,16 @@ include 'db.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 
+//Variable para poner el mensaje de acuerdo a la acción realizada
+$mensaje = '';
+
 $razon_social = $conn->real_escape_string($data['razon_social'] ?? '');
 $estacion     = $conn->real_escape_string($data['estacion'] ?? '');
 $precio       = floatval($data['precio'] ?? 0);
 $tipo         = $conn->real_escape_string($data['tipo'] ?? '');
 $uuid         = $conn->real_escape_string($data['uuid'] ?? '');
 $fecha = $conn->real_escape_string($data['fecha'] ?? date('Y-m-d'));
+
 // Se define el costo fijo del flete que se sumará al precio unitario
 $flete = 0.25; // de momento fijo pero luego sera variable
 
@@ -116,6 +120,11 @@ if ($resBuscar->num_rows > 0) {
         $conn->query("UPDATE precios_combustible 
                       SET $campo = $precio, $campo_flete = $precio_flete, costo_flete = $flete, $campo_pv = $precioVenta, modificado = 1, razon_social = '$razon_social'
                       WHERE id = $precioId");
+        
+        $mensaje = 'se ha encontrado coincidencia con un registro y este ha sido modificado.';
+    }
+    else {
+        $mensaje = 'el valor es igual al del anterior registro, por lo tanto no se modifica.';
     }
 } else {
     // Si no existe registro, se inserta uno nuevo con los datos y precios correspondientes
@@ -128,9 +137,11 @@ if ($resBuscar->num_rows > 0) {
         echo json_encode(['success' => false, 'error' => 'Error al insertar en precios_combustible: ' . $conn->error]);
         exit;
     }
-//
+
     // Guarda el ID del nuevo registro insertado
     $precioId = $conn->insert_id;
+    $mensaje = 'no se ha encontrado coincidencia con ningún registro, por lo tanto se ingresó uno nuevo.';
+    
 }
 
 // Insertar UUID con referencia a precio_id
@@ -142,4 +153,6 @@ if (!$conn->query($sqlUuid)) {
 }
 
 
-echo json_encode(['success' => true]);
+// echo json_encode(['success' => true]);
+//Manda la respuesta de acuerdo al mensaje
+echo json_encode(['success' => true, 'accion' => $mensaje]);
