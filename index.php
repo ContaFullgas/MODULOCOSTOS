@@ -22,98 +22,7 @@ date_default_timezone_set('America/Mexico_City');
 
     <div id="resultado"></div>
 
-    <!-- <div class="d-flex align-items-end gap-3 mb-3 flex-wrap">
-    <div>
-        <label for="fecha" class="form-label">Selecciona fecha:</label>
-        <input type="date" id="fecha" name="fecha" class="form-control">
-    </div>
-
-    <div>
-        <label class="form-label  d-block">Exportar cambios:</label>
-        <button class="btn btn-primary" onclick="exportarExcel()" id="btnExportar">
-            Exportar
-        </button>
-    </div>
-
-    <div>
-        <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
-        <div class="input-group">
-            <input type="date" id="nueva_fecha" class="form-control">
-            <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar Día</button>
-        </div>
-    </div>
-</div>
-
-<div id="resultado_exportacion" class="mb-2"></div>
-<div id="resultado_generacion" class="mb-3"></div>
-<div id="tablaPrecios"></div> -->
-
-<!-- <div class="d-flex align-items-end justify-content-between gap-3 mb-3 flex-wrap">
-    <div class="d-flex align-items-end gap-3 flex-wrap">
-        <div>
-            <label for="fecha" class="form-label">Selecciona fecha:</label>
-            <input type="date" id="fecha" name="fecha" class="form-control">
-        </div>
-
-        <div>
-            <label class="form-label d-block">Exportar cambios:</label>
-            <button class="btn btn-outline-primary" onclick="exportarExcel()" id="btnExportar">
-                Exportar
-            </button>
-
-            <label class="form-label d-block">Borrar día:</label>
-            <button class="btn btn-outline-danger" onclick="eliminarRegistrosPorFecha()">
-                Borrar
-            </button>
-
-        </div>
-    </div>
-
-    <div>
-        <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
-        <div class="input-group">
-            <input type="date" id="nueva_fecha" class="form-control">
-            <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar día</button>
-        </div>
-    </div>
-</div>
-
-<div id="resultado_exportacion" class="mb-2"></div>
-<div id="resultado_generacion" class="mb-3"></div>
-<div id="tablaPrecios"></div> -->
-
-<!-- <div class="d-flex align-items-end justify-content-between gap-3 mb-3 flex-wrap">
-    <div class="d-flex align-items-end gap-3 flex-wrap">
-        <div>
-            <label for="fecha" class="form-label">Selecciona fecha:</label>
-            <input type="date" id="fecha" name="fecha" class="form-control">
-        </div>
-
-        <div class="d-flex gap-3">
-            <div>
-                <label class="form-label">Exportar cambios:</label>
-                <button class="btn btn-outline-primary w-100" onclick="exportarExcel()" id="btnExportar">
-                    Exportar
-                </button>
-            </div>
-
-            <div>
-                <label class="form-label">Borrar día:</label>
-                <button class="btn btn-outline-danger w-100" onclick="eliminarRegistrosPorFecha()">
-                    Borrar
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div>
-        <label for="nueva_fecha" class="form-label">Generar nuevo día:</label>
-        <div class="input-group">
-            <input type="date" id="nueva_fecha" class="form-control">
-            <button class="btn btn-outline-success" type="button" onclick="generarNuevoDia()">Generar día</button>
-        </div>
-    </div>
-</div> -->
+    
 
 <div class="d-flex flex-wrap gap-3 mb-3">
     <!-- Campo de fecha -->
@@ -224,7 +133,14 @@ date_default_timezone_set('America/Mexico_City');
                             // modalBody.innerHTML = `
                             //     <p><strong>Seleccione una estación:</strong></p>
                             //     <select id="selectEstacion" class="form-select">${options}</select>`;
+                            
+                            //Formatear fecha para que se muestre en el formato dia-mes-año
+                            let fechaOriginal = data.data.fecha.split('T')[0];
+                            let partesFecha = fechaOriginal.split('-'); // [AAAA, MM, DD]
+                            let fechaCFDIModal = `${partesFecha[2]}/${partesFecha[1]}/${partesFecha[0]}`;
+
                             modalBody.innerHTML = `
+                            <p><strong>Fecha:</strong> ${fechaCFDIModal}</p>
                             <p><strong>Razón social:</strong> ${data.data.nombre}</p>
                             <!-- <p><strong>RFC receptor:</strong> ${data.data.rfc}</p> -->
                             <p><strong>Tipo de combustible:</strong> ${tipo}</p>
@@ -450,6 +366,7 @@ date_default_timezone_set('America/Mexico_City');
 //     });
 // }
 
+//Eliminar registros en la fecha seleccionada
 function eliminarRegistrosPorFecha() {
     const fecha = document.getElementById('fecha').value;
 

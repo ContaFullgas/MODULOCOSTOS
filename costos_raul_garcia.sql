@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 09-06-2025 a las 21:58:02
+-- Tiempo de generación: 11-06-2025 a las 20:29:02
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -121,7 +121,38 @@ INSERT INTO `estaciones` (`id`, `nombre`, `rfc_receptor`, `iva`) VALUES
 (80, 'MUNA', 'SYU110901LR9', 0.16),
 (81, 'TIZIMÍN', 'SYU110901LR9', 0.16),
 (82, 'PUEBLA CENTRO', 'SEP200807463', 0.16),
-(83, 'TUXTLA SANTA MARIA', 'SEP200807463', 0.16);
+(83, 'TUXTLA SANTA MARIA', 'SEP200807463', 0.16),
+(84, '14 SUR', 'GRM1604267N3', 0.16),
+(85, 'AGUA AZUL', 'GON130219GD4', 0.16),
+(86, 'ALLENDE', 'PET070605PC2', 0.16),
+(87, 'AMALUCAN', 'GRM1604267N3', 0.16),
+(88, 'AMOZOC', 'SEF200821N64', 0.16),
+(89, 'AMOZOC 2', 'SGA150629E68', 0.16),
+(90, 'ATEXCAC', 'SEF200821N64', 0.16),
+(91, 'ATLIXCO', 'SEF200821N64', 0.16),
+(100, 'ATLIXCO 2', 'SEF200821N64', 0.16),
+(101, 'BOSQUES', 'GRM1604267N3', 0.16),
+(102, 'CANCÚN MADERO ', 'SEM1512187Y9', 0.16),
+(103, 'CAPU', 'MOR9602092P5', 0.16),
+(104, 'CHOLULA', 'SEF200821N64', 0.16),
+(105, 'COLÓN', 'SCO140610PY0', 0.16),
+(106, 'EL DORADO', 'VEGV560707KD2', 0.16),
+(107, 'FORJADORES', 'SEF200821N64', 0.16),
+(108, 'HERMANAS', 'PET070605PC2', 0.16),
+(109, 'HERMANOS SERDAN', 'GRM1604267N3', 0.16),
+(110, 'LOS ANGELES', 'GRA141128124', 0.16),
+(111, 'METEPEC', 'SME960327222', 0.16),
+(112, 'NUEVA ROSITA 2', 'PET070605PC2', 0.16),
+(113, 'PERINORTE', 'SEF200821N64', 0.16),
+(114, 'SABINAS', 'PNO130206NW7', 0.16),
+(115, 'SAN MATEO', 'SSM0302202G0', 0.16),
+(116, 'TLAXCALA', 'SEC141031B4A', 0.16),
+(117, 'TORRECILLAS', 'GRM1604267N3', 0.16),
+(118, 'TUXTLA BELISARIO', 'CRC0412029S2', 0.16),
+(119, 'VILLA VERDE', 'GVV110118HW7', 0.16),
+(120, 'XONACA', 'MOR9602092P5', 0.16),
+(121, 'YAXCHÉ', 'SEC150112537', 0.16),
+(122, 'LA MARQUESA', 'SRT060418CG3', 0.16);
 
 -- --------------------------------------------------------
 
@@ -301,7 +332,7 @@ CREATE TABLE `precios_uuid` (
 --
 
 INSERT INTO `precios_uuid` (`id`, `uuid`, `precio_id`) VALUES
-(132, 'b5a69a84-3535-4596-b47e-d1f46055739e', 68);
+(135, 'b5a69a84-3535-4596-b47e-d1f46055739e', 68);
 
 --
 -- Índices para tablas volcadas
@@ -342,7 +373,7 @@ ALTER TABLE `precios_uuid`
 -- AUTO_INCREMENT de la tabla `estaciones`
 --
 ALTER TABLE `estaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=84;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
 
 --
 -- AUTO_INCREMENT de la tabla `ieps`
@@ -354,13 +385,13 @@ ALTER TABLE `ieps`
 -- AUTO_INCREMENT de la tabla `precios_combustible`
 --
 ALTER TABLE `precios_combustible`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1210;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3564;
 
 --
 -- AUTO_INCREMENT de la tabla `precios_uuid`
 --
 ALTER TABLE `precios_uuid`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
 
 --
 -- Restricciones para tablas volcadas
