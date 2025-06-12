@@ -89,9 +89,9 @@ date_default_timezone_set('America/Mexico_City');
       <div class="form-group">
         <label for="mes">Seleccionar mes:</label>
         <input type="month" id="mes" class="form-control w-25" />
-        <button onclick="cargarPromedios()" class="btn btn-outline-primary mt-2">Consultar</button>
+        <!-- <button onclick="cargarPromedios()" class="btn btn-outline-primary mt-2">Consultar</button> -->
          <!-- Nuevo botón Exportar -->
-        <button id="btnExportar" onclick="exportarExcelMensual()" class="btn btn-outline-success mt-2 ms-2">Exportar Excel</button>
+        <button id="btnExportar" onclick="exportarExcelMensual()" class="btn btn-outline-success mt-3">Exportar Excel</button>
     </div>
 
       <div id="mensajePromedios" class="alert alert-info mt-4">
@@ -637,6 +637,43 @@ function exportarExcelMensual() {
     });
 }
 
+// Ejecutar automáticamente al volver al tab mensual si ya hay un mes seleccionado
+// document.querySelector('a[href="#mensual"]').addEventListener('shown.bs.tab', function () {
+//   const mes = document.getElementById('mes').value;
+//   if (mes) {
+//     cargarPromedios();
+//     alert("Promedios actualizados");
+//   }
+// });
+
+// let yaConsultado = false; // Bandera: indica si el usuario ya consultó
+
+  document.addEventListener('DOMContentLoaded', function () {
+    const tabMensual = document.querySelector('#mensual-tab');
+    const inputMes = document.getElementById('mes');
+    // const btnConsultar = document.querySelector('button[onclick="cargarPromedios()"]');
+
+    // 1. Cuando el usuario entra al tab mensual
+    tabMensual.addEventListener('shown.bs.tab', function () {
+      const mes = inputMes.value;
+    //   if (mes && yaConsultado) {
+        
+        // alert("Promedios actualizados");
+        cargarPromedios();
+    //   }
+    });
+
+    // 2. Cuando el usuario presiona "Consultar"
+    // btnConsultar.addEventListener('click', function () {
+    //   yaConsultado = true;
+    // });
+
+    // 3. Cuando el usuario cambia el mes manualmente
+    inputMes.addEventListener('change', function () {
+    //   yaConsultado = false; // Volver a requerir "Consultar"
+      cargarPromedios();
+    });
+  });
 
     </script>
 
