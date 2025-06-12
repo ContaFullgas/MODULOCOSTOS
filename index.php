@@ -90,7 +90,9 @@ date_default_timezone_set('America/Mexico_City');
         <label for="mes">Seleccionar mes:</label>
         <input type="month" id="mes" class="form-control w-25" />
         <button onclick="cargarPromedios()" class="btn btn-outline-primary mt-2">Consultar</button>
-      </div>
+         <!-- Nuevo botón Exportar -->
+        <button id="btnExportar" onclick="exportarExcelMensual()" class="btn btn-outline-success mt-2 ms-2">Exportar Excel</button>
+    </div>
 
       <div id="mensajePromedios" class="alert alert-info mt-4">
         Selecciona un mes para consultar los promedios.
@@ -588,6 +590,53 @@ function cargarPromedios() {
     contenedorTabla.style.display = 'none';
   });
 }
+
+//Exportar excel mensual
+function exportarExcelMensual() {
+  const mes = document.getElementById('mes').value;
+  const btn = document.getElementById('btnExportar');
+
+  if (!mes) {
+    alert('Selecciona un mes para exportar.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = 'Generando...';
+
+  // La variable 'mes' tiene formato "YYYY-MM", convertimos a rango inicio-fin
+  const inicio = mes + '-01';
+  // Obtener último día del mes seleccionado
+  const [year, month] = mes.split('-');
+  const ultimoDia = new Date(year, month, 0).getDate(); // 0 da el último día del mes anterior
+  const fin = `${year}-${month}-${ultimoDia}`;
+
+  fetch(`exportar_mensual.php?inicio=${encodeURIComponent(inicio)}&fin=${encodeURIComponent(fin)}`)
+    .then(response => {
+      if (response.headers.get('Content-Type').includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+        return response.blob();
+      } else {
+        return response.text().then(text => { throw new Error(text); });
+      }
+    })
+    .then(blob => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `resumen_mensual_${mes}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    })
+    .catch(error => {
+      alert(error.message || 'No hay datos para exportar o ocurrió un error.');
+    })
+    .finally(() => {
+      btn.disabled = false;
+      btn.innerHTML = 'Exportar Excel';
+    });
+}
+
 
     </script>
 
