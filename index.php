@@ -89,7 +89,7 @@ date_default_timezone_set('America/Mexico_City');
       <div class="form-group">
         <label for="mes">Seleccionar mes:</label>
         <input type="month" id="mes" class="form-control w-25" />
-        <button onclick="cargarPromedios()" class="btn btn-primary mt-2">Consultar</button>
+        <button onclick="cargarPromedios()" class="btn btn-outline-primary mt-2">Consultar</button>
       </div>
 
       <div id="mensajePromedios" class="alert alert-info mt-4">
@@ -97,19 +97,25 @@ date_default_timezone_set('America/Mexico_City');
       </div>
 
     <div class="table-responsive mt-3" id="tablaPromediosContainer" style="display: none;">
-        <table class="table table-bordered table-hover align-middle text-center mt-4" id="tablaPromedios">
+        <table class="table table-bordered table-hover align-middle text-center mt-4" id="tablaPromedios" style="border-radius: 12px; overflow: hidden;">
             <thead>
                 <tr>
                 <th class="table-dark" rowspan="2">SIIC</th>
                 <th class="table-dark" rowspan="2">ZONA</th>
                 <th class="Estacion border border-white" style="background-color: #A55B4B; color: white;" rowspan="2">ESTACIÓN</th>
-                <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PROMEDIO PRECIO COSTO</th>
+                <th class="border border-white" colspan="4" style="background-color: #261FB3; color: white;">PROMEDIO DE UTILIDAD</th>
+                <th class="border border-white" colspan="4" style="background-color: #261FB3; color: white;">PROMEDIO DE UTILIDAD POR LITRO</th>
             
                 </tr>
                 <tr>
                 <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
                 <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PREMIUM</th>
                 <th class="Diesel border border-white" style="background-color: black; color: white;">DIESEL</th>
+                <th class="border border-white" style="background-color: #A55B4B; color: white;">PROMEDIO GENERAL POR ESTACION</th>
+                <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
+                <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PREMIUM</th>
+                <th class="Diesel border border-white" style="background-color: black; color: white;">DIESEL</th>
+                <th class="border border-white" style="background-color: #A55B4B; color: white;">UTILIDAD PROMEDIO</th>
                 
                 </tr>
             </thead>
@@ -559,9 +565,15 @@ function cargarPromedios() {
             <td>${row.siic_inteligas ?? ''}</td>
             <td>${row.zona ?? ''}</td>
             <td>${row.estacion ?? ''}</td>
-            <td>${row.vu_magna !== null ? '$' + Number(row.vu_magna).toFixed(2) : '-'}</td>
-            <td>${row.vu_premium !== null ? '$' + Number(row.vu_premium).toFixed(2) : '-'}</td>
-            <td>${row.vu_diesel !== null ? '$' + Number(row.vu_diesel).toFixed(2) : '-'}</td>
+            <td>${row.vu_magna !== null ? + Number(row.vu_magna).toFixed(2) + '%' : '-'}</td>
+            <td>${row.vu_premium !== null ? + Number(row.vu_premium).toFixed(2) + '%' : '-'}</td>
+            <td>${row.vu_diesel !== null ? + Number(row.vu_diesel).toFixed(2) + '%' : '-'}</td>
+            <td>${row.promedio_general_estacion !== null ? + Number(row.promedio_general_estacion).toFixed(2) + '%' : '-'}</td>
+
+            <td>${row.utilidad_magna !== null ? '$' + Number(row.utilidad_magna).toFixed(2) : '-'}</td>
+            <td>${row.utilidad_premium !== null ? '$' + Number(row.utilidad_premium).toFixed(2) : '-'}</td>
+            <td>${row.utilidad_diesel !== null ? '$' + Number(row.utilidad_diesel).toFixed(2) : '-'}</td>
+            <td>${row.utilidad_promedio_litro !== null ? '$' + Number(row.utilidad_promedio_litro).toFixed(2) : '-'}</td>
           </tr>
         `;
       });
