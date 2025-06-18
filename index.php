@@ -37,9 +37,7 @@ date_default_timezone_set('America/Mexico_City');
 
     <div id="resultado"></div>
 
-        
-
-    <div class="d-flex flex-wrap gap-3 mb-3">
+    <div class="d-flex flex-wrap gap-3 mb-2">
         <!-- Campo de fecha -->
         <div class="d-flex flex-column">
             <label for="fecha" class="form-label">Selecciona fecha:</label>
@@ -82,8 +80,6 @@ date_default_timezone_set('America/Mexico_City');
 
     </div>
 
-
-
     <div id="resultado_exportacion" class="mb-2"></div>
     <div id="resultado_generacion" class="mb-3"></div>
     <div id="resultado_verificar_registros" class="mb-3"></div>
@@ -91,20 +87,42 @@ date_default_timezone_set('America/Mexico_City');
   </div>
 
   <!-- TAB MENSUAL -->
-  <div class="tab-pane fade" id="mensual" role="tabpanel">
-    <div class="p-3">
-      <h3>Consulta Mensual de Promedios</h3>
-      <div class="form-group">
-        <label for="mes">Seleccionar mes:</label>
-        <input type="month" id="mes" class="form-control w-25" />
-        <!-- <button onclick="cargarPromedios()" class="btn btn-outline-primary mt-2">Consultar</button> -->
-         <!-- Nuevo botón Exportar -->
-        <button id="btnExportar" onclick="exportarExcelMensual()" class="btn btn-outline-success mt-3">Exportar Excel</button>
+<div class="tab-pane fade" id="mensual" role="tabpanel">
+  <!-- <div class="p-3"> -->
+    <br>
+    <h3>Consulta Mensual de Promedios</h3>
+
+    <!-- Contenedor de filtros y botones -->
+    <div class="d-flex flex-wrap gap-3 mb-3">
+      <!-- Campo de mes -->
+      <div class="d-flex flex-column">
+        <label for="mes" class="form-label">Seleccionar mes:</label>
+        <input type="month" id="mes" class="form-control" style="min-width: 200px;" />
+      </div>
+
+      <!-- Botón Exportar -->
+      <div class="d-flex flex-column">
+        <label class="form-label">Exportar a Excel:</label>
+        <button id="btnExportar" onclick="exportarExcelMensual()" class="btn btn-outline-success" style="width: 130px;">
+          Exportar
+        </button>
+      </div>
+
+      <!-- Filtro por zona -->
+      <div class="d-flex flex-column">
+        <label for="selectorZonaMensual" class="form-label">Filtrar por zona:</label>
+        <select id="selectorZonaMensual" class="form-select" style="min-width: 210px;">
+          <option value="">Todas las zonas</option>
+        </select>
+      </div>
     </div>
 
-      <div id="mensajePromedios" class="alert alert-info mt-4">
-        Selecciona un mes para consultar los promedios.
-      </div>
+    <!-- Mensaje informativo -->
+    <div id="mensajePromedios" class="alert alert-info mt-4">
+      Selecciona un mes para consultar los promedios.
+    </div>
+  <!-- </div> -->
+</div>
 
     <div class="table-responsive mt-3" id="tablaPromediosContainer" style="display: none;">
         <table class="table table-bordered table-hover align-middle text-center mt-4" id="tablaPromedios" style="border-radius: 12px; overflow: hidden;">
