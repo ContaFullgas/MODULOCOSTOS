@@ -72,6 +72,14 @@ date_default_timezone_set('America/Mexico_City');
                 </button>
             </div>
         </div>
+
+        <div class="mb-3">
+            <label for="selectorZona" class="form-label">Filtrar por zona:</label>
+            <select id="selectorZona" class="form-select" disabled style="min-width: 210px;">
+                <option value="">Todas las zonas</option>
+            </select>
+        </div>
+
     </div>
 
 
@@ -133,33 +141,73 @@ date_default_timezone_set('America/Mexico_City');
 
 <script>
     // Función para cargar la tabla con la fecha seleccionada
-    function cargarTablaPrecios(fecha = null) {
-        let url = 'tabla_precios.php';
-        if (fecha) {
-            url += '?fecha=' + fecha;
-        }
-        fetch(url)
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('tablaPrecios').innerHTML = html;
-            });
+function cargarTablaPrecios(fecha = null, zona = null) {
+    let url = 'tabla_precios.php';
+    const params = [];
+
+    if (fecha) params.push('fecha=' + encodeURIComponent(fecha));
+    if (zona) params.push('zona=' + encodeURIComponent(zona));
+    if (params.length) url += '?' + params.join('&');
+
+    return fetch(url)
+        .then(response => response.text())
+        .then(html => {
+            const tablaDiv = document.getElementById('tablaPrecios');
+            tablaDiv.innerHTML = html;
+
+            //Evalua si hay datos, si no hay desbloquea el selector de zona y si hay lo desbloquea
+            const wrapper = tablaDiv.querySelector('#tablaWrapper');
+            const hayDatos = wrapper?.dataset?.hayDatos === '1';
+            const zonaInput = document.getElementById('selectorZona');
+            zonaInput.disabled = !hayDatos;
+            // zonaInput.style.display = hayDatos ? 'inline-block' : 'none';
+        });
+}
+
+//Funcion para el selector de zonas
+document.addEventListener('DOMContentLoaded', function () {
+    const fechaInput = document.getElementById('fecha');
+    const zonaInput = document.getElementById('selectorZona');
+
+    // Ocultar o desactivar el selector al inicio
+    // zonaInput.disabled = true;
+    // zonaInput.style.display = 'none'; // <- si prefieres ocultarlo por completo
+
+    const fecha = fechaInput.value;
+
+    if (fecha) {
+        cargarTablaPrecios(fecha).then(() => {
+            // zonaInput.disabled = false;
+            // zonaInput.style.display = 'inline-block';
+            cargarZonas();
+            filtrarPorZona();
+        });
     }
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const fechaInput = document.getElementById('fecha');
+    fechaInput.addEventListener('change', function () {
+        const nuevaFecha = this.value;
+        const zona = zonaInput.value;
 
-        if (!fechaInput.value) {
-            // Si no hay fecha seleccionada, cargar últimos 3 meses
-            cargarTablaPrecios();
+        if (nuevaFecha) {
+            zonaInput.disabled = false;
+            // zonaInput.style.display = 'inline-block';
+            cargarZonas(); // ahora sí
         } else {
-            cargarTablaPrecios(fechaInput.value);
+            zonaInput.disabled = true;
+            // zonaInput.style.display = 'none';
         }
 
-        fechaInput.addEventListener('change', function () {
-            cargarTablaPrecios(this.value);
-        });
+        cargarTablaPrecios(nuevaFecha, zona).then(() => filtrarPorZona());
     });
 
+    zonaInput.addEventListener('change', function () {
+        const zona = this.value;
+        const nuevaFecha = fechaInput.value;
+        cargarTablaPrecios(nuevaFecha, zona).then(() => filtrarPorZona());
+    });
+});
+    
+//Funcion para cargar archivos xml
     document.getElementById('inputFile').addEventListener('change', function () {
         const fileInput = this;
         if (fileInput.files.length === 0) return;
@@ -277,6 +325,7 @@ date_default_timezone_set('America/Mexico_City');
                                     // Recargar la tabla para la fecha actual o seleccionada
                                     alert('Acción: ' + res.accion);
                                     cargarTablaPrecios(document.getElementById('fecha').value);
+                                    cargarZonas();
                                 } else {
                                     alert('Error al guardar: ' + res.error);
                                 }
@@ -674,6 +723,98 @@ function exportarExcelMensual() {
       cargarPromedios();
     });
   });
+
+function cargarZonas() {
+    const select = document.getElementById('selectorZona');
+    if (!select) return; // No hacer nada si no existe
+
+    fetch('api_zonas.php')
+        .then(res => res.json())
+        .then(zonas => {
+            // Limpiar opciones actuales (menos la primera)
+            select.options.length = 1;
+            zonas.forEach(z => {
+                const option = document.createElement('option');
+                option.value = z;
+                option.textContent = z;
+                select.appendChild(option);
+            });
+        })
+        .catch(err => console.error('Error al cargar zonas:', err));
+}
+
+// Función para filtrar tabla y mostrar promedios
+function filtrarPorZona() {
+  const zonaSeleccionada = document.getElementById('selectorZona').value.toLowerCase();
+  const filas = document.querySelectorAll('#tablaPrecios tbody tr');
+
+  let suma = {
+    vu_magna: 0,
+    vu_premium: 0,
+    vu_diesel: 0,
+    costo_flete: 0,
+    pf_magna: 0,
+    pf_premium: 0,
+    pf_diesel: 0,
+    precio_magna: 0,
+    precio_premium: 0,
+    precio_diesel: 0,
+  };
+
+  let cuenta = 0;
+
+  filas.forEach(fila => {
+    const zonaAgrupada = (fila.getAttribute('data-zona-agrupada') || '').toLowerCase();
+    const mostrar = !zonaSeleccionada || zonaAgrupada === zonaSeleccionada;
+
+    fila.style.display = mostrar ? '' : 'none';
+
+    if (mostrar) {
+      const celdas = fila.querySelectorAll('td');
+
+      // Usa los índices correctos según tu tabla
+      suma.vu_magna       += parseFloat(celdas[4].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.vu_premium     += parseFloat(celdas[5].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.vu_diesel      += parseFloat(celdas[6].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.costo_flete    += parseFloat(celdas[7].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.pf_magna       += parseFloat(celdas[8].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.pf_premium     += parseFloat(celdas[9].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.pf_diesel      += parseFloat(celdas[10].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.precio_magna   += parseFloat(celdas[11].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.precio_premium += parseFloat(celdas[12].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.precio_diesel  += parseFloat(celdas[13].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+
+      cuenta++;
+    }
+  });
+
+  const tbody = document.querySelector('#tablaPrecios tbody');
+
+  // Elimina fila promedio previa si existe
+  const filasExistentes = tbody.querySelectorAll('tr');
+  if (filasExistentes.length > 0 && filasExistentes[filasExistentes.length - 1].textContent.includes('Promedios')) {
+    tbody.removeChild(filasExistentes[filasExistentes.length - 1]);
+  }
+
+  // Agrega fila promedio nueva
+  const filaPromedio = document.createElement('tr');
+  filaPromedio.innerHTML = `
+    <td colspan="4"><strong>Promedios</strong></td>
+    <td><strong>$${(suma.vu_magna / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.vu_premium / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.vu_diesel / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.costo_flete / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.pf_magna / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.pf_premium / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.pf_diesel / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.precio_magna / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.precio_premium / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.precio_diesel / cuenta || 0).toFixed(2)}</strong></td>
+  `;
+  tbody.appendChild(filaPromedio);
+}
+
+
 
     </script>
 

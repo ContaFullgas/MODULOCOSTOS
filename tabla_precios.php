@@ -7,26 +7,27 @@ $fecha_sel = $_GET['fecha'] ?? null;
     // Si el usuario seleccionó una fecha válida
     $sql = "
         SELECT 
-            fecha,
-            siic_inteligas,
-            zona,
-            razon_social,
-            estacion,
-            vu_magna,
-            vu_premium,
-            vu_diesel,
-            costo_flete,
-            pf_magna,
-            pf_premium,
-            pf_diesel,
-            precio_magna,
-            precio_premium,
-            precio_diesel,
-            modificado
-
-        FROM precios_combustible
-        WHERE DATE(fecha) = '$fecha_sel'
-        ORDER BY id
+        pc.fecha,
+        pc.siic_inteligas,
+        pc.zona AS zona_original,
+        e.zona_agrupada,
+        pc.razon_social,
+        pc.estacion,
+        pc.vu_magna,
+        pc.vu_premium,
+        pc.vu_diesel,
+        pc.costo_flete,
+        pc.pf_magna,
+        pc.pf_premium,
+        pc.pf_diesel,
+        pc.precio_magna,
+        pc.precio_premium,
+        pc.precio_diesel,
+        pc.modificado
+    FROM precios_combustible pc
+    LEFT JOIN estaciones e ON pc.estacion = e.nombre
+    WHERE DATE(pc.fecha) = '$fecha_sel'
+    ORDER BY pc.id
     ";
 // } else {
 //     // Si no hay fecha (primera carga): mostrar últimos 3 meses
@@ -52,9 +53,15 @@ if ($result === false) {
     echo "Error en la consulta: " . $conn->error;
     exit;
 }
+
+//Para saber desde el index si hay datos o no
+echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : '0') . '">';
 ?>
 
 <?php if ($result->num_rows > 0): ?>
+
+    
+
     <div class="table-responsive rounded-4">
         <table class="table table-bordered table-hover align-middle  text-center table-hover">
             <thead>
@@ -85,37 +92,40 @@ if ($result === false) {
             <tbody>
                 <?php while($row = $result->fetch_assoc()): ?>
                     <?php
-                        // Si modificado = 1, agregamos clase CSS para resaltar
                         $clase = ($row['modificado'] == 1) ? 'registro-modificado' : '';
+                        // Si no hay zona agrupada (null), usar cadena vacía para evitar errores JS
+                        $zonaAgrupada = $row['zona_agrupada'] ?? '';
                     ?>
-                <tr class="<?= $clase ?>">
-                    <td><?= htmlspecialchars(substr($row['fecha'] ?? '', 0, 10)) ?></td>
-                    <td><?= htmlspecialchars($row['siic_inteligas'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                    <td><?= htmlspecialchars($row['zona'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                    <!-- <td><?= htmlspecialchars($row['razon_social']) ?></td> -->
-                    <td><?= htmlspecialchars($row['estacion'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                    <tr class="<?= $clase ?>" data-zona-agrupada="<?= htmlspecialchars($zonaAgrupada, ENT_QUOTES, 'UTF-8') ?>">
+                        <td><?= htmlspecialchars(substr($row['fecha'] ?? '', 0, 10)) ?></td>
+                        <td><?= htmlspecialchars($row['siic_inteligas'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($row['zona_original'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
+                        <td><?= htmlspecialchars($row['estacion'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
 
-                    <td><?= $row['vu_magna'] !== null ? '$' . number_format($row['vu_magna'], 2) : '-' ?></td>
-                    <td><?= $row['vu_premium'] !== null ? '$' . number_format($row['vu_premium'], 2) : '-' ?></td>
-                    <td><?= $row['vu_diesel'] !== null ? '$' . number_format($row['vu_diesel'], 2) : '-' ?></td>
-                    <td><?= $row['costo_flete'] !== null ? '$' . number_format($row['costo_flete'], 2) : '-' ?></td>
+                        <td><?= $row['vu_magna'] !== null ? '$' . number_format($row['vu_magna'], 2) : '-' ?></td>
+                        <td><?= $row['vu_premium'] !== null ? '$' . number_format($row['vu_premium'], 2) : '-' ?></td>
+                        <td><?= $row['vu_diesel'] !== null ? '$' . number_format($row['vu_diesel'], 2) : '-' ?></td>
+                        <td><?= $row['costo_flete'] !== null ? '$' . number_format($row['costo_flete'], 2) : '-' ?></td>
 
-                    <td><?= $row['pf_magna'] !== null ? '$' . number_format($row['pf_magna'], 2) : '-' ?></td>
-                    <td><?= $row['pf_premium'] !== null ? '$' . number_format($row['pf_premium'], 2) : '-' ?></td>
-                    <td><?= $row['pf_diesel'] !== null ? '$' . number_format($row['pf_diesel'], 2) : '-' ?></td>
+                        <td><?= $row['pf_magna'] !== null ? '$' . number_format($row['pf_magna'], 2) : '-' ?></td>
+                        <td><?= $row['pf_premium'] !== null ? '$' . number_format($row['pf_premium'], 2) : '-' ?></td>
+                        <td><?= $row['pf_diesel'] !== null ? '$' . number_format($row['pf_diesel'], 2) : '-' ?></td>
 
-                    <td><?= $row['precio_magna'] !== null ? '$' . number_format($row['precio_magna'], 2) : '-' ?></td>
-                    <td><?= $row['precio_premium'] !== null ? '$' . number_format($row['precio_premium'], 2) : '-' ?></td>
-                    <td><?= $row['precio_diesel'] !== null ? '$' . number_format($row['precio_diesel'], 2) : '-' ?></td>
-                </tr>
+                        <td><?= $row['precio_magna'] !== null ? '$' . number_format($row['precio_magna'], 2) : '-' ?></td>
+                        <td><?= $row['precio_premium'] !== null ? '$' . number_format($row['precio_premium'], 2) : '-' ?></td>
+                        <td><?= $row['precio_diesel'] !== null ? '$' . number_format($row['precio_diesel'], 2) : '-' ?></td>
+                    </tr>
                 <?php endwhile; ?>
             </tbody>
+           
         </table>
     </div>
 <?php else: ?>
     <div class="alert alert-info">No hay registros de precios para la fecha seleccionada.</div>
 <?php endif;
 
+//Para el selector de zonas
+echo '</div>';
 $conn->close();
 ?>
 
