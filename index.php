@@ -111,7 +111,7 @@ date_default_timezone_set('America/Mexico_City');
       <!-- Filtro por zona -->
       <div class="d-flex flex-column">
         <label for="selectorZonaMensual" class="form-label">Filtrar por zona:</label>
-        <select id="selectorZonaMensual" class="form-select" style="min-width: 210px;">
+        <select id="selectorZonaMensual" class="form-select" style="min-width: 210px;" disabled>
           <option value="">Todas las zonas</option>
         </select>
       </div>
@@ -536,6 +536,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const modal = document.getElementById('modalEstacion');
     const inputArchivo = document.getElementById('inputFile');
 
+    document.getElementById('selectorZonaMensual').addEventListener('change', function () {
+        cargarPromedios();
+    });
+
     // Cuando el modal se cierra
     modal.addEventListener('hidden.bs.modal', function () {
       // Limpiar input de archivo
@@ -603,11 +607,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function cargarPromedios() {
   const mes = document.getElementById('mes').value;
+  const zona = document.getElementById('selectorZonaMensual').value;
   const mensaje = document.getElementById('mensajePromedios');
   const tabla = document.getElementById('tablaPromedios');
   const contenedorTabla = document.getElementById('tablaPromediosContainer');
+  const selectorMensual = document.getElementById('selectorZonaMensual');
 
   if (!mes) {
+    //Desactiva el selector de zona
+    selectorMensual.disabled = true;
     mensaje.textContent = 'Por favor selecciona un mes válido.';
     mensaje.classList.replace('d-none', 'alert-info');
     contenedorTabla.style.display = 'none';
@@ -617,22 +625,28 @@ function cargarPromedios() {
   fetch('api_promedios_mes.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mes })
+    // body: JSON.stringify({ mes })
+    // body: JSON.stringify({ mes, selectorZonaMensual })
+    body: JSON.stringify({ mes, selectorZonaMensual: zona })
   })
   .then(res => res.json())
   .then(data => {
     if (data.length === 0) {
+      //Desactiva el selector de zona
+      selectorMensual.disabled = true;
       mensaje.textContent = 'No hay registros de precios para el mes seleccionado.';
       mensaje.classList.replace('d-none', 'alert-info');
       contenedorTabla.style.display = 'none';
     } else {
       const tbody = tabla.querySelector('tbody');
       tbody.innerHTML = '';
+      //Activa el selector de zona
+      selectorMensual.disabled = false;
       data.forEach(row => {
         tbody.innerHTML += `
           <tr>
             <td>${row.siic_inteligas ?? ''}</td>
-            <td>${row.zona ?? ''}</td>
+            <td>${row.zona_original ?? ''}</td>
             <td>${row.estacion ?? ''}</td>
             <td>${row.vu_magna !== null ? + Number(row.vu_magna).toFixed(2) + '%' : '-'}</td>
             <td>${row.vu_premium !== null ? + Number(row.vu_premium).toFixed(2) + '%' : '-'}</td>
@@ -648,6 +662,7 @@ function cargarPromedios() {
       });
       mensaje.classList.add('d-none');
       contenedorTabla.style.display = 'block';
+      
     }
   })
   .catch(err => {
@@ -718,6 +733,9 @@ function exportarExcelMensual() {
   document.addEventListener('DOMContentLoaded', function () {
     const tabMensual = document.querySelector('#mensual-tab');
     const inputMes = document.getElementById('mes');
+
+    //Cargar zonas mensual
+    cargarZonasMensual();
     // const btnConsultar = document.querySelector('button[onclick="cargarPromedios()"]');
 
     // 1. Cuando el usuario entra al tab mensual
@@ -738,6 +756,9 @@ function exportarExcelMensual() {
     // 3. Cuando el usuario cambia el mes manualmente
     inputMes.addEventListener('change', function () {
     //   yaConsultado = false; // Volver a requerir "Consultar"
+      
+      //Reiniciar input selector de zona y después volver a cargar promedios
+      selectorZonaMensual.selectedIndex = 0;
       cargarPromedios();
     });
   });
@@ -760,6 +781,21 @@ function cargarZonas() {
         })
         .catch(err => console.error('Error al cargar zonas:', err));
 }
+
+function cargarZonasMensual() {
+  fetch('api_zonas.php') // Este archivo debe devolver zonas distintas
+    .then(res => res.json())
+    .then(zonas => {
+      const select = document.getElementById('selectorZonaMensual');
+      zonas.forEach(z => {
+        const opt = document.createElement('option');
+        opt.value = z;
+        opt.textContent = z;
+        select.appendChild(opt);
+      });
+    });
+}
+
 
 // Función para filtrar tabla y mostrar promedios
 function filtrarPorZona() {
