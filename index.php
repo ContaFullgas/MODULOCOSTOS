@@ -865,7 +865,7 @@ function exportarExcelMensual() {
     cargarZonasMensual();
     // const btnConsultar = document.querySelector('button[onclick="cargarPromedios()"]');
 
-    // 1. Cuando el usuario entra al tab mensual
+    // 1. Cuando el usuario entra al tab mensual se actualizan de nuevo los valores por si se realizo modificaciones en el apartado diario
     tabMensual.addEventListener('shown.bs.tab', function () {
       const mes = inputMes.value;
     //   if (mes && yaConsultado) {
