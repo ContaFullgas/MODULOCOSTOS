@@ -158,7 +158,33 @@ date_default_timezone_set('America/Mexico_City');
 
 
 <script>
-    // Función para cargar la tabla con la fecha seleccionada
+
+//Metodo para ocultar información entre pestañas diaria y mensual
+//Sin el, en el apartado diario se mostraba la tabla mensual, en lugar de solo la diaria
+document.addEventListener('DOMContentLoaded', function () {
+  const tabMensual = document.querySelector('#mensual-tab');
+  const tabDiaria = document.querySelector('#diario-tab');
+  const contenedorMensual = document.getElementById('tablaPromediosContainer');
+  const tbodyMensual = document.querySelector('#tablaPromedios tbody');
+  const mensajePromedios = document.getElementById('mensajePromedios');
+
+  // Cuando se muestra el tab mensual
+  tabMensual.addEventListener('shown.bs.tab', function () {
+    const mes = document.getElementById('mes').value;
+    if (mes) cargarPromedios();
+  });
+
+  // ✅ Cuando se activa otro tab (como diario), ocultamos los datos del mensual
+  tabDiaria.addEventListener('shown.bs.tab', function () {
+    contenedorMensual.style.display = 'none';
+    tbodyMensual.innerHTML = '';
+    mensajePromedios.classList.remove('alert-danger', 'alert-info');
+    mensajePromedios.classList.add('d-none');
+  });
+});
+
+
+// Función para cargar la tabla con la fecha seleccionada
 function cargarTablaPrecios(fecha = null, zona = null) {
     let url = 'tabla_precios.php';
     const params = [];
@@ -605,6 +631,74 @@ document.addEventListener('DOMContentLoaded', function () {
 //   });
 // }
 
+// function cargarPromedios() {
+//   const mes = document.getElementById('mes').value;
+//   const zona = document.getElementById('selectorZonaMensual').value;
+//   const mensaje = document.getElementById('mensajePromedios');
+//   const tabla = document.getElementById('tablaPromedios');
+//   const contenedorTabla = document.getElementById('tablaPromediosContainer');
+//   const selectorMensual = document.getElementById('selectorZonaMensual');
+
+//   if (!mes) {
+//     //Desactiva el selector de zona
+//     selectorMensual.disabled = true;
+//     mensaje.textContent = 'Por favor selecciona un mes válido.';
+//     mensaje.classList.replace('d-none', 'alert-info');
+//     contenedorTabla.style.display = 'none';
+//     return;
+//   }
+
+//   fetch('api_promedios_mes.php', {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     // body: JSON.stringify({ mes })
+//     // body: JSON.stringify({ mes, selectorZonaMensual })
+//     body: JSON.stringify({ mes, selectorZonaMensual: zona })
+//   })
+//   .then(res => res.json())
+//   .then(data => {
+//     if (data.length === 0) {
+//       //Desactiva el selector de zona
+//       selectorMensual.disabled = true;
+//       mensaje.textContent = 'No hay registros de precios para el mes seleccionado.';
+//       mensaje.classList.replace('d-none', 'alert-info');
+//       contenedorTabla.style.display = 'none';
+//     } else {
+//       const tbody = tabla.querySelector('tbody');
+//       tbody.innerHTML = '';
+//       //Activa el selector de zona
+//       selectorMensual.disabled = false;
+//       data.forEach(row => {
+//         tbody.innerHTML += `
+//           <tr>
+//             <td>${row.siic_inteligas ?? ''}</td>
+//             <td>${row.zona_original ?? ''}</td>
+//             <td>${row.estacion ?? ''}</td>
+//             <td>${row.vu_magna !== null ? + Number(row.vu_magna).toFixed(2) + '%' : '-'}</td>
+//             <td>${row.vu_premium !== null ? + Number(row.vu_premium).toFixed(2) + '%' : '-'}</td>
+//             <td>${row.vu_diesel !== null ? + Number(row.vu_diesel).toFixed(2) + '%' : '-'}</td>
+//             <td>${row.promedio_general_estacion !== null ? + Number(row.promedio_general_estacion).toFixed(2) + '%' : '-'}</td>
+
+//             <td>${row.utilidad_magna !== null ? '$' + Number(row.utilidad_magna).toFixed(2) : '-'}</td>
+//             <td>${row.utilidad_premium !== null ? '$' + Number(row.utilidad_premium).toFixed(2) : '-'}</td>
+//             <td>${row.utilidad_diesel !== null ? '$' + Number(row.utilidad_diesel).toFixed(2) : '-'}</td>
+//             <td>${row.utilidad_promedio_litro !== null ? '$' + Number(row.utilidad_promedio_litro).toFixed(2) : '-'}</td>
+//           </tr>
+//         `;
+//       });
+//       mensaje.classList.add('d-none');
+//       contenedorTabla.style.display = 'block';
+      
+//     }
+//   })
+//   .catch(err => {
+//     console.error(err);
+//     mensaje.textContent = 'Error al cargar los datos.';
+//     mensaje.classList.replace('d-none', 'alert-danger');
+//     contenedorTabla.style.display = 'none';
+//   });
+// }
+
 function cargarPromedios() {
   const mes = document.getElementById('mes').value;
   const zona = document.getElementById('selectorZonaMensual').value;
@@ -625,34 +719,52 @@ function cargarPromedios() {
   fetch('api_promedios_mes.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    // body: JSON.stringify({ mes })
-    // body: JSON.stringify({ mes, selectorZonaMensual })
     body: JSON.stringify({ mes, selectorZonaMensual: zona })
   })
-  .then(res => res.json())
-  .then(data => {
-    if (data.length === 0) {
-      //Desactiva el selector de zona
-      selectorMensual.disabled = true;
-      mensaje.textContent = 'No hay registros de precios para el mes seleccionado.';
-      mensaje.classList.replace('d-none', 'alert-info');
-      contenedorTabla.style.display = 'none';
-    } else {
+    .then(res => res.json())
+    .then(data => {
+      if (data.length === 0) {
+        //Desactiva el selector de zona
+        selectorMensual.disabled = true;
+        mensaje.textContent = 'No hay registros de precios para el mes seleccionado.';
+        mensaje.classList.replace('d-none', 'alert-info');
+        contenedorTabla.style.display = 'none';
+        return;
+      }
+
       const tbody = tabla.querySelector('tbody');
       tbody.innerHTML = '';
       //Activa el selector de zona
       selectorMensual.disabled = false;
+
+      // Inicializa totales
+      let total = {
+        vu_magna: 0, vu_premium: 0, vu_diesel: 0, promedio_general_estacion: 0,
+        utilidad_magna: 0, utilidad_premium: 0, utilidad_diesel: 0, utilidad_promedio_litro: 0
+      };
+      let count = data.length;
+
       data.forEach(row => {
+        // Suma totales
+        total.vu_magna += parseFloat(row.vu_magna || 0);
+        total.vu_premium += parseFloat(row.vu_premium || 0);
+        total.vu_diesel += parseFloat(row.vu_diesel || 0);
+        total.promedio_general_estacion += parseFloat(row.promedio_general_estacion || 0);
+        total.utilidad_magna += parseFloat(row.utilidad_magna || 0);
+        total.utilidad_premium += parseFloat(row.utilidad_premium || 0);
+        total.utilidad_diesel += parseFloat(row.utilidad_diesel || 0);
+        total.utilidad_promedio_litro += parseFloat(row.utilidad_promedio_litro || 0);
+
+        // Inserta fila de datos
         tbody.innerHTML += `
           <tr>
             <td>${row.siic_inteligas ?? ''}</td>
             <td>${row.zona_original ?? ''}</td>
             <td>${row.estacion ?? ''}</td>
-            <td>${row.vu_magna !== null ? + Number(row.vu_magna).toFixed(2) + '%' : '-'}</td>
-            <td>${row.vu_premium !== null ? + Number(row.vu_premium).toFixed(2) + '%' : '-'}</td>
-            <td>${row.vu_diesel !== null ? + Number(row.vu_diesel).toFixed(2) + '%' : '-'}</td>
-            <td>${row.promedio_general_estacion !== null ? + Number(row.promedio_general_estacion).toFixed(2) + '%' : '-'}</td>
-
+            <td>${row.vu_magna !== null ? Number(row.vu_magna).toFixed(2) + '%' : '-'}</td>
+            <td>${row.vu_premium !== null ? Number(row.vu_premium).toFixed(2) + '%' : '-'}</td>
+            <td>${row.vu_diesel !== null ? Number(row.vu_diesel).toFixed(2) + '%' : '-'}</td>
+            <td>${row.promedio_general_estacion !== null ? Number(row.promedio_general_estacion).toFixed(2) + '%' : '-'}</td>
             <td>${row.utilidad_magna !== null ? '$' + Number(row.utilidad_magna).toFixed(2) : '-'}</td>
             <td>${row.utilidad_premium !== null ? '$' + Number(row.utilidad_premium).toFixed(2) : '-'}</td>
             <td>${row.utilidad_diesel !== null ? '$' + Number(row.utilidad_diesel).toFixed(2) : '-'}</td>
@@ -660,18 +772,33 @@ function cargarPromedios() {
           </tr>
         `;
       });
+
+      // Agrega fila de promedios
+      tbody.innerHTML += `
+        <tr style="font-weight: bold; background-color: #f2f2f2;">
+          <td colspan="3">Promedio</td>
+          <td>${(total.vu_magna / count).toFixed(2)}%</td>
+          <td>${(total.vu_premium / count).toFixed(2)}%</td>
+          <td>${(total.vu_diesel / count).toFixed(2)}%</td>
+          <td>${(total.promedio_general_estacion / count).toFixed(2)}%</td>
+          <td>$${(total.utilidad_magna / count).toFixed(2)}</td>
+          <td>$${(total.utilidad_premium / count).toFixed(2)}</td>
+          <td>$${(total.utilidad_diesel / count).toFixed(2)}</td>
+          <td>$${(total.utilidad_promedio_litro / count).toFixed(2)}</td>
+        </tr>
+      `;
+
       mensaje.classList.add('d-none');
       contenedorTabla.style.display = 'block';
-      
-    }
-  })
-  .catch(err => {
-    console.error(err);
-    mensaje.textContent = 'Error al cargar los datos.';
-    mensaje.classList.replace('d-none', 'alert-danger');
-    contenedorTabla.style.display = 'none';
-  });
+    })
+    .catch(err => {
+      console.error(err);
+      mensaje.textContent = 'Error al cargar los datos.';
+      mensaje.classList.replace('d-none', 'alert-danger');
+      contenedorTabla.style.display = 'none';
+    });
 }
+
 
 //Exportar excel mensual
 function exportarExcelMensual() {
