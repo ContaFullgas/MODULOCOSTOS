@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: localhost:3306
--- Tiempo de generación: 11-06-2025 a las 20:29:02
+-- Servidor: localhost:3307
+-- Tiempo de generación: 21-06-2025 a las 00:24:41
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.1.25
 
@@ -30,6 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `estaciones` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) DEFAULT NULL,
+  `zona_agrupada` varchar(100) DEFAULT NULL,
   `rfc_receptor` varchar(13) DEFAULT NULL,
   `iva` decimal(5,2) DEFAULT 0.16
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -38,121 +39,124 @@ CREATE TABLE `estaciones` (
 -- Volcado de datos para la tabla `estaciones`
 --
 
-INSERT INTO `estaciones` (`id`, `nombre`, `rfc_receptor`, `iva`) VALUES
-(1, 'COLOSIO', 'SEB151218B36', 0.16),
-(2, 'JUÁREZ', 'SEB151218B36', 0.16),
-(3, 'IMÍ', 'SEB151218B36', 0.16),
-(4, 'PGJ', 'SEB151218B36', 0.16),
-(5, 'VILLACABRA', 'SEB151218B36', 0.16),
-(6, 'CHAN YAXCHE', 'SEC150112537', 0.16),
-(7, 'CHEMAX', 'SEC150112537', 0.16),
-(8, 'TULUM CRUCERO', 'SEC150112537', 0.16),
-(9, 'EBTÚN', 'SEC150112537', 0.16),
-(10, 'IDEAL', 'SEC150112537', 0.16),
-(11, 'ISLA AGUADA', 'SEC150112537', 0.16),
-(12, 'PEDRO SANTOS', 'SEC150112537', 0.16),
-(13, 'SACIABIL', 'SEC150112537', 0.16),
-(14, 'ZACÍ', 'SEC150112537', 0.16),
-(15, 'MORELOS', 'SEC20082165A', 0.16),
-(16, 'SEYBAPLAYA', 'SEC20082165A', 0.16),
-(17, 'CHAMPOTÓN  MALECÓN.', 'SEC141031S67', 0.16),
-(18, 'HECELCHAKÁN', 'SEC141031S67', 0.16),
-(19, 'KANASÍN 58', 'CACX7605101P8', 0.16),
-(20, 'PISTÉ', 'CACX7605101P8', 0.16),
-(21, 'TULUM COBA', 'CACX7605101P8', 0.16),
-(22, 'TAXISTAS CUN', 'SEM1512187Y9', 0.16),
-(23, 'C. LÓPEZ PORTILLO', 'SEM1512187Y9', 0.16),
-(24, 'TEJUPILCO', 'SEM1512187Y9', 0.16),
-(25, 'ESCARCEGA LEMUS', 'SEM1410318Q5', 0.16),
-(26, 'TENABO', 'SEM1410318Q5', 0.16),
-(27, 'ABROJALITO', 'SES150112RC3', 0.16),
-(28, 'REAL VERONA', 'SES150112RC3', 0.16),
-(29, 'CELAYA 2', 'CSB971203H46', 0.16),
-(30, 'SAN PEDRO', 'CARJ521227GH5', 0.16),
-(31, 'CALKINI CENTRO', 'SEM141031V5A', 0.16),
-(32, 'ESCARCEGA ALARCÓN', 'SEM141031V5A', 0.16),
-(33, 'CARRILLO PUERTO', 'SEM141031V5A', 0.16),
-(34, 'C. LÓPEZ PORTILLO 2', 'SEM141031V5A', 0.16),
-(35, 'MOTUL', 'SEM141031V5A', 0.16),
-(36, 'ROJO GOMEZ', 'SEM141031V5A', 0.08),
-(37, 'SAN JUAN', 'SEM141031V5A', 0.16),
-(38, 'MERCADO', 'SEM141031V5A', 0.16),
-(39, 'CHUBURNÁ', 'SEY0704139A8', 0.16),
-(40, 'KOHUNLICH', 'SEY0704139A8', 0.08),
-(41, 'UMÁN', 'SEY0704139A8', 0.16),
-(42, 'VALLADOLID', 'SEY0704139A8', 0.16),
-(43, 'AGUASCALIENTES', 'SES200507JU6', 0.16),
-(44, 'SALAMANCA', 'SES200507JU6', 0.16),
-(45, '20 DE NOVIEMBRE', 'SEC1503037FA', 0.16),
-(46, 'CALKINI 2', 'SEC1503037FA', 0.16),
-(47, 'CAUCEL', 'SEC1503037FA', 0.16),
-(48, 'PALOMAR', 'SEC1503037FA', 0.16),
-(49, 'RANCHO VIEJO', 'SEC1503037FA', 0.16),
-(50, 'RUTA 5', 'SEC1503037FA', 0.16),
-(51, 'EL CUYO', 'JGE900406818', 0.16),
-(52, 'LA BARCA', 'SEE141031A1A', 0.16),
-(53, 'PETO', 'SER150303GN5', 0.16),
-(54, 'TZUCACAB', 'SER150303GN5', 0.16),
-(55, 'RAMOS ARIZPE', 'SEC141031B4A', 0.16),
-(56, 'REAL GRANADA', 'AET1404031U2', 0.16),
-(57, 'SIERRA HERMOSA', 'AET1404031U2', 0.16),
-(58, 'TECAMÁC MP', 'AET1404031U2', 0.16),
-(59, 'COLONIA YUCATÁN', 'CGM130531NS2', 0.16),
-(60, 'PREMIER', 'AOD170302LQ7', 0.16),
-(61, 'RIO NUEVO', 'AOD170302LQ7', 0.16),
-(62, 'TRAILERO', 'AOD170302LQ7', 0.16),
-(63, 'MAYA', 'SEC150204U97', 0.16),
-(64, 'CALIMAYA', 'SEC150204U97', 0.16),
-(65, 'MAXUXAC 2', 'SEC150204U97', 0.08),
-(66, 'MULSAY', 'SEC150204U97', 0.16),
-(67, 'CHAMPOTÓN  RESTAURANTE', 'SEI1410319R7', 0.16),
-(68, 'CHAMPOTÓN  ECHEVERRIA', 'SEI1410319R7', 0.16),
-(69, 'HOPELCHÉN', 'SEI1410319R7', 0.16),
-(70, 'BUENAVISTA', 'SEM150204RK4', 0.16),
-(71, 'PALMIRA', 'SEM150204RK4', 0.16),
-(72, 'TULUM ZAMNA', 'SEM070413TA9', 0.16),
-(73, 'ANDRÉS QROO.', 'SEM070413TA9', 0.08),
-(74, 'BACALAR', 'SEM070413TA9', 0.16),
-(75, 'HÉROES', 'SEM070413TA9', 0.08),
-(76, 'HUAY PIX', 'SEM070413TA9', 0.08),
-(77, 'MAXUXAC', 'SEM070413TA9', 0.08),
-(78, 'EXPOFERIA', 'SYU110901LR9', 0.16),
-(79, 'KOPOMA ', 'SYU110901LR9', 0.16),
-(80, 'MUNA', 'SYU110901LR9', 0.16),
-(81, 'TIZIMÍN', 'SYU110901LR9', 0.16),
-(82, 'PUEBLA CENTRO', 'SEP200807463', 0.16),
-(83, 'TUXTLA SANTA MARIA', 'SEP200807463', 0.16),
-(84, '14 SUR', 'GRM1604267N3', 0.16),
-(85, 'AGUA AZUL', 'GON130219GD4', 0.16),
-(86, 'ALLENDE', 'PET070605PC2', 0.16),
-(87, 'AMALUCAN', 'GRM1604267N3', 0.16),
-(88, 'AMOZOC', 'SEF200821N64', 0.16),
-(89, 'AMOZOC 2', 'SGA150629E68', 0.16),
-(90, 'ATEXCAC', 'SEF200821N64', 0.16),
-(91, 'ATLIXCO', 'SEF200821N64', 0.16),
-(100, 'ATLIXCO 2', 'SEF200821N64', 0.16),
-(101, 'BOSQUES', 'GRM1604267N3', 0.16),
-(102, 'CANCÚN MADERO ', 'SEM1512187Y9', 0.16),
-(103, 'CAPU', 'MOR9602092P5', 0.16),
-(104, 'CHOLULA', 'SEF200821N64', 0.16),
-(105, 'COLÓN', 'SCO140610PY0', 0.16),
-(106, 'EL DORADO', 'VEGV560707KD2', 0.16),
-(107, 'FORJADORES', 'SEF200821N64', 0.16),
-(108, 'HERMANAS', 'PET070605PC2', 0.16),
-(109, 'HERMANOS SERDAN', 'GRM1604267N3', 0.16),
-(110, 'LOS ANGELES', 'GRA141128124', 0.16),
-(111, 'METEPEC', 'SME960327222', 0.16),
-(112, 'NUEVA ROSITA 2', 'PET070605PC2', 0.16),
-(113, 'PERINORTE', 'SEF200821N64', 0.16),
-(114, 'SABINAS', 'PNO130206NW7', 0.16),
-(115, 'SAN MATEO', 'SSM0302202G0', 0.16),
-(116, 'TLAXCALA', 'SEC141031B4A', 0.16),
-(117, 'TORRECILLAS', 'GRM1604267N3', 0.16),
-(118, 'TUXTLA BELISARIO', 'CRC0412029S2', 0.16),
-(119, 'VILLA VERDE', 'GVV110118HW7', 0.16),
-(120, 'XONACA', 'MOR9602092P5', 0.16),
-(121, 'YAXCHÉ', 'SEC150112537', 0.16),
-(122, 'LA MARQUESA', 'SRT060418CG3', 0.16);
+INSERT INTO `estaciones` (`id`, `nombre`, `zona_agrupada`, `rfc_receptor`, `iva`) VALUES
+(1, 'COLOSIO', 'Estatal Campeche', 'SEB151218B36', 0.16),
+(2, 'JUÁREZ', 'Estatal Campeche', 'SEB151218B36', 0.16),
+(3, 'IMÍ', 'Estatal Campeche', 'SEB151218B36', 0.16),
+(4, 'PGJ', 'Estatal Campeche', 'SEB151218B36', 0.16),
+(5, 'VILLACABRA', 'Estatal Campeche', 'SEB151218B36', 0.16),
+(6, 'CHAN YAXCHE', NULL, 'SEC150112537', 0.16),
+(7, 'CHEMAX', 'Estatal Yucatán', 'SEC150112537', 0.16),
+(8, 'TULUM CRUCERO', 'Estatal Qroo', 'SEC150112537', 0.16),
+(9, 'EBTÚN', 'Estatal Yucatán', 'SEC150112537', 0.16),
+(10, 'IDEAL', 'Estatal Qroo', 'SEC150112537', 0.16),
+(11, 'ISLA AGUADA', 'Estatal Campeche', 'SEC150112537', 0.16),
+(12, 'PEDRO SANTOS', 'Estatal Qroo', 'SEC150112537', 0.16),
+(13, 'SACIABIL', 'Estatal Yucatán', 'SEC150112537', 0.16),
+(14, 'ZACÍ', 'Estatal Yucatán', 'SEC150112537', 0.16),
+(15, 'MORELOS', 'Estatal Yucatán', 'SEC20082165A', 0.16),
+(16, 'SEYBAPLAYA', 'Estatal Campeche', 'SEC20082165A', 0.16),
+(17, 'CHAMPOTÓN  MALECÓN.', 'Estatal Campeche', 'SEC141031S67', 0.16),
+(18, 'HECELCHAKÁN', 'Estatal Campeche', 'SEC141031S67', 0.16),
+(19, 'KANASÍN 58', 'Estatal Yucatán', 'CACX7605101P8', 0.16),
+(20, 'PISTÉ', 'Estatal Yucatán', 'CACX7605101P8', 0.16),
+(21, 'TULUM COBA', 'Estatal Qroo', 'CACX7605101P8', 0.16),
+(22, 'TAXISTAS CUN', NULL, 'SEM1512187Y9', 0.16),
+(23, 'C. LÓPEZ PORTILLO', 'Estatal Qroo', 'SEM1512187Y9', 0.16),
+(24, 'TEJUPILCO', NULL, 'SEM1512187Y9', 0.16),
+(25, 'ESCARCEGA LEMUS', 'Estatal Campeche', 'SEM1410318Q5', 0.16),
+(26, 'TENABO', 'Estatal Campeche', 'SEM1410318Q5', 0.16),
+(27, 'ABROJALITO', 'Estatal Edo Mex', 'SES150112RC3', 0.16),
+(28, 'REAL VERONA', 'Estatal Edo Mex', 'SES150112RC3', 0.16),
+(29, 'CELAYA 2', NULL, 'CSB971203H46', 0.16),
+(30, 'SAN PEDRO', NULL, 'CARJ521227GH5', 0.16),
+(31, 'CALKINI CENTRO', 'Estatal Campeche', 'SEM141031V5A', 0.16),
+(32, 'ESCARCEGA ALARCÓN', 'Estatal Campeche', 'SEM141031V5A', 0.16),
+(33, 'CARRILLO PUERTO', 'Estatal Qroo', 'SEM141031V5A', 0.16),
+(34, 'C. LÓPEZ PORTILLO 2', 'Estatal Qroo', 'SEM141031V5A', 0.16),
+(35, 'MOTUL', 'Estatal Yucatán', 'SEM141031V5A', 0.16),
+(36, 'ROJO GOMEZ', 'Estatal Qroo', 'SEM141031V5A', 0.08),
+(37, 'SAN JUAN', 'Estatal Yucatán', 'SEM141031V5A', 0.16),
+(38, 'MERCADO', 'Estatal Yucatán', 'SEM141031V5A', 0.16),
+(39, 'CHUBURNÁ', 'Estatal Yucatán', 'SEY0704139A8', 0.16),
+(40, 'KOHUNLICH', 'Estatal Qroo', 'SEY0704139A8', 0.08),
+(41, 'UMÁN', 'Estatal Yucatán', 'SEY0704139A8', 0.16),
+(42, 'VALLADOLID', 'Estatal Yucatán', 'SEY0704139A8', 0.16),
+(43, 'AGUASCALIENTES', 'Estatal Aguascalientes', 'SEC141031B4A', 0.16),
+(44, 'SALAMANCA', NULL, 'SEC141031B4A', 0.16),
+(45, '20 DE NOVIEMBRE', 'Estatal Qroo', 'SEC1503037FA', 0.16),
+(46, 'CALKINI 2', 'Estatal Campeche', 'SEC1503037FA', 0.16),
+(47, 'CAUCEL', 'Estatal Yucatán', 'SEC1503037FA', 0.16),
+(48, 'PALOMAR', NULL, 'SEC1503037FA', 0.16),
+(49, 'RANCHO VIEJO', 'Estatal Qroo', 'SEC1503037FA', 0.16),
+(50, 'RUTA 5', 'Estatal Qroo', 'SEC1503037FA', 0.16),
+(51, 'EL CUYO', 'Estatal Yucatán', 'JGE900406818', 0.16),
+(52, 'LA BARCA', NULL, 'SEE141031A1A', 0.16),
+(53, 'PETO', 'Estatal Yucatán', 'SER150303GN5', 0.16),
+(54, 'TZUCACAB', 'Estatal Yucatán', 'SER150303GN5', 0.16),
+(55, 'RAMOS ARIZPE', 'Estatal Coahuila', 'SES200507JU6', 0.16),
+(56, 'REAL GRANADA', 'Estatal Edo Mex', 'AET1404031U2', 0.16),
+(57, 'SIERRA HERMOSA', 'Estatal Edo Mex', 'AET1404031U2', 0.16),
+(58, 'TECAMÁC MP', 'Estatal Edo Mex', 'AET1404031U2', 0.16),
+(59, 'COLONIA YUCATÁN', 'Estatal Yucatán', 'CGM130531NS2', 0.16),
+(60, 'PREMIER', NULL, 'AOD170302LQ7', 0.16),
+(61, 'RIO NUEVO', NULL, 'AOD170302LQ7', 0.16),
+(62, 'TRAILERO', NULL, 'AOD170302LQ7', 0.16),
+(63, 'MAYA', 'Estatal Yucatán', 'SEC150204U97', 0.16),
+(64, 'CALIMAYA', 'Estatal Edo Mex', 'SEC150204U97', 0.16),
+(65, 'MAXUXAC 2', 'Estatal Qroo', 'SEC150204U97', 0.08),
+(66, 'MULSAY', 'Estatal Yucatán', 'SEC150204U97', 0.16),
+(67, 'CHAMPOTÓN  RESTAURANTE', 'Estatal Campeche', 'SEI1410319R7', 0.16),
+(68, 'CHAMPOTÓN  ECHEVERRIA', 'Estatal Campeche', 'SEI1410319R7', 0.16),
+(69, 'HOPELCHÉN', 'Estatal Campeche', 'SEI1410319R7', 0.16),
+(70, 'BUENAVISTA', 'Estatal Campeche', 'SEM150204RK4', 0.16),
+(71, 'PALMIRA', 'Estatal Campeche', 'SEM150204RK4', 0.16),
+(72, 'TULUM ZAMNA', 'Estatal Qroo', 'SEM070413TA9', 0.16),
+(73, 'ANDRÉS QROO.', 'Estatal Qroo', 'SEM070413TA9', 0.08),
+(74, 'BACALAR', 'Estatal Qroo', 'SEM070413TA9', 0.16),
+(75, 'HÉROES', 'Estatal Qroo', 'SEM070413TA9', 0.08),
+(76, 'HUAY PIX', 'Estatal Qroo', 'SEM070413TA9', 0.08),
+(77, 'MAXUXAC', 'Estatal Qroo', 'SEM070413TA9', 0.08),
+(78, 'EXPOFERIA', 'Estatal Yucatán', 'SYU110901LR9', 0.16),
+(79, 'KOPOMA ', 'Estatal Yucatán', 'SYU110901LR9', 0.16),
+(80, 'MUNA', 'Estatal Yucatán', 'SYU110901LR9', 0.16),
+(81, 'TIZIMÍN', 'Estatal Yucatán', 'SYU110901LR9', 0.16),
+(82, 'PUEBLA CENTRO', 'Estatal Puebla', 'SEP200807463', 0.16),
+(83, 'TUXTLA SANTA MARIA', 'Estatal Chiapas', 'SEP200807463', 0.16),
+(84, '14 SUR', 'Estatal Puebla', 'GRM1604267N3', 0.16),
+(85, 'AGUA AZUL', 'Estatal Puebla', 'GON130219GD4', 0.16),
+(86, 'ALLENDE', 'Estatal Coahuila', 'PET070605PC2', 0.16),
+(87, 'AMALUCAN', 'Estatal Puebla', 'GRM1604267N3', 0.16),
+(88, 'AMOZOC', 'Estatal Puebla', 'SEF200821N64', 0.16),
+(89, 'AMOZOC 2', 'Estatal Puebla', 'SGA150629E68', 0.16),
+(90, 'ATEXCAC', 'Estatal Puebla', 'SEF200821N64', 0.16),
+(91, 'ATLIXCO', 'Estatal Puebla', 'SEF200821N64', 0.16),
+(100, 'ATLIXCO 2', 'Estatal Puebla', 'SEF200821N64', 0.16),
+(101, 'BOSQUES', 'Estatal Puebla', 'GRM1604267N3', 0.16),
+(102, 'CANCÚN MADERO ', 'Estatal Qroo', 'SEM1512187Y9', 0.16),
+(103, 'CAPU', 'Estatal Puebla', 'MOR9602092P5', 0.16),
+(104, 'CHOLULA', 'Estatal Puebla', 'SEF200821N64', 0.16),
+(105, 'COLÓN', 'Estatal Nuevo León', 'SCO140610PY0', 0.16),
+(106, 'EL DORADO', 'Estatal Edo Mex', 'VEGV560707KD2', 0.16),
+(107, 'FORJADORES', 'Estatal Puebla', 'SEF200821N64', 0.16),
+(108, 'HERMANAS', 'Estatal Coahuila', 'PET070605PC2', 0.16),
+(109, 'HERMANOS SERDAN', 'Estatal Puebla', 'GRM1604267N3', 0.16),
+(110, 'LOS ANGELES', 'Estatal Puebla', 'GRA141128124', 0.16),
+(111, 'METEPEC', 'Estatal Edo Mex', 'SME960327222', 0.16),
+(112, 'NUEVA ROSITA 2', 'Estatal Coahuila', 'PET070605PC2', 0.16),
+(113, 'PERINORTE', 'Estatal Puebla', 'SEF200821N64', 0.16),
+(114, 'SABINAS', 'Estatal Coahuila', 'PNO130206NW7', 0.16),
+(115, 'SAN MATEO', 'Estatal Edo Mex', 'SSM0302202G0', 0.16),
+(116, 'TLAXCALA', 'Estatal Tlaxcala', 'SEC141031B4A', 0.16),
+(117, 'TORRECILLAS', 'Estatal Puebla', 'GRM1604267N3', 0.16),
+(118, 'TUXTLA BELISARIO', 'Estatal Chiapas', 'CRC0412029S2', 0.16),
+(119, 'VILLA VERDE', 'Estatal Puebla', 'GVV110118HW7', 0.16),
+(120, 'XONACA', 'Estatal Puebla', 'MOR9602092P5', 0.16),
+(121, 'YAXCHÉ', 'Estatal Yucatán', 'SEC150112537', 0.16),
+(122, 'LA MARQUESA', 'Estatal Edo Mex', 'SRT060418CG3', 0.16),
+(123, 'BOULEBARD NORTE', 'Estatal Puebla', NULL, 0.00),
+(124, 'FELIX U. GOMEZ', 'Estatal Nuevo León', NULL, 0.00),
+(125, 'n', 'Estatal Yucatán', NULL, 0.00);
 
 -- --------------------------------------------------------
 
@@ -373,7 +377,7 @@ ALTER TABLE `precios_uuid`
 -- AUTO_INCREMENT de la tabla `estaciones`
 --
 ALTER TABLE `estaciones`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=123;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=126;
 
 --
 -- AUTO_INCREMENT de la tabla `ieps`
@@ -385,13 +389,13 @@ ALTER TABLE `ieps`
 -- AUTO_INCREMENT de la tabla `precios_combustible`
 --
 ALTER TABLE `precios_combustible`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3564;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4983;
 
 --
 -- AUTO_INCREMENT de la tabla `precios_uuid`
 --
 ALTER TABLE `precios_uuid`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=146;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=158;
 
 --
 -- Restricciones para tablas volcadas
@@ -407,7 +411,7 @@ DELIMITER $$
 --
 -- Eventos
 --
-CREATE DEFINER=`root`@`localhost` EVENT `depurar_registros_antiguos` ON SCHEDULE EVERY 1 DAY STARTS '2025-06-03 12:17:31' ON COMPLETION NOT PRESERVE ENABLE DO BEGIN
+CREATE DEFINER=`root`@`localhost` EVENT `depurar_registros_antiguos` ON SCHEDULE EVERY 1 DAY STARTS '2025-06-19 11:23:39' ON COMPLETION NOT PRESERVE ENABLE DO BEGIN
     -- Eliminar primero de precios_uuid los relacionados con precios_combustible > 3 meses
     DELETE pu
     FROM precios_uuid pu
