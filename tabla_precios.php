@@ -23,6 +23,14 @@ $fecha_sel = $_GET['fecha'] ?? null;
         pc.precio_magna,
         pc.precio_premium,
         pc.precio_diesel,
+
+        pc.porcentaje_utilidad_magna,
+        pc.porcentaje_utilidad_premium,
+        pc.porcentaje_utilidad_diesel,
+        pc.utilidad_litro_magna,
+        pc.utilidad_litro_premium,
+        pc.utilidad_litro_diesel,
+
         pc.modificado
     FROM precios_combustible pc
     LEFT JOIN estaciones e ON pc.estacion = e.nombre
@@ -75,6 +83,8 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
                     <th class="" style="background-color: #A55B4B; color: white;" rowspan="2">COSTO DE FLETE</th>
                     <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">COSTO + FLETE</th>
                     <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PRECIO VENTA</th>
+                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">% DE UTILIDAD</th>
+                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">UTILIDAD POR LITRO</th>
                 </tr>
                 <tr>
                     <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
@@ -86,6 +96,12 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
                     <th class="Magna border border-white" style="background-color: #399918; color: white;">PRECIO MAGNA</th>
                     <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PRECIO PREMIUM</th>
                     <th class="Diesel border border-white" style="background-color: black; color: white;">PRECIO DIESEL</th>
+                    <th class="Magna border border-white" style="background-color: #399918; color: white;">% MAGNA</th>
+                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">% PREMIUM</th>
+                    <th class="Diesel border border-white" style="background-color: black; color: white;">% DIESEL</th>
+                    <th class="Magna border border-white" style="background-color: #399918; color: white;">$ MAGNA</th>
+                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">$ PREMIUM</th>
+                    <th class="Diesel border border-white" style="background-color: black; color: white;">$ DIESEL</th>
                 </tr>
             </thead>
 
@@ -114,6 +130,14 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
                         <td><?= $row['precio_magna'] !== null ? '$' . number_format($row['precio_magna'], 2) : '-' ?></td>
                         <td><?= $row['precio_premium'] !== null ? '$' . number_format($row['precio_premium'], 2) : '-' ?></td>
                         <td><?= $row['precio_diesel'] !== null ? '$' . number_format($row['precio_diesel'], 2) : '-' ?></td>
+
+                        <td><?= $row['porcentaje_utilidad_magna'] !== null ? number_format($row['porcentaje_utilidad_magna'], 2) . '%' : '-' ?></td>
+                        <td><?= $row['porcentaje_utilidad_premium'] !== null ? number_format($row['porcentaje_utilidad_premium'], 2) . '%' : '-' ?></td>
+                        <td><?= $row['porcentaje_utilidad_diesel'] !== null ? number_format($row['porcentaje_utilidad_diesel'], 2) . '%' : '-' ?></td>
+
+                        <td><?= $row['utilidad_litro_magna'] !== null ? '$' . number_format($row['utilidad_litro_magna'], 2) : '-' ?></td>
+                        <td><?= $row['utilidad_litro_premium'] !== null ? '$' . number_format($row['utilidad_litro_premium'], 2) : '-' ?></td>
+                        <td><?= $row['utilidad_litro_diesel'] !== null ? '$' . number_format($row['utilidad_litro_diesel'], 2) : '-' ?></td>
                     </tr>
                 <?php endwhile; ?>
             </tbody>

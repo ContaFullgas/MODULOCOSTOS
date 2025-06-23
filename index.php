@@ -940,6 +940,12 @@ function filtrarPorZona() {
     precio_magna: 0,
     precio_premium: 0,
     precio_diesel: 0,
+    porcentaje_utilidad_magna: 0,
+    porcentaje_utilidad_premium: 0,
+    porcentaje_utilidad_diesel: 0,
+    utilidad_litro_magna: 0,
+    utilidad_litro_premium: 0,
+    utilidad_litro_diesel: 0
   };
 
   let cuenta = 0;
@@ -964,6 +970,12 @@ function filtrarPorZona() {
       suma.precio_magna   += parseFloat(celdas[11].textContent.replace(/[^0-9.-]+/g, "")) || 0;
       suma.precio_premium += parseFloat(celdas[12].textContent.replace(/[^0-9.-]+/g, "")) || 0;
       suma.precio_diesel  += parseFloat(celdas[13].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.porcentaje_utilidad_magna   += parseFloat(celdas[14].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.porcentaje_utilidad_premium += parseFloat(celdas[15].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.porcentaje_utilidad_diesel  += parseFloat(celdas[16].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.utilidad_litro_magna        += parseFloat(celdas[17].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.utilidad_litro_premium      += parseFloat(celdas[18].textContent.replace(/[^0-9.-]+/g, "")) || 0;
+      suma.utilidad_litro_diesel       += parseFloat(celdas[19].textContent.replace(/[^0-9.-]+/g, "")) || 0;
 
       cuenta++;
     }
@@ -991,6 +1003,13 @@ function filtrarPorZona() {
     <td><strong>$${(suma.precio_magna / cuenta || 0).toFixed(2)}</strong></td>
     <td><strong>$${(suma.precio_premium / cuenta || 0).toFixed(2)}</strong></td>
     <td><strong>$${(suma.precio_diesel / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>${(suma.porcentaje_utilidad_magna / cuenta || 0).toFixed(2)}%</strong></td>
+    <td><strong>${(suma.porcentaje_utilidad_premium / cuenta || 0).toFixed(2)}%</strong></td>
+    <td><strong>${(suma.porcentaje_utilidad_diesel / cuenta || 0).toFixed(2)}%</strong></td>
+    <td><strong>$${(suma.utilidad_litro_magna / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.utilidad_litro_premium / cuenta || 0).toFixed(2)}</strong></td>
+    <td><strong>$${(suma.utilidad_litro_diesel / cuenta || 0).toFixed(2)}</strong></td>
+
   `;
   tbody.appendChild(filaPromedio);
 }
