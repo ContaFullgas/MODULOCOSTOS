@@ -389,8 +389,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                 if (res.success) {
                                     // Recargar la tabla para la fecha actual o seleccionada
                                     alert('Acción: ' + res.accion);
-                                    cargarTablaPrecios(document.getElementById('fecha').value);
+
+                                    const fecha = document.getElementById('fecha').value;
+                                    //Carga los promedios diarios despues de que devuelve la promesa de terminacion el método cargarTablaPrecios
+                                    cargarTablaPrecios(fecha).then(() => filtrarPorZona());
                                     cargarZonas();
+
                                 } else {
                                     alert('Error al guardar: ' + res.error);
                                 }
