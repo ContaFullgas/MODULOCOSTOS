@@ -23,7 +23,8 @@ $uuid         = $conn->real_escape_string($data['uuid'] ?? '');
 $fecha = $conn->real_escape_string($data['fecha'] ?? date('Y-m-d'));
 
 // Se define el costo fijo del flete que se sumará al precio unitario
-$flete = 0.25; // de momento fijo pero luego sera variable
+// $flete = 0.25; // de momento fijo pero luego sera variable
+$flete = isset($data['flete']) ? floatval($data['flete']) : 0.25;
 
 // Obtener IVA de la estación
 $sqlIva = "SELECT iva FROM estaciones WHERE nombre = '$estacion'";

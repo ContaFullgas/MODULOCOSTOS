@@ -311,6 +311,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                 ${options}
                             </select>
 
+                            <p class="mt-3"><strong>Costo de flete:</strong></p>
+                            <input type="number" id="inputFlete" class="form-control" placeholder="Ejemplo: 0.25" step="0.01" min="0">
                         `;
 
                         }
@@ -321,6 +323,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         document.getElementById('btnConfirmarEstacion').onclick = () => {
                             const select = document.getElementById('selectEstacion');
 
+                            //Validaciones para las estaciones
                             if (!select) {
                                 alert('No hay estación para seleccionar.');
                                 return;
@@ -331,6 +334,22 @@ document.addEventListener('DOMContentLoaded', function () {
                                 return;
                             }
 
+                            //Validaciones para el costo flete
+                            const fleteInput = document.getElementById('inputFlete');
+                            const fleteValue = fleteInput.value.trim();
+                            // Validar que el usuario haya ingresado algo
+                            if (fleteValue === '') {
+                                alert('Por favor, ingresa un costo de flete antes de continuar.');
+                                fleteInput.focus();
+                                return;
+                            }
+                            const flete = parseFloat(fleteValue);
+                            if (isNaN(flete) || flete < 0) {
+                                alert('Ingresa un valor válido para el costo de flete (mayor o igual a 0).');
+                                fleteInput.focus();
+                                return;
+                            }
+
                             const estacionId = select.value;
                             const estacionNombre = select.options[select.selectedIndex].text;
                             const total = parseFloat(data.data.total);
@@ -338,6 +357,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             const precioUnitario = (total / cantidad).toFixed(2);
                             const fechaCFDI = data.data.fecha.split('T')[0];
                             const fechaSeleccionada = document.getElementById('fecha').value;
+                            // const flete = parseFloat(document.getElementById('inputFlete').value) || 0.25;
 
                             if (fechaCFDI !== fechaSeleccionada) {
                                 alert(`La fecha del XML (${fechaCFDI}) no coincide con la fecha seleccionada (${fechaSeleccionada}), no es posible subir la información.`);
@@ -359,7 +379,8 @@ document.addEventListener('DOMContentLoaded', function () {
                                     precio: precioUnitario,
                                     tipo: tipo,
                                     uuid: data.data.uuid,
-                                    fecha: fechaCFDI
+                                    fecha: fechaCFDI,
+                                    flete: flete
                                 })
                             })
                             .then(response => response.json())
