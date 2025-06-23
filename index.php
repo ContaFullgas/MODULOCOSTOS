@@ -437,8 +437,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             // Recargar la tabla si la fecha actual coincide con la generada
             if (document.getElementById('fecha').value === fecha) {
-                cargarTablaPrecios(fecha);
-            }
+                  cargarTablaPrecios(fecha).then(() => {
+                      //Promesa para cargar los promedios una vez que la tabla se alla terminado de cargar completamente
+                      filtrarPorZona();
+                  });
+              }
+
         })
         .catch(error => {
             document.getElementById('resultado_generacion').innerHTML =
@@ -924,7 +928,7 @@ function cargarZonasMensual() {
 }
 
 
-// Función para filtrar tabla y mostrar promedios
+// Función para filtrar tabla y mostrar promedios diarios
 function filtrarPorZona() {
   const zonaSeleccionada = document.getElementById('selectorZona').value.toLowerCase();
   const filas = document.querySelectorAll('#tablaPrecios tbody tr');

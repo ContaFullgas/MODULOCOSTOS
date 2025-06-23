@@ -27,8 +27,8 @@ if ($row = $res->fetch_assoc()) {
     $ultimaFecha = $row['fecha'];
 
     // Copiar datos de la última fecha con nueva fecha
-    $sql = "INSERT INTO precios_combustible (fecha, siic_inteligas, zona, razon_social, estacion, vu_magna, vu_premium, vu_diesel, costo_flete, pf_magna, pf_premium, pf_diesel, precio_magna, precio_premium, precio_diesel)
-            SELECT ?, siic_inteligas, zona, razon_social, estacion, vu_magna, vu_premium, vu_diesel, costo_flete, pf_magna, pf_premium, pf_diesel, precio_magna, precio_premium, precio_diesel
+    $sql = "INSERT INTO precios_combustible (fecha, siic_inteligas, zona, razon_social, estacion, vu_magna, vu_premium, vu_diesel, costo_flete, pf_magna, pf_premium, pf_diesel, precio_magna, precio_premium, precio_diesel, porcentaje_utilidad_magna, porcentaje_utilidad_premium, porcentaje_utilidad_diesel, utilidad_litro_magna, utilidad_litro_premium, utilidad_litro_diesel)
+            SELECT ?, siic_inteligas, zona, razon_social, estacion, vu_magna, vu_premium, vu_diesel, costo_flete, pf_magna, pf_premium, pf_diesel, precio_magna, precio_premium, precio_diesel, porcentaje_utilidad_magna, porcentaje_utilidad_premium, porcentaje_utilidad_diesel, utilidad_litro_magna, utilidad_litro_premium, utilidad_litro_diesel
             FROM precios_combustible
             WHERE fecha = ?";
 
