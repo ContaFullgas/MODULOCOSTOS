@@ -46,7 +46,14 @@ date_default_timezone_set('America/Mexico_City');
 
         <!-- Botones agrupados -->
         <div class="d-flex flex-wrap gap-3">
-            <!-- Exportar -->
+            <!-- Exportar dia-->
+            <div class="d-flex flex-column">
+                <label class="form-label">Exportar día:</label>
+                <button class="btn btn-outline-primary" style="width: 130px;" onclick="" id="btnExportarExcelDia">
+                    Exportar
+                </button>
+            </div>
+            <!-- Exportar cambios-->
             <div class="d-flex flex-column">
                 <label class="form-label">Exportar cambios:</label>
                 <button class="btn btn-outline-primary" style="width: 130px;" onclick="exportarExcel()" id="btnExportar">
@@ -1043,7 +1050,16 @@ function filtrarPorZona() {
   tbody.appendChild(filaPromedio);
 }
 
-
+//Metodo para exportar la tabla completa del día seleccionado en el selector de fecha
+document.getElementById('btnExportarExcelDia').addEventListener('click', function () {
+    const fecha = document.getElementById('fecha').value;
+    if (!fecha) {
+        alert('Por favor, selecciona una fecha.');
+        return;
+    }
+    // Redirige al script que genera el Excel
+    window.location.href = `exportar_para_modificar_precio_venta.php?fecha=${encodeURIComponent(fecha)}`;
+});
 
     </script>
 
