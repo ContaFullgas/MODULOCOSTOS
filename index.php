@@ -112,7 +112,7 @@ date_default_timezone_set('America/Mexico_City');
       <!-- Botón Exportar -->
       <div class="d-flex flex-column">
         <label class="form-label">Exportar a Excel:</label>
-        <button id="btnExportar" onclick="exportarExcelMensual()" class="btn btn-outline-success" style="width: 130px;">
+        <button id="btnExportar" onclick="exportarExcelMensual()" class="btn btn-outline-primary" style="width: 130px;">
           Exportar
         </button>
       </div>
@@ -1060,14 +1060,40 @@ function filtrarPorZona() {
 }
 
 //Metodo para exportar la tabla completa del día seleccionado en el selector de fecha
+// document.getElementById('btnExportarExcelDia').addEventListener('click', function () {
+//     const fecha = document.getElementById('fecha').value;
+//     if (!fecha) {
+//         alert('Por favor, selecciona una fecha.');
+//         return;
+//     }
+    
+//     // Verifica si la tabla tiene datos
+//     const tablaWrapper = document.querySelector('#tablaPrecios #tablaWrapper');
+//     const hayDatos = tablaWrapper?.dataset?.hayDatos === '1';
+
+//     if (!hayDatos) {
+//         document.getElementById('mensajeImportacion').innerHTML = `
+//         <div class="alert alert-warning alert-dismissible fade show" role="alert">
+//           ⚠️ No hay registros disponibles para exportar en la fecha seleccionada.
+//           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//         </div>`;
+//         return;
+//     }
+
+//     // Redirige al script que genera el Excel
+//     window.location.href = `exportar_para_modificar_precio_venta.php?fecha=${encodeURIComponent(fecha)}`;
+// });
+
+//Metodo para exportar la tabla completa del día seleccionado en el selector de fecha usando fetch
 document.getElementById('btnExportarExcelDia').addEventListener('click', function () {
     const fecha = document.getElementById('fecha').value;
+    const btn = document.getElementById('btnExportarExcelDia');
+
     if (!fecha) {
         alert('Por favor, selecciona una fecha.');
         return;
     }
-    
-    // Verifica si la tabla tiene datos
+
     const tablaWrapper = document.querySelector('#tablaPrecios #tablaWrapper');
     const hayDatos = tablaWrapper?.dataset?.hayDatos === '1';
 
@@ -1080,9 +1106,40 @@ document.getElementById('btnExportarExcelDia').addEventListener('click', functio
         return;
     }
 
-    // Redirige al script que genera el Excel
-    window.location.href = `exportar_para_modificar_precio_venta.php?fecha=${encodeURIComponent(fecha)}`;
+    btn.disabled = true;
+    btn.innerHTML = 'Generando...';
+
+    fetch(`exportar_para_modificar_precio_venta.php?fecha=${encodeURIComponent(fecha)}`)
+        .then(response => {
+            if (response.headers.get('Content-Type').includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                return response.blob();
+            } else {
+                return response.text().then(text => { throw new Error(text); });
+            }
+        })
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `precios_${fecha}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            document.getElementById('mensajeImportacion').innerHTML = `
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    ${error.message || 'No se pudo generar el archivo.'}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>`;
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = 'Exportar Excel';
+        });
 });
+
 
 //Importar excel
 // document.getElementById('formImportarExcel').addEventListener('submit', function (e) {
