@@ -197,7 +197,7 @@ foreach (range('A', 'Z') as $col) {
 // FORMATOS
 $formato_dinero = '"$" #,##0.00';
 $formato_porcentaje = '0.00%';
-$columnas_dinero = ['F','G','H','J','L','M','N','P','Q','X','Y','Z'];
+$columnas_dinero = ['F','G','H','J','L','M','N','P','Q','R','X','Y','Z'];
 $columnas_porcentaje = ['T','U','V'];
 
 foreach ($columnas_dinero as $col) {

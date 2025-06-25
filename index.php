@@ -24,74 +24,76 @@ date_default_timezone_set('America/Mexico_City');
 <div class="tab-content" id="myTabsContent">
   <!-- TAB DIARIO -->
   <div class="tab-pane fade show active" id="diario" role="tabpanel">
-    <!-- Aquí va tu contenido existente de vista diaria -->
-    <br>
-    <h3>Subir Facturas (XML)</h3>
+  <br>
+  <h3>Subir Facturas (XML)</h3>
 
-    <form id="formUpload" class="mb-4">
-        <div class="mb-3">
-            <input type="file" name="documento" class="form-control w-50" accept=".xml" required id="inputFile" disabled/>
-            <small id="mensaje_fecha" class="text-danger">Seleccione una fecha para cargar archivos XML.</small>
-        </div>
+  <div class="d-flex justify-content-between align-items-start flex-wrap">
+    <!-- Input para subir XML -->
+    <form id="formUpload" class="mb-3">
+      <input type="file" name="documento" class="form-control w-100" accept=".xml" required id="inputFile" disabled style="max-width: 500px;" />
+      <small id="mensaje_fecha" class="text-danger">Seleccione una fecha para cargar archivos XML.</small>
     </form>
 
-    <div id="resultado"></div>
+    <!-- Botón Exportar Cambios alineado al mismo nivel -->
+    <div class="d-flex flex-column align-items-end" style="margin-top: -30px;">
+      <label class="form-label">Exportar cambios:</label>
+      <button class="btn btn-outline-primary" style="width: 130px;" onclick="exportarExcel()" id="btnExportar">
+        Exportar
+      </button>
+    </div>
+  </div>
 
-    <div class="d-flex flex-wrap gap-3 mb-2">
-        <!-- Campo de fecha -->
-        <div class="d-flex flex-column">
-            <label for="fecha" class="form-label">Selecciona fecha:</label>
-            <input type="date" id="fecha" name="fecha" class="form-control" style="min-width: 200px;">
-        </div>
-
-        <!-- Botones agrupados -->
-        <div class="d-flex flex-wrap gap-3">
-            <!-- Exportar dia-->
-            <div class="d-flex flex-column">
-                <label class="form-label">Exportar día:</label>
-                <button class="btn btn-outline-primary" style="width: 130px;" onclick="" id="btnExportarExcelDia">
-                    Exportar
-                </button>
-            </div>
-            <!-- Exportar cambios-->
-            <div class="d-flex flex-column">
-                <label class="form-label">Exportar cambios:</label>
-                <button class="btn btn-outline-primary" style="width: 130px;" onclick="exportarExcel()" id="btnExportar">
-                    Exportar
-                </button>
-            </div>
-
-            <!-- Borrar -->
-            <div class="d-flex flex-column">
-                <label class="form-label">Borrar día:</label>
-                <button class="btn btn-outline-danger" style="width: 130px;" onclick="eliminarRegistrosPorFecha()">
-                    Borrar
-                </button>
-            </div>
-
-            <!-- Generar nuevo día -->
-            <div class="d-flex flex-column">
-                <label class="form-label">Generar nuevo día:</label>
-                <button class="btn btn-outline-success" style="width: 130px;" type="button" onclick="generarNuevoDia()">
-                    Generar día
-                </button>
-            </div>
-        </div>
-
-        <div class="mb-3">
-            <label for="selectorZona" class="form-label">Filtrar por zona:</label>
-            <select id="selectorZona" class="form-select" disabled style="min-width: 210px;">
-                <option value="">Todas las zonas</option>
-            </select>
-        </div>
-
+  <div class="d-flex flex-wrap gap-3 mb-4 align-items-end">
+    <!-- Campo de fecha -->
+    <div class="d-flex flex-column">
+      <label for="fecha" class="form-label">Selecciona fecha:</label>
+      <input type="date" id="fecha" name="fecha" class="form-control" style="min-width: 200px;">
     </div>
 
-    <div id="resultado_exportacion" class="mb-2"></div>
-    <div id="resultado_generacion" class="mb-3"></div>
-    <div id="resultado_verificar_registros" class="mb-3"></div>
-    <div id="tablaPrecios"></div>
+    <!-- Exportar día -->
+    <div class="d-flex flex-column">
+      <label class="form-label">Exportar día:</label>
+      <button class="btn btn-outline-primary" style="width: 130px;" id="btnExportarExcelDia">Exportar</button>
+    </div>
+
+   <!-- Importar Excel -->
+    <form id="formImportarExcel" enctype="multipart/form-data" class="d-flex flex-column">
+      <label class="form-label">Importar día:</label>
+      <input type="file" name="archivo_excel" accept=".xlsx" required class="form-control" style="max-width: 350px;" />
+      <input type="hidden" name="fecha" id="fecha_excel_hidden">
+    </form>
+
+    <!-- Borrar -->
+    <div class="d-flex flex-column">
+      <label class="form-label">Borrar día:</label>
+      <button class="btn btn-outline-danger" style="width: 130px;" onclick="eliminarRegistrosPorFecha()">Borrar</button>
+    </div>
+
+    <!-- Generar nuevo día -->
+    <div class="d-flex flex-column">
+      <label class="form-label">Generar día:</label>
+      <button class="btn btn-outline-success" style="width: 130px;" type="button" onclick="generarNuevoDia()">Generar día</button>
+    </div>
+
+    <!-- Selector de zona -->
+    <div class="d-flex flex-column">
+      <label for="selectorZona" class="form-label">Filtrar por zona:</label>
+      <select id="selectorZona" class="form-select" disabled style="min-width: 210px;">
+        <option value="">Todas las zonas</option>
+      </select>
+    </div>
   </div>
+
+  <!-- Mensajes -->
+  <div id="mensajeImportacion" class="mb-2"></div>
+  <div id="resultado_exportacion" class="mb-2"></div>
+  <div id="resultado_generacion" class="mb-3"></div>
+  <div id="resultado_verificar_registros" class="mb-3"></div>
+
+  <!-- Tabla -->
+  <div id="tablaPrecios"></div>
+</div>
+
 
   <!-- TAB MENSUAL -->
 <div class="tab-pane fade" id="mensual" role="tabpanel">
@@ -132,7 +134,7 @@ date_default_timezone_set('America/Mexico_City');
 </div>
 
     <div class="table-responsive mt-3" id="tablaPromediosContainer" style="display: none;">
-        <table class="table table-bordered table-hover align-middle text-center mt-4" id="tablaPromedios" style="border-radius: 12px; overflow: hidden;">
+        <table class="table table-bordered table-hover align-middle text-center mt-2" id="tablaPromedios" style="border-radius: 12px; overflow: hidden;">
             <thead>
                 <tr>
                 <th class="table-dark" rowspan="2">SIIC</th>
@@ -190,6 +192,13 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 });
 
+//Para mostrar mensaje de seleccionar fecha
+window.addEventListener('DOMContentLoaded', function () {
+    const fechaInput = document.getElementById('fecha');
+    const fecha = fechaInput?.value;
+    // Llama siempre a cargarTablaPrecios, aunque la fecha sea null o vacía
+    cargarTablaPrecios(fecha);
+});
 
 // Función para cargar la tabla con la fecha seleccionada
 function cargarTablaPrecios(fecha = null, zona = null) {
@@ -1060,6 +1069,191 @@ document.getElementById('btnExportarExcelDia').addEventListener('click', functio
     // Redirige al script que genera el Excel
     window.location.href = `exportar_para_modificar_precio_venta.php?fecha=${encodeURIComponent(fecha)}`;
 });
+
+//Importar excel
+// document.getElementById('formImportarExcel').addEventListener('submit', function (e) {
+//     e.preventDefault(); // Evita el envío normal
+
+//     const form = e.target;
+//     const formData = new FormData(form);
+//     // const mensaje = document.getElementById('mensajeImportacion');
+//     // mensaje.textContent = 'Procesando...';
+
+//     fetch('importar_precios_venta.php', {
+//         method: 'POST',
+//         body: formData
+//     })
+//     .then(resp => resp.json())
+//     .then(data => {
+//         if (data.success) {
+//             if (data.actualizados > 0) {
+//               // mensaje.textContent = `✅ Se actualizaron ${data.actualizados} registros.`;
+//               document.getElementById('mensajeImportacion').innerHTML =
+//                 `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+//                     ✅ Se actualizaron ${data.actualizados} registros.
+//                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//                 </div>`;
+//             } else {
+//               // mensaje.textContent = `⚠️ El archivo fue procesado pero no se actualizó ningún registro.`;
+//               document.getElementById('mensajeImportacion').innerHTML =
+//                 `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+//                     ⚠️ El archivo fue procesado pero no se actualizó ningún registro.
+//                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//                 </div>`;
+//             }
+//             // mensaje.style.color = 'green';
+//             // Obtener la fecha desde el input oculto
+//             const fechaInput = document.getElementById('fecha');
+//             const fecha = fechaInput ? fechaInput.value : null;
+//             // Recargar tabla automáticamente con la fecha (y zona si quieres)
+//             cargarTablaPrecios(fecha).then(() => {
+//             // zonaInput.disabled = false;
+//             // zonaInput.style.display = 'inline-block';
+//             cargarZonas();
+//             filtrarPorZona();
+//         });
+
+//         form.reset(); // Limpia el formulario después de importar y recargar
+
+//         } else {
+//             // mensaje.textContent = `❌ Error: ${data.error}`;
+//             // mensaje.style.color = 'red';
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//         // mensaje.textContent = '❌ Error al subir el archivo.';
+//         // mensaje.style.color = 'red';
+//     });
+// });
+
+//   document.getElementById('formImportarExcel').addEventListener('submit', function (e) {
+//     e.preventDefault(); // Evita el envío normal
+
+//     const form = e.target;
+//     const formData = new FormData(form);
+//     const mensaje = document.getElementById('mensajeImportacion');
+
+//     // Mensaje temporal de carga
+//     mensaje.innerHTML = `
+//         <div class="alert alert-info alert-dismissible fade show" role="alert">
+//             ⏳ Procesando archivo...
+//             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//         </div>
+//     `;
+
+//     fetch('importar_precios_venta.php', {
+//         method: 'POST',
+//         body: formData
+//     })
+//     .then(resp => resp.json())
+//     .then(data => {
+//         if (data.success) {
+//             if (data.actualizados > 0) {
+//                 mensaje.innerHTML = `
+//                     <div class="alert alert-success alert-dismissible fade show" role="alert">
+//                         ✅ Se actualizaron ${data.actualizados} registros.
+//                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//                     </div>
+//                 `;
+//             } else {
+//                 mensaje.innerHTML = `
+//                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
+//                         ⚠️ El archivo fue procesado pero no se actualizó ningún registro.
+//                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//                     </div>
+//                 `;
+//             }
+
+//             const fechaInput = document.getElementById('fecha');
+//             const fecha = fechaInput ? fechaInput.value : null;
+
+//             cargarTablaPrecios(fecha).then(() => {
+//                 cargarZonas();
+//                 filtrarPorZona();
+//             });
+
+//             form.reset(); // Limpiar formulario
+//         } else {
+//             mensaje.innerHTML = `
+//                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
+//                     ❌ Error: ${data.error}
+//                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//                 </div>
+//             `;
+//         }
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//         mensaje.innerHTML = `
+//             <div class="alert alert-danger alert-dismissible fade show" role="alert">
+//                 ❌ Error al subir el archivo. Intenta nuevamente.
+//                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//             </div>
+//         `;
+//     });
+// });
+
+document.querySelector('input[name="archivo_excel"]').addEventListener('change', function () {
+    const form = document.getElementById('formImportarExcel');
+    const formData = new FormData(form);
+    const mensajeContenedor = document.getElementById('mensajeImportacion');
+
+    mensajeContenedor.innerHTML = `<div class="alert alert-info" role="alert">⏳ Procesando archivo...</div>`;
+
+    fetch('importar_precios_venta.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(resp => resp.json())
+    .then(data => {
+        if (data.success) {
+            if (data.actualizados > 0) {
+                mensajeContenedor.innerHTML = `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        ✅ Se actualizaron ${data.actualizados} registros.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>`;
+            } else {
+                mensajeContenedor.innerHTML = `
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        ⚠️ El archivo fue procesado pero no se actualizó ningún registro.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                    </div>`;
+            }
+
+            const fecha = document.getElementById('fecha').value || null;
+            cargarTablaPrecios(fecha).then(() => {
+                cargarZonas();
+                filtrarPorZona();
+            });
+
+            // Limpiar input
+            form.reset();
+        } else {
+            mensajeContenedor.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    ❌ Error: ${data.error}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                </div>`;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mensajeContenedor.innerHTML = `
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                ❌ Error al subir el archivo.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+    });
+});
+
+//Sincronizar valor de la fecha del excel con el input(importar_precios_venta.php actualmente no usa $_POST['fecha'], porque la fecha se toma desde el Excel (columna A), así que puedes eliminar el input hidden y el código JS de sincronización si quieres.
+//Pero si en el futuro quieres validar que el Excel corresponde a la fecha seleccionada en el sistema, entonces sí deberías conservarlo.)
+document.getElementById('fecha').addEventListener('change', function () {
+    document.getElementById('fecha_excel_hidden').value = this.value;
+});
+
 
     </script>
 
