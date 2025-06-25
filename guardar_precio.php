@@ -119,7 +119,7 @@ if ($resBuscar->num_rows > 0) {
     // Solo actualizar si el valor existente es nulo o diferente del nuevo precio
     if (is_null($row[$campo]) || floatval($row[$campo]) != $precio) {
         $conn->query("UPDATE precios_combustible 
-                      SET $campo = $precio, $campo_flete = $precio_flete, costo_flete = $flete, modificado = 1, razon_social = '$razon_social'
+                      SET $campo = $precio, $campo_flete = $precio_flete, costo_flete = $flete, modificado_xml = 1, razon_social = '$razon_social'
                       WHERE id = $precioId");
         
         $mensaje = 'se ha encontrado coincidencia con un registro y este ha sido modificado.';
@@ -130,7 +130,7 @@ if ($resBuscar->num_rows > 0) {
 } else {
     // Si no existe registro, se inserta uno nuevo con los datos y precios correspondientes
     $sqlInsert = "INSERT INTO precios_combustible 
-                  (razon_social, estacion, fecha, $campo, $campo_flete, costo_flete, modificado)
+                  (razon_social, estacion, fecha, $campo, $campo_flete, costo_flete, modificado_xml)
                   VALUES ('$razon_social', '$estacion', '$fecha', $precio, $precio_flete, $flete, $precioVenta, 1)";
     
     // Verifica si la inserción falló

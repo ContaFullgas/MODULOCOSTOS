@@ -31,7 +31,10 @@ $fecha_sel = $_GET['fecha'] ?? null;
         pc.utilidad_litro_premium,
         pc.utilidad_litro_diesel,
 
-        pc.modificado
+        pc.modificado_xml,
+        pc.modificado_excel
+
+
     FROM precios_combustible pc
     LEFT JOIN estaciones e ON pc.estacion = e.nombre
     WHERE DATE(pc.fecha) = '$fecha_sel'
@@ -108,11 +111,28 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
             <tbody>
                 <?php while($row = $result->fetch_assoc()): ?>
                     <?php
-                        $clase = ($row['modificado'] == 1) ? 'registro-modificado' : '';
+
+                        $clases = [];
+                        $titulo = '';
+
+                        if ($row['modificado_xml'] == 1 && $row['modificado_excel'] == 1) {
+                            $clases[] = 'modificado-ambos';
+                            $titulo = 'Modificado por XML y Excel';
+                        } elseif ($row['modificado_xml'] == 1) {
+                            $clases[] = 'modificado-xml';
+                            $titulo = 'Modificado por XML';
+                        } elseif ($row['modificado_excel'] == 1) {
+                            $clases[] = 'modificado-excel';
+                            $titulo = 'Modificado por Excel';
+                        }
+
+                        $claseFinal = implode(' ', $clases);
+
+
                         // Si no hay zona agrupada (null), usar cadena vacía para evitar errores JS
                         $zonaAgrupada = $row['zona_agrupada'] ?? '';
                     ?>
-                    <tr class="<?= $clase ?>" data-zona-agrupada="<?= htmlspecialchars($zonaAgrupada, ENT_QUOTES, 'UTF-8') ?>">
+                    <tr class="<?= $claseFinal ?>" title="<?= htmlspecialchars($titulo) ?>" data-zona-agrupada="<?= htmlspecialchars($zonaAgrupada, ENT_QUOTES, 'UTF-8') ?>">
                         <td><?= htmlspecialchars(substr($row['fecha'] ?? '', 0, 10)) ?></td>
                         <td><?= htmlspecialchars($row['siic_inteligas'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                         <td><?= htmlspecialchars($row['zona_original'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
@@ -155,9 +175,18 @@ $conn->close();
 
 <!-- Estilos para remarcar los registros que se modificaron -->
 <style>
-    .registro-modificado,
-        .registro-modificado td {
-            background-color:rgb(254, 197, 10) !important; /* Amarillo claro */
-            font-weight: bold;
-        }
+    .modificado-xml td {
+        background-color: #ffe0b2 !important; /* Naranja claro */
+        font-weight: bold;
+    }
+
+    .modificado-excel td {
+        background-color: #c8e6c9 !important; /* Verde claro */
+        font-weight: bold;
+    }
+
+    .modificado-ambos td {
+        background-color: #ef9a9a !important; /* Rojo claro */
+        font-weight: bold;
+    }
 </style>

@@ -87,6 +87,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_excel'])) {
 
             if ($stmt->affected_rows > 0) {
                 $actualizados++;
+
+                // Buscar la fecha anterior más cercana con datos para esta estación
+                $stmtPrev = $conn->prepare("
+                    SELECT precio_magna, precio_premium, precio_diesel 
+                    FROM precios_combustible 
+                    WHERE estacion = ? AND fecha < ? 
+                    ORDER BY fecha DESC 
+                    LIMIT 1
+                ");
+                $stmtPrev->bind_param("ss", $estacion, $fecha);
+                $stmtPrev->execute();
+                $resPrev = $stmtPrev->get_result();
+
+                $cambioReal = false;
+
+                if ($resPrev && $resPrev->num_rows > 0) {
+                    $anterior = $resPrev->fetch_assoc();
+
+                    // Comparar valores, permitir diferencias menores (por ejemplo, 0.001) por redondeos
+                    if (
+                        abs(floatval($anterior['precio_magna']) - floatval($precio_magna)) > 0.001 ||
+                        abs(floatval($anterior['precio_premium']) - floatval($precio_premium)) > 0.001 ||
+                        abs(floatval($anterior['precio_diesel']) - floatval($precio_diesel)) > 0.001
+                    ) {
+                        $cambioReal = true;
+                    }
+                } else {
+                    // Si no hay datos anteriores, consideramos que sí hay un cambio
+                    // $cambioReal = true;
+                }
+
+                if ($cambioReal) {
+                    $stmtMod = $conn->prepare("
+                        UPDATE precios_combustible
+                        SET modificado_excel = 1
+                        WHERE DATE(fecha) = ? AND estacion = ?
+                    ");
+                    $stmtMod->bind_param("ss", $fecha, $estacion);
+                    $stmtMod->execute();
+                }
             }
 
             $fila++;

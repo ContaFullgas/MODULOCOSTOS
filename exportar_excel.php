@@ -18,7 +18,7 @@ if (!$fecha) {
 // Consulta registros modificados de esa fecha
 $query = "SELECT siic_inteligas, zona, estacion, precio_magna, precio_premium, precio_diesel 
           FROM precios_combustible 
-          WHERE modificado = 1 AND fecha = ?";
+          WHERE modificado_excel = 1 AND fecha = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param('s', $fecha);
 $stmt->execute();
@@ -91,6 +91,12 @@ while ($data = $result->fetch_assoc()) {
     $sheet->setCellValue("D{$row}", $data['precio_magna']);
     $sheet->setCellValue("E{$row}", $data['precio_premium']);
     $sheet->setCellValue("F{$row}", $data['precio_diesel']);
+
+    // Aplicar formato de dinero $#,##0.00
+        $sheet->getStyle("D{$row}:F{$row}")
+              ->getNumberFormat()
+              ->setFormatCode('"$"#,##0.00');
+
 
     // Estilos por columna de precios
     $sheet->getStyle("D{$row}")->applyFromArray([
