@@ -1066,6 +1066,20 @@ document.getElementById('btnExportarExcelDia').addEventListener('click', functio
         alert('Por favor, selecciona una fecha.');
         return;
     }
+    
+    // Verifica si la tabla tiene datos
+    const tablaWrapper = document.querySelector('#tablaPrecios #tablaWrapper');
+    const hayDatos = tablaWrapper?.dataset?.hayDatos === '1';
+
+    if (!hayDatos) {
+        document.getElementById('mensajeImportacion').innerHTML = `
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+          ⚠️ No hay registros disponibles para exportar en la fecha seleccionada.
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+        </div>`;
+        return;
+    }
+
     // Redirige al script que genera el Excel
     window.location.href = `exportar_para_modificar_precio_venta.php?fecha=${encodeURIComponent(fecha)}`;
 });
@@ -1194,7 +1208,24 @@ document.getElementById('btnExportarExcelDia').addEventListener('click', functio
 //     });
 // });
 
+//Importar excel diario
 document.querySelector('input[name="archivo_excel"]').addEventListener('change', function () {
+
+    //Validar que no se importe si la fecha no tiene registros
+    const tablaWrapper = document.querySelector('#tablaPrecios #tablaWrapper');
+    const hayDatos = tablaWrapper?.dataset?.hayDatos === '1';
+    if (!hayDatos) {
+        const mensajeContenedor = document.getElementById('mensajeImportacion');
+        mensajeContenedor.innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                ⚠️ No puedes importar porque no hay registros para la fecha seleccionada.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+        // Limpiar el input
+        this.value = '';
+        return;
+    }
+
     const form = document.getElementById('formImportarExcel');
     const formData = new FormData(form);
     const mensajeContenedor = document.getElementById('mensajeImportacion');
@@ -1236,6 +1267,8 @@ document.querySelector('input[name="archivo_excel"]').addEventListener('change',
                     ❌ Error: ${data.error}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
                 </div>`;
+                // Limpiar input
+                form.reset();
         }
     })
     .catch(error => {

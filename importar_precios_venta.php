@@ -3,6 +3,7 @@ require 'vendor/autoload.php';
 include 'db.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 // var_dump($_FILES);
 // exit;
@@ -16,8 +17,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_excel'])) {
         $spreadsheet = IOFactory::load($archivo);
         $sheet = $spreadsheet->getActiveSheet();
 
+        $fechaSeleccionada = $_POST['fecha'] ?? null;
+
+        // Validar que la fecha del Excel (celda A4) coincida con la seleccionada
+        $celdaFecha = $sheet->getCell("A4");
+        $valorFecha = $celdaFecha->getValue();
+
+        // Si la celda está vacía o es 0, es inválida
+        if (empty($valorFecha) || $valorFecha === 0) {
+            echo json_encode([
+                'success' => false,
+                'error' => "La celda A4 está vacía o no contiene una fecha válida. Valor leído: '$valorFecha'"
+            ]);
+            exit;
+        }
+
+        try {
+            if (Date::isDateTime($celdaFecha)) {
+                $fechaExcelFormato = Date::excelToDateTimeObject($valorFecha)->format('Y-m-d');
+            } else {
+                $fechaExcelFormato = date('Y-m-d', strtotime($valorFecha));
+            }
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'error' => "No se pudo interpretar la fecha de la celda A4. Valor: '$valorFecha'. Error: " . $e->getMessage()
+            ]);
+            exit;
+        }
+
+
+        if ($fechaSeleccionada && $fechaExcelFormato) {
+            if ($fechaSeleccionada !== $fechaExcelFormato) {
+                echo json_encode([
+                    'success' => false,
+                    'error' => "La fecha del Excel ($fechaExcelFormato) no coincide con la fecha seleccionada ($fechaSeleccionada)."
+                ]);
+                exit;
+            }
+        }
+
+
         $actualizados = 0;
-        $fila = 3; // Comienza en la fila 3 (después de encabezados)
+        $fila = 4; // Comienza en la fila 4 (después de encabezados)
         while (true) {
             $fecha = $sheet->getCell("A$fila")->getValue();
             $estacion = $sheet->getCell("D$fila")->getValue();

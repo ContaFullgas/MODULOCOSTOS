@@ -47,6 +47,19 @@ $query = "
 
 $result = $conn->query($query);
 
+// if ($result->num_rows === 0) {
+//     echo '
+//     <div id="tablaWrapper" data-hay-datos="0">
+//         <div class="alert alert-warning alert-dismissible fade show" role="alert">
+//             ⚠️ No hay registros de precios para la fecha seleccionada.
+//             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+//         </div>
+//     </div>';
+
+
+//     exit; // Ya no sigas con la construcción de la tabla
+// }
+
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Precios');
