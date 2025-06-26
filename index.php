@@ -129,11 +129,13 @@ date_default_timezone_set('America/Mexico_City');
       </div>
     </div>
 
+    <div id="resultado_verificar_registros_mes" class="mb-3"></div>
     <!-- Mensaje informativo -->
     <div id="mensajePromedios" class="alert alert-info mt-4">
       Selecciona un mes para consultar los promedios.
     </div>
   <!-- </div> -->
+   
 </div>
 
     <div class="table-responsive rounded-4" id="tablaPromediosContainer" style="display: none;">
@@ -447,7 +449,13 @@ document.addEventListener('DOMContentLoaded', function () {
     function generarNuevoDia() {
         const fecha = document.getElementById('fecha').value;
         if (!fecha) {
-            alert('Selecciona una fecha válida para generar el nuevo día.');
+            // alert('Selecciona una fecha válida para generar el nuevo día.');
+            document.getElementById('resultado_verificar_registros').innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                Selecciona una fecha válida para generar el nuevo día.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+            return;
             return;
         }
 
@@ -503,7 +511,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const btn = document.getElementById('btnExportar');
 
     if (!fecha) {
-        alert('Selecciona una fecha para exportar los cambios.');
+        // alert('Selecciona una fecha para exportar los cambios.');
+        document.getElementById('resultado_verificar_registros').innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                Selecciona una fecha para exportar los cambios.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+            return;
         return;
     }
 
@@ -545,7 +559,13 @@ function eliminarRegistrosPorFecha() {
     const fecha = document.getElementById('fecha').value;
 
     if (!fecha) {
-        alert('Selecciona una fecha para borrar los registros.');
+        // alert('Selecciona una fecha para borrar los registros.');
+        document.getElementById('resultado_verificar_registros').innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                Selecciona una fecha para borrar los registros.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+            return;
         return;
     }
 
@@ -853,7 +873,13 @@ function exportarExcelMensual() {
   const btn = document.getElementById('btnExportar');
 
   if (!mes) {
-    alert('Selecciona un mes para exportar.');
+    // alert('Selecciona un mes para exportar.');
+    document.getElementById('resultado_verificar_registros_mes').innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                Selecciona un mes para exportar.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+            return;
     return;
   }
 
@@ -885,7 +911,13 @@ function exportarExcelMensual() {
       a.remove();
     })
     .catch(error => {
-      alert(error.message || 'No hay datos para exportar o ocurrió un error.');
+      // alert(error.message || 'No hay datos para exportar o ocurrió un error.');
+      document.getElementById('resultado_verificar_registros_mes').innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                No hay datos para exportar o ocurrió un error.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+            return;
     })
     .finally(() => {
       btn.disabled = false;
@@ -1092,7 +1124,13 @@ document.getElementById('btnExportarExcelDia').addEventListener('click', functio
     const btn = document.getElementById('btnExportarExcelDia');
 
     if (!fecha) {
-        alert('Por favor, selecciona una fecha.');
+        // alert('Por favor, selecciona una fecha.');
+        document.getElementById('resultado_verificar_registros').innerHTML = `
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                Por favor, selecciona una fecha.
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+            </div>`;
+            return;
         return;
     }
 
