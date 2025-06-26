@@ -1170,7 +1170,6 @@ document.getElementById('btnExportarExcelDia').addEventListener('click', functio
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
             </div>`;
             return;
-        return;
     }
 
     const tablaWrapper = document.querySelector('#tablaPrecios #tablaWrapper');
@@ -1185,37 +1184,49 @@ document.getElementById('btnExportarExcelDia').addEventListener('click', functio
         return;
     }
 
-    btn.disabled = true;
-    btn.innerHTML = 'Generando...';
-
-    fetch(`exportar_para_modificar_precio_venta.php?fecha=${encodeURIComponent(fecha)}`)
-        .then(response => {
-            if (response.headers.get('Content-Type').includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
-                return response.blob();
-            } else {
-                return response.text().then(text => { throw new Error(text); });
+    // Validar si hay XML antes de exportar
+    fetch(`exportar_para_modificar_precio_venta.php?validar=1&fecha=${encodeURIComponent(fecha)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.hayXml) {
+                if (!confirm("⚠️ Aún no se ha cargado ningún XML. ¿Está seguro de realizar la exportación?")) {
+                    return; // Canceló
+                }
             }
-        })
-        .then(blob => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `precios_${fecha}.xlsx`;
-            document.body.appendChild(a);
-            a.click();
-            a.remove();
-            URL.revokeObjectURL(url);
-        })
-        .catch(error => {
-            document.getElementById('mensajeImportacion').innerHTML = `
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    ${error.message || 'No se pudo generar el archivo.'}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-                </div>`;
-        })
-        .finally(() => {
-            btn.disabled = false;
-            btn.innerHTML = 'Exportar Excel';
+
+            // Continuar con la exportación
+            btn.disabled = true;
+            btn.innerHTML = 'Generando...';
+
+            fetch(`exportar_para_modificar_precio_venta.php?fecha=${encodeURIComponent(fecha)}`)
+                .then(response => {
+                    if (response.headers.get('Content-Type').includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')) {
+                        return response.blob();
+                    } else {
+                        return response.text().then(text => { throw new Error(text); });
+                    }
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `precios_${fecha}.xlsx`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    URL.revokeObjectURL(url);
+                })
+                .catch(error => {
+                    document.getElementById('mensajeImportacion').innerHTML = `
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            ${error.message || 'No se pudo generar el archivo.'}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+                        </div>`;
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Exportar Excel';
+                });
         });
 });
 

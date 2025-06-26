@@ -15,6 +15,19 @@ if (!$fecha) {
     die("Fecha no especificada.");
 }
 
+//Verificar que se hayan cargado xml
+if (isset($_GET['validar']) && $_GET['validar'] == '1') {
+    $fecha = $_GET['fecha'] ?? '';
+    $stmt = $conn->prepare("SELECT COUNT(*) FROM precios_combustible WHERE DATE(fecha) = ? AND modificado_xml = 1");
+    $stmt->bind_param('s', $fecha);
+    $stmt->execute();
+    $stmt->bind_result($cuenta);
+    $stmt->fetch();
+    $stmt->close();
+    echo json_encode(['hayXml' => $cuenta > 0]);
+    exit;
+}
+
 $query = "
     SELECT 
         pc.fecha,
