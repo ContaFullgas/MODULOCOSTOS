@@ -53,18 +53,19 @@ date_default_timezone_set('America/Mexico_City');
       <input type="date" id="fecha" name="fecha" class="form-control" style="min-width: 200px;">
     </div>
 
+    <!-- Selector de zona -->
+    <div class="d-flex flex-column">
+      <label for="selectorZona" class="form-label" style="color: white;">Filtrar por zona:</label>
+      <select id="selectorZona" class="form-select" disabled style="min-width: 210px;">
+        <option value="">Todas las zonas</option>
+      </select>
+    </div>
+
     <!-- Exportar día -->
     <div class="d-flex flex-column">
       <label class="form-label" style="color: white;">Exportar día:</label>
       <button class="boton-destacado btn btn-primary rounded-2" style="width: 130px;" id="btnExportarExcelDia">Exportar</button>
     </div>
-
-   <!-- Importar Excel -->
-    <form id="formImportarExcel" enctype="multipart/form-data" class="d-flex flex-column">
-      <label class="form-label" style="color: white;">Importar día:</label>
-      <input type="file" name="archivo_excel" accept=".xlsx" required class="form-control" style="max-width: 350px;" />
-      <input type="hidden" name="fecha" id="fecha_excel_hidden">
-    </form>
 
     <!-- Borrar -->
     <div class="d-flex flex-column">
@@ -78,13 +79,13 @@ date_default_timezone_set('America/Mexico_City');
       <button class="boton-destacado btn btn-success" style="width: 130px;" type="button" onclick="generarNuevoDia()">Generar día</button>
     </div>
 
-    <!-- Selector de zona -->
-    <div class="d-flex flex-column">
-      <label for="selectorZona" class="form-label" style="color: white;">Filtrar por zona:</label>
-      <select id="selectorZona" class="form-select" disabled style="min-width: 210px;">
-        <option value="">Todas las zonas</option>
-      </select>
-    </div>
+    <!-- Importar Excel -->
+    <form id="formImportarExcel" enctype="multipart/form-data" class="d-flex flex-column">
+      <label class="form-label" style="color: white;">Importar día:</label>
+      <input type="file" name="archivo_excel" accept=".xlsx" required class="form-control" style="max-width: 500px;" />
+      <input type="hidden" name="fecha" id="fecha_excel_hidden">
+    </form>
+
   </div>
 
   <!-- Mensajes -->
@@ -169,9 +170,47 @@ date_default_timezone_set('America/Mexico_City');
   </div>
 </div>
 
-
+<!-- Botón flotante scroll -->
+<button id="btnScroll" class="btn-scroll" title="Ir al final">↓</button>
 
 <script>
+
+//Funcion para boton para ir al final y al principio de la página, la función se ejecuta al cargar la página
+function inicializarBotonScroll() {
+    const btn = document.getElementById('btnScroll');
+
+    if (!btn) return;
+
+    btn.addEventListener('click', () => {
+      if (btn.dataset.position === 'bottom') {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+
+    window.addEventListener('scroll', () => {
+      const atBottom = window.innerHeight + window.scrollY >= document.body.scrollHeight - 5;
+      if (atBottom) {
+        btn.innerText = '↑';
+        btn.title = 'Volver arriba';
+        btn.dataset.position = 'top';
+      } else if (window.scrollY < 100) {
+        btn.innerText = '↓';
+        btn.title = 'Ir al final';
+        btn.dataset.position = 'bottom';
+      }
+    });
+
+    // Estado inicial
+    btn.innerText = '↓';
+    btn.title = 'Ir al final';
+    btn.dataset.position = 'bottom';
+  }
+
+  // Ejecutar al cargar la página el boton scroll que va de arriba hacia abajo, es el metodo de arriba
+  document.addEventListener('DOMContentLoaded', inicializarBotonScroll);
+
 //Metodo para ocultar información entre pestañas diaria y mensual
 //Sin el, en el apartado diario se mostraba la tabla mensual, en lugar de solo la diaria
 document.addEventListener('DOMContentLoaded', function () {
@@ -413,7 +452,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                     const fecha = document.getElementById('fecha').value;
                                     //Carga los promedios diarios despues de que devuelve la promesa de terminacion el método cargarTablaPrecios
                                     cargarTablaPrecios(fecha).then(() => filtrarPorZona());
-                                    cargarZonas();
+                                    // cargarZonas();
 
                                 } else {
                                     alert('Error al guardar: ' + res.error);
@@ -610,7 +649,7 @@ function eliminarRegistrosPorFecha() {
             document.getElementById("inputFile").disabled = true;
             document.getElementById("mensaje_fecha").textContent = "No hay registros para esta fecha. Genera un nuevo día antes de cargar XML.";
 
-            cargarTablaPrecios(fecha); // Recargar tabla
+            cargarTablaPrecios(fecha).then(() => cargarZonas()); // Recargar tabla
         })
         .catch(error => {
             console.error('Error al eliminar registros:', error);
@@ -1352,8 +1391,9 @@ document.querySelector('input[name="archivo_excel"]').addEventListener('change',
 
             const fecha = document.getElementById('fecha').value || null;
             cargarTablaPrecios(fecha).then(() => {
-                cargarZonas();
+                
                 filtrarPorZona();
+                // cargarZonas();
             });
 
             // Limpiar input
