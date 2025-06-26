@@ -7,11 +7,14 @@ date_default_timezone_set('America/Mexico_City');
 <head>
     <meta charset="UTF-8">
     <title>Subida de Documentos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
-<body class="container py-4">
-<h1>PRECIOS COMBUSTIBLES FULLGAS</h1>
+<body class="container-fluid py-4" style="background-color: #3a3d41; width: 90%;">
+<div class="lighting-effect"></div>
+<h1 class="d-flex justify-content-center" style="color: white;">PRECIOS COMBUSTIBLES FULLGAS</h1>
 <ul class="nav nav-tabs mt-4" id="myTabs" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="diario-tab" data-bs-toggle="tab" data-bs-target="#diario" type="button" role="tab">Vista Diaria</button>
@@ -25,19 +28,19 @@ date_default_timezone_set('America/Mexico_City');
   <!-- TAB DIARIO -->
   <div class="tab-pane fade show active" id="diario" role="tabpanel">
   <br>
-  <h3>Subir Facturas (XML)</h3>
+  <h3 style="color: white;">Subir Facturas (XML)</h3>
 
   <div class="d-flex justify-content-between align-items-start flex-wrap">
     <!-- Input para subir XML -->
     <form id="formUpload" class="mb-3">
       <input type="file" name="documento" class="form-control w-100" accept=".xml" required id="inputFile" disabled style="max-width: 500px;" />
-      <small id="mensaje_fecha" class="text-danger">Seleccione una fecha para cargar archivos XML.</small>
+      <small id="mensaje_fecha" class="text-warning">Seleccione una fecha para cargar archivos XML.</small>
     </form>
 
     <!-- Botón Exportar Cambios alineado al mismo nivel -->
     <div class="d-flex flex-column align-items-end" style="margin-top: -30px;">
-      <label class="form-label">Exportar cambios:</label>
-      <button class="btn btn-outline-primary" style="width: 130px;" onclick="exportarExcel()" id="btnExportar">
+      <label class="form-label" style="color: white;">Exportar cambios:</label>
+      <button class="boton-destacado btn btn-primary rounded-2 mb-4" style="width: 130px;" onclick="exportarExcel()" id="btnExportar">
         Exportar
       </button>
     </div>
@@ -46,38 +49,38 @@ date_default_timezone_set('America/Mexico_City');
   <div class="d-flex flex-wrap gap-3 mb-4 align-items-end">
     <!-- Campo de fecha -->
     <div class="d-flex flex-column">
-      <label for="fecha" class="form-label">Selecciona fecha:</label>
+      <label for="fecha" class="form-label" style="color: white;">Selecciona fecha:</label>
       <input type="date" id="fecha" name="fecha" class="form-control" style="min-width: 200px;">
     </div>
 
     <!-- Exportar día -->
     <div class="d-flex flex-column">
-      <label class="form-label">Exportar día:</label>
-      <button class="btn btn-outline-primary" style="width: 130px;" id="btnExportarExcelDia">Exportar</button>
+      <label class="form-label" style="color: white;">Exportar día:</label>
+      <button class="boton-destacado btn btn-primary rounded-2" style="width: 130px;" id="btnExportarExcelDia">Exportar</button>
     </div>
 
    <!-- Importar Excel -->
     <form id="formImportarExcel" enctype="multipart/form-data" class="d-flex flex-column">
-      <label class="form-label">Importar día:</label>
+      <label class="form-label" style="color: white;">Importar día:</label>
       <input type="file" name="archivo_excel" accept=".xlsx" required class="form-control" style="max-width: 350px;" />
       <input type="hidden" name="fecha" id="fecha_excel_hidden">
     </form>
 
     <!-- Borrar -->
     <div class="d-flex flex-column">
-      <label class="form-label">Borrar día:</label>
-      <button class="btn btn-outline-danger" style="width: 130px;" onclick="eliminarRegistrosPorFecha()">Borrar</button>
+      <label class="form-label" style="color: white;">Borrar día:</label>
+      <button class="boton-destacado btn btn-danger rounded-2" style="width: 130px;" onclick="eliminarRegistrosPorFecha()">Borrar</button>
     </div>
 
     <!-- Generar nuevo día -->
     <div class="d-flex flex-column">
-      <label class="form-label">Generar día:</label>
-      <button class="btn btn-outline-success" style="width: 130px;" type="button" onclick="generarNuevoDia()">Generar día</button>
+      <label class="form-label" style="color: white;">Generar día:</label>
+      <button class="boton-destacado btn btn-success" style="width: 130px;" type="button" onclick="generarNuevoDia()">Generar día</button>
     </div>
 
     <!-- Selector de zona -->
     <div class="d-flex flex-column">
-      <label for="selectorZona" class="form-label">Filtrar por zona:</label>
+      <label for="selectorZona" class="form-label" style="color: white;">Filtrar por zona:</label>
       <select id="selectorZona" class="form-select" disabled style="min-width: 210px;">
         <option value="">Todas las zonas</option>
       </select>
@@ -99,27 +102,27 @@ date_default_timezone_set('America/Mexico_City');
 <div class="tab-pane fade" id="mensual" role="tabpanel">
   <!-- <div class="p-3"> -->
     <br>
-    <h3>Consulta Mensual de Promedios</h3>
+    <h3 style="color: white;">Consulta Mensual de Promedios</h3>
 
     <!-- Contenedor de filtros y botones -->
     <div class="d-flex flex-wrap gap-3 mb-3">
       <!-- Campo de mes -->
       <div class="d-flex flex-column">
-        <label for="mes" class="form-label">Seleccionar mes:</label>
+        <label for="mes" class="form-label" style="color: white;">Seleccionar mes:</label>
         <input type="month" id="mes" class="form-control" style="min-width: 200px;" />
       </div>
 
       <!-- Botón Exportar -->
       <div class="d-flex flex-column">
-        <label class="form-label">Exportar a Excel:</label>
-        <button id="btnExportar" onclick="exportarExcelMensual()" class="btn btn-outline-primary" style="width: 130px;">
+        <label class="form-label" style="color: white;">Exportar a Excel:</label>
+        <button id="btnExportar" onclick="exportarExcelMensual()" class="boton-destacado btn btn-primary rounded-2" style="width: 130px;">
           Exportar
         </button>
       </div>
 
       <!-- Filtro por zona -->
       <div class="d-flex flex-column">
-        <label for="selectorZonaMensual" class="form-label">Filtrar por zona:</label>
+        <label for="selectorZonaMensual" class="form-label" style="color: white;">Filtrar por zona:</label>
         <select id="selectorZonaMensual" class="form-select" style="min-width: 210px;" disabled>
           <option value="">Todas las zonas</option>
         </select>
@@ -133,26 +136,26 @@ date_default_timezone_set('America/Mexico_City');
   <!-- </div> -->
 </div>
 
-    <div class="table-responsive mt-3" id="tablaPromediosContainer" style="display: none;">
-        <table class="table table-bordered table-hover align-middle text-center mt-2" id="tablaPromedios" style="border-radius: 12px; overflow: hidden;">
+    <div class="table-responsive rounded-4" id="tablaPromediosContainer" style="display: none;">
+        <table class="table table-bordered table-hover align-middle text-center mt-2" id="tablaPromedios" style="border-collapse: separate; border-spacing: 5px;">
             <thead>
                 <tr>
-                <th class="table-dark" rowspan="2">SIIC</th>
-                <th class="table-dark" rowspan="2">ZONA</th>
-                <th class="Estacion border border-white" style="background-color: #A55B4B; color: white;" rowspan="2">ESTACIÓN</th>
-                <th class="border border-white" colspan="4" style="background-color: #261FB3; color: white;">PROMEDIO DE UTILIDAD</th>
-                <th class="border border-white" colspan="4" style="background-color: #261FB3; color: white;">PROMEDIO DE UTILIDAD POR LITRO</th>
+                <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: black; color: white;  padding: 10px;" rowspan="2">SIIC</th>
+                <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: #4F1C51; color: white; ; padding: 10px;" rowspan="2">ZONA</th>
+                <th class="Estacion border border-white rounded-4 text-center align-middle" style="background-color: #A55B4B; color: white; padding: 10px;" rowspan="2">ESTACIÓN</th>
+                <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px;">PROMEDIO DE UTILIDAD</th>
+                <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px;">PROMEDIO DE UTILIDAD POR LITRO</th>
             
                 </tr>
                 <tr>
-                <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
-                <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PREMIUM</th>
-                <th class="Diesel border border-white" style="background-color: black; color: white;">DIESEL</th>
-                <th class="border border-white" style="background-color: #A55B4B; color: white;">PROMEDIO GENERAL POR ESTACION</th>
-                <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
-                <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PREMIUM</th>
-                <th class="Diesel border border-white" style="background-color: black; color: white;">DIESEL</th>
-                <th class="border border-white" style="background-color: #A55B4B; color: white;">UTILIDAD PROMEDIO</th>
+                <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">MAGNA</th>
+                <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">PREMIUM</th>
+                <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">DIESEL</th>
+                <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; ">PROMEDIO GENERAL POR ESTACION</th>
+                <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">MAGNA</th>
+                <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">PREMIUM</th>
+                <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">DIESEL</th>
+                <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; ">UTILIDAD PROMEDIO</th>
                 
                 </tr>
             </thead>
@@ -167,7 +170,6 @@ date_default_timezone_set('America/Mexico_City');
 
 
 <script>
-
 //Metodo para ocultar información entre pestañas diaria y mensual
 //Sin el, en el apartado diario se mostraba la tabla mensual, en lugar de solo la diaria
 document.addEventListener('DOMContentLoaded', function () {
@@ -1375,5 +1377,6 @@ document.getElementById('fecha').addEventListener('change', function () {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./mouse.js"></script>
 </body>
 </html>

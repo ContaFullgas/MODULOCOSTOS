@@ -74,37 +74,37 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
     
 
     <div class="table-responsive rounded-4">
-        <table class="table table-bordered table-hover align-middle  text-center table-hover">
+        <table class="table table-bordered table-hover align-middle  text-center table-hover" style="border-collapse: separate; border-spacing: 5px;">
             <thead>
                 <tr>
-                    <th class="table-dark" rowspan="2">FECHA</th>
-                    <th class="table-dark" rowspan="2">SIIC</th>
-                    <th class="table-dark" rowspan="2">ZONA</th>
+                    <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: black; color: white;  padding: 10px;" rowspan="2">FECHA</th>
+                    <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: #4F1C51; color: white; ; padding: 10px;" rowspan="2">SIIC</th>
+                    <th class="Estacion border border-white rounded-4 text-center align-middle" style="background-color: #A55B4B; color: white; padding: 10px; " rowspan="2">ZONA</th>
                     <!-- <th class="RazonSocial border border-white" style="background-color: #4F1C51; color: white;" rowspan="2">RAZÓN SOCIAL</th> -->
-                    <th class="Estacion border border-white" style="background-color: #A55B4B; color: white;" rowspan="2">ESTACIÓN</th>
-                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PRECIO COSTO</th>
-                    <th class="" style="background-color: #A55B4B; color: white;" rowspan="2">COSTO DE FLETE</th>
-                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">COSTO + FLETE</th>
-                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">PRECIO VENTA</th>
-                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">% DE UTILIDAD</th>
-                    <th class="border border-white" colspan="3" style="background-color: #261FB3; color: white;">UTILIDAD POR LITRO</th>
+                    <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; " rowspan="2">ESTACIÓN</th>
+                    <th class="border border-white rounded-4" colspan="3" style="background-color: #261FB3; color: white; padding: 10px;">PRECIO COSTO</th>
+                    <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; " rowspan="2">COSTO DE FLETE</th>
+                    <th class="border border-white rounded-4" colspan="3" style="background-color: #261FB3; color: white; padding: 10px; ">COSTO + FLETE</th>
+                    <th class="border border-white rounded-4" colspan="3" style="background-color: #261FB3; color: white; padding: 10px; ">PRECIO VENTA</th>
+                    <th class="border border-white rounded-4" colspan="3" style="background-color: #261FB3; color: white; padding: 10px; ">% DE UTILIDAD</th>
+                    <th class="border border-white rounded-4" colspan="3" style="background-color: #261FB3; color: white; padding: 10px; ">UTILIDAD POR LITRO</th>
                 </tr>
                 <tr>
-                    <th class="Magna border border-white" style="background-color: #399918; color: white;">MAGNA</th>
-                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PREMIUM</th>
-                    <th class="Diesel border border-white" style="background-color: black; color: white;">DIESEL</th>
-                    <th class="Magna border border-white" style="background-color: #399918; color: white;">P+F MAGNA</th>
-                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">P+F PREMIUM</th>
-                    <th class="Diesel border border-white" style="background-color: black; color: white;">P+F DIESEL</th>
-                    <th class="Magna border border-white" style="background-color: #399918; color: white;">PRECIO MAGNA</th>
-                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">PRECIO PREMIUM</th>
-                    <th class="Diesel border border-white" style="background-color: black; color: white;">PRECIO DIESEL</th>
-                    <th class="Magna border border-white" style="background-color: #399918; color: white;">% MAGNA</th>
-                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">% PREMIUM</th>
-                    <th class="Diesel border border-white" style="background-color: black; color: white;">% DIESEL</th>
-                    <th class="Magna border border-white" style="background-color: #399918; color: white;">$ MAGNA</th>
-                    <th class="Premium border border-white" style="background-color: #FF0000; color: white;">$ PREMIUM</th>
-                    <th class="Diesel border border-white" style="background-color: black; color: white;">$ DIESEL</th>
+                    <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">MAGNA</th>
+                    <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">PREMIUM</th>
+                    <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">DIESEL</th>
+                    <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">P+F MAGNA</th>
+                    <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">P+F PREMIUM</th>
+                    <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">P+F DIESEL</th>
+                    <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">PRECIO MAGNA</th>
+                    <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">PRECIO PREMIUM</th>
+                    <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">PRECIO DIESEL</th>
+                    <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">% MAGNA</th>
+                    <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">% PREMIUM</th>
+                    <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">% DIESEL</th>
+                    <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">$ MAGNA</th>
+                    <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">$ PREMIUM</th>
+                    <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">$ DIESEL</th>
                 </tr>
             </thead>
 

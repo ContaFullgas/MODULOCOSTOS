@@ -15,10 +15,77 @@
       color: white; }
 
     .RazonSocial {
-       background-color: #00BCD4; 
-       color: white; }
+      background-color: #00BCD4;
+      color: white;
+      text-align: center;
+      justify-content: center;}
 
     .table thead th {
        text-align: center; }
 
-      
+.boton-destacado:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  /* sombra más intensa */
+  transform: scale(1.05);
+  /* agrandar levemente */
+  transform: translateY(-2px);
+}
+
+.boton-destacado:active {
+  transform: scale(0.9);
+  /* efecto cuando se hace clic */
+  transition: .3s ease;
+}
+
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Aplicar la animación al hacer hover */
+.boton-destacado:hover {
+  animation: bounce 0.5s ease infinite;
+  /* Duración: 0.5s, suavizado, se repite */
+}
+
+.nav-tabs .nav-link {
+  color: white; /* gris claro para pestañas inactivas */
+}
+
+.nav-tabs .nav-link.active {
+  color: black; /* blanco para la pestaña activa */
+}
+
+/* Este es el "halo" que sigue al mouse */
+.lighting-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  background: radial-gradient(circle 30px at var(--x) var(--y),
+      rgb(250, 247, 247),
+      transparent 60%);
+  transition: opacity 0.1s;
+  opacity: 0;
+  /* Inicialmente invisible */
+}
+
+body:hover .lighting-effect {
+  opacity: 90;
+  /* Solo visible cuando el mouse está dentro */
+}
+
+/* Personalización del efecto hover solo en tablas con table-hover */
+.table-hover tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
