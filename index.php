@@ -9,12 +9,13 @@ date_default_timezone_set('America/Mexico_City');
     <title>Subida de Documentos</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="container-fluid py-4" style="background-color: #3a3d41; width: 90%;">
 <div class="lighting-effect"></div>
-<h1 class="d-flex justify-content-center" style="color: white;">PRECIOS COMBUSTIBLES FULLGAS</h1>
+<h1 class="d-flex justify-content-center" style="color: white; font-family: 'Oswald', sans-serif;">PRECIOS COMBUSTIBLES FULLGAS</h1>
 <ul class="nav nav-tabs mt-4" id="myTabs" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="diario-tab" data-bs-toggle="tab" data-bs-target="#diario" type="button" role="tab">Vista Diaria</button>
@@ -28,7 +29,7 @@ date_default_timezone_set('America/Mexico_City');
   <!-- TAB DIARIO -->
   <div class="tab-pane fade show active" id="diario" role="tabpanel">
   <br>
-  <h3 style="color: white;">Subir Facturas (XML)</h3>
+  <h3 style="color: white; font-family: 'Oswald', sans-serif;">Subir Facturas (XML)</h3>
 
   <div class="d-flex justify-content-between align-items-start flex-wrap">
     <!-- Input para subir XML -->
@@ -103,8 +104,8 @@ date_default_timezone_set('America/Mexico_City');
 <div class="tab-pane fade" id="mensual" role="tabpanel">
   <!-- <div class="p-3"> -->
     <br>
-    <h3 style="color: white;">Consulta Mensual de Promedios</h3>
-
+    <h3 style="color: white; font-family: 'Oswald', sans-serif;">Consulta Mensual de Promedios</h3>
+    <br>
     <!-- Contenedor de filtros y botones -->
     <div class="d-flex flex-wrap gap-3 mb-3">
       <!-- Campo de mes -->
@@ -143,22 +144,22 @@ date_default_timezone_set('America/Mexico_City');
         <table class="table table-bordered table-hover align-middle text-center mt-2" id="tablaPromedios" style="border-collapse: separate; border-spacing: 5px;">
             <thead>
                 <tr>
-                <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: black; color: white;  padding: 10px;" rowspan="2">SIIC</th>
-                <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: #4F1C51; color: white; ; padding: 10px;" rowspan="2">ZONA</th>
-                <th class="Estacion border border-white rounded-4 text-center align-middle" style="background-color: #A55B4B; color: white; padding: 10px;" rowspan="2">ESTACIÓN</th>
-                <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px;">PROMEDIO DE UTILIDAD</th>
-                <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px;">PROMEDIO DE UTILIDAD POR LITRO</th>
+                <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: black; color: white;  padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">SIIC</th>
+                <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: #4F1C51; color: white; ; padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">ZONA</th>
+                <th class="Estacion border border-white rounded-4 text-center align-middle" style="background-color: #A55B4B; color: white; padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">ESTACIÓN</th>
+                <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO DE UTILIDAD</th>
+                <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO DE UTILIDAD POR LITRO</th>
             
                 </tr>
                 <tr>
-                <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">MAGNA</th>
-                <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">PREMIUM</th>
-                <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">DIESEL</th>
-                <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; ">PROMEDIO GENERAL POR ESTACION</th>
-                <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; ">MAGNA</th>
-                <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; ">PREMIUM</th>
-                <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; ">DIESEL</th>
-                <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; ">UTILIDAD PROMEDIO</th>
+                <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">MAGNA</th>
+                <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PREMIUM</th>
+                <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">DIESEL</th>
+                <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO GENERAL POR ESTACION</th>
+                <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">MAGNA</th>
+                <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PREMIUM</th>
+                <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">DIESEL</th>
+                <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">UTILIDAD PROMEDIO</th>
                 
                 </tr>
             </thead>
@@ -1440,13 +1441,13 @@ document.getElementById('fecha').addEventListener('change', function () {
 
     <!-- Modal -->
     <div class="modal fade" id="modalEstacion" tabindex="-1" aria-labelledby="modalEstacionLabel" aria-hidden="true">
-      <div class="modal-dialog">
-        <div class="modal-content">
+      <div class="modal-dialog border border-white border-4 rounded-4">
+        <div class="modal-content text-dark" style="background-color: #000000;">
           <div class="modal-header">
-            <h5 class="modal-title" id="modalEstacionLabel">Seleccionar estación</h5>
+            <h5 class="modal-title" id="modalEstacionLabel" style="color: white;">Seleccionar estación</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
           </div>
-          <div class="modal-body"></div>
+          <div class="modal-body" style="background-color: #950101; color: white;"></div>
 
           <!-- Datos del XML
             <div class="mb-3 border rounded p-3 bg-light">
