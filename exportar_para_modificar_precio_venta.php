@@ -1,5 +1,6 @@
 <?php
 require 'vendor/autoload.php';
+\PhpOffice\PhpSpreadsheet\Settings::setLocale('en');
 include 'db.php';
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -173,9 +174,16 @@ while ($row = $result->fetch_assoc()) {
     $sheet->setCellValue("T$fila", $row['porcentaje_utilidad_magna'] / 100);
     $sheet->setCellValue("U$fila", $row['porcentaje_utilidad_premium'] / 100);
     $sheet->setCellValue("V$fila", $row['porcentaje_utilidad_diesel'] / 100);
-    $sheet->setCellValue("X$fila", $row['utilidad_litro_magna']);
-    $sheet->setCellValue("Y$fila", $row['utilidad_litro_premium']);
-    $sheet->setCellValue("Z$fila", $row['utilidad_litro_diesel']);
+    // $sheet->setCellValue("X$fila", $row['utilidad_litro_magna']);
+    // $sheet->setCellValue("Y$fila", $row['utilidad_litro_premium']);
+    // $sheet->setCellValue("Z$fila", $row['utilidad_litro_diesel']);
+    $sheet->getCell("X$fila")->setValueExplicit("=IF(P$fila=\"\", \"\", IF(P$fila - L$fila < 0, \"\", P$fila - L$fila))", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA);
+    $sheet->getCell("Y$fila")->setValueExplicit("=IF(Q$fila=\"\", \"\", IF(Q$fila - M$fila < 0, \"\", Q$fila - M$fila))", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA);
+    $sheet->getCell("Z$fila")->setValueExplicit("=IF(R$fila=\"\", \"\", IF(R$fila - N$fila < 0, \"\", R$fila - N$fila))", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA);
+
+
+
+
 
     //Colorear registros
     foreach (['A', 'B', 'C', 'D'] as $col) {
@@ -264,5 +272,6 @@ header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetm
 header('Content-Disposition: attachment;filename="ingresar_precio_venta_'.$fecha.'.xlsx"');
 header('Cache-Control: max-age=0');
 $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+$writer->setPreCalculateFormulas(true);
 $writer->save('php://output');
 exit;

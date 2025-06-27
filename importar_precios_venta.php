@@ -77,12 +77,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_excel'])) {
             $precio_premium = $sheet->getCell("Q$fila")->getCalculatedValue();
             $precio_diesel = $sheet->getCell("R$fila")->getCalculatedValue();
 
+            // Aquí agregas utilidad por litro calculada (columnas X, Y, Z)
+            $valor_utilidad_magna = $sheet->getCell("X$fila")->getCalculatedValue();
+            $valor_utilidad_premium = $sheet->getCell("Y$fila")->getCalculatedValue();
+            $valor_utilidad_diesel = $sheet->getCell("Z$fila")->getCalculatedValue();
+            //Si el valor de la celda no es numerico lo pasa como nulo
+            $utilidad_litro_magna   = (is_numeric($valor_utilidad_magna)) ? $valor_utilidad_magna : null;
+            $utilidad_litro_premium = (is_numeric($valor_utilidad_premium)) ? $valor_utilidad_premium : null;
+            $utilidad_litro_diesel  = (is_numeric($valor_utilidad_diesel)) ? $valor_utilidad_diesel : null;
+
             $stmt = $conn->prepare("
                 UPDATE precios_combustible
-                SET precio_magna = ?, precio_premium = ?, precio_diesel = ?
+                SET precio_magna = ?, precio_premium = ?, precio_diesel = ?,
+                utilidad_litro_magna = ?, utilidad_litro_premium = ?, utilidad_litro_diesel = ?
                 WHERE DATE(fecha) = ? AND estacion = ?
             ");
-            $stmt->bind_param("ddsss", $precio_magna, $precio_premium, $precio_diesel, $fecha, $estacion);
+            $stmt->bind_param("ddddddss", $precio_magna, $precio_premium, $precio_diesel, $utilidad_litro_magna, $utilidad_litro_premium,  $utilidad_litro_diesel, $fecha, $estacion);
             $stmt->execute();
 
             if ($stmt->affected_rows > 0) {
