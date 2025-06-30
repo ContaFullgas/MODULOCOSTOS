@@ -9,7 +9,6 @@ use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
-// Recibir rango de fechas
 $inicio = $_GET['inicio'] ?? '';
 $fin = $_GET['fin'] ?? '';
 
@@ -17,7 +16,6 @@ if (!$inicio || !$fin) {
     die('⚠️ Debes proporcionar fechas inicio y fin.');
 }
 
-// Consulta mensual con los cálculos (usa la que tienes ya probada)
 $sql = "
 SELECT 
     razon_social,
@@ -55,7 +53,7 @@ SELECT
 
 FROM precios_combustible
 WHERE fecha BETWEEN ? AND ?
-ORDER BY id
+ORDER BY zona, id
 ";
 
 $stmt = $conn->prepare($sql);
@@ -67,46 +65,53 @@ if ($result->num_rows === 0) {
     die('⚠️ No hay datos para el rango seleccionado.');
 }
 
-// Crear hoja Excel
 $spreadsheet = new Spreadsheet();
 $sheet = $spreadsheet->getActiveSheet();
 $sheet->setTitle('Resumen Mensual');
 
-// Encabezado general
 $sheet->setCellValue('A2', "Resumen mensual del $inicio al $fin");
-$sheet->mergeCells('A2:K2');
+$sheet->mergeCells('A2:M2');
 $sheet->getStyle('A2')->applyFromArray([
-    'font' => ['bold' => true, 'size' => 14, 'color' => ['argb' => Color::COLOR_BLACK]],
+    'font' => ['bold' => true, 'size' => 14],
     'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFCCF2F4']]
 ]);
 
-// Encabezado agrupado
-$sheet->setCellValue('D3', 'PROMEDIO DE UTILIDAD (%)');
-$sheet->mergeCells('D3:G3');
-$sheet->getStyle('D3:G3')->applyFromArray([
+$sheet->setCellValue('E3', 'PROMEDIO DE UTILIDAD (%)');
+$sheet->mergeCells('E3:H3');
+$sheet->getStyle('E3:H3')->applyFromArray([
     'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
-    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF261FB3']]
 ]);
 
-$sheet->setCellValue('H3', 'PROMEDIO DE UTILIDAD POR LITRO');
-$sheet->mergeCells('H3:K3');
-$sheet->getStyle('H3:K3')->applyFromArray([
+$sheet->setCellValue('J3', 'PROMEDIO DE UTILIDAD POR LITRO');
+$sheet->mergeCells('J3:M3');
+$sheet->getStyle('J3:M3')->applyFromArray([
     'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
-    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+    'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF261FB3']]
 ]);
 
-// Encabezados individuales
 $headers = [
-    'SIIC', 'ZONA', 'ESTACIÓN',
-    'MAGNA', 'PREMIUM', 'DIESEL', 'PROMEDIO GENERAL',
+    'SIIC', 'ZONA', 'ESTACIÓN', '',
+    'MAGNA', 'PREMIUM', 'DIESEL', 'PROMEDIO GENERAL', '',
     'MAGNA', 'PREMIUM', 'DIESEL', 'UTILIDAD PROMEDIO'
 ];
 $sheet->fromArray($headers, NULL, 'A4');
 
-// Estilos encabezados fijos (primeras 3 columnas)
+// Colorear encabezados individuales con sus respectivos colores
+$sheet->getStyle('E4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('399918'); // MAGNA verde
+$sheet->getStyle('F4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000'); // PREMIUM rojo
+$sheet->getStyle('G4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('555555'); // DIESEL gris
+$sheet->getStyle('H4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('A55B4B'); // PROMEDIO GENERAL café
+
+$sheet->getStyle('J4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('399918'); // MAGNA verde
+$sheet->getStyle('K4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('FF0000'); // PREMIUM rojo
+$sheet->getStyle('L4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('555555'); // DIESEL gris
+$sheet->getStyle('M4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('A55B4B'); // UTILIDAD PROMEDIO café
+
+
 $sheet->getStyle('A4:C4')->applyFromArray([
     'font' => ['bold' => true],
     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF000000']],
@@ -114,109 +119,108 @@ $sheet->getStyle('A4:C4')->applyFromArray([
     'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
 ]);
 
-// Estilo columna ESTACIÓN específica (como en tabla, fondo #A55B4B)
-$sheet->getStyle('C4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFA55B4B']],
-    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
-]);
+// $sheet->getStyle('E4:H4')->applyFromArray([
+//     'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+//     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF261FB3']],
+// ]);
+// $sheet->getStyle('J4:M4')->applyFromArray([
+//     'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+//     'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF261FB3']],
+// ]);
 
-// Estilos para columnas Promedio Utilidad (D4:G4)
-$sheet->getStyle('D4:G4')->applyFromArray([
-    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF261FB3']],
-    'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
-]);
-
-// Estilos para columnas Promedio Utilidad por Litro (H4:L4)
-$sheet->getStyle('H4:K4')->applyFromArray([
-    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF261FB3']],
-    'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
-]);
-
-// Estilos de cada columna Promedio Utilidad (con colores particulares)
-$sheet->getStyle('D4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF399918']], // verde
-]);
+// Encabezados MAGNA, PREMIUM, DIESEL y PROMEDIO GENERAL
 $sheet->getStyle('E4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFFF0000']], // rojo
+    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF399918']] // verde
 ]);
 $sheet->getStyle('F4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF000000']], // negro
-]);
-
-// Mismos colores para utilidad por litro
-$sheet->getStyle('H4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF399918']], // verde
-]);
-$sheet->getStyle('I4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFFF0000']], // rojo
-]);
-$sheet->getStyle('J4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF000000']], // negro
-]);
-
-// Color para promedio general y utilidad promedio
-$sheet->getStyle('G4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFA55B4B']], 
     'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFFF0000']] // rojo
+]);
+$sheet->getStyle('G4')->applyFromArray([
+    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF000000']] // gris
+]);
+$sheet->getStyle('H4')->applyFromArray([
+    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFA55B4B']] // café
+]);
+
+// Encabezados UTILIDAD por litro MAGNA, PREMIUM, DIESEL y PROMEDIO
+$sheet->getStyle('J4')->applyFromArray([
+    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF399918']] // verde
 ]);
 $sheet->getStyle('K4')->applyFromArray([
-    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFA55B4B']],
     'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFFF0000']] // rojo
+]);
+$sheet->getStyle('L4')->applyFromArray([
+    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FF000000']] // gris
+]);
+$sheet->getStyle('M4')->applyFromArray([
+    'font' => ['bold' => true, 'color' => ['argb' => Color::COLOR_WHITE]],
+    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFA55B4B']] // café
 ]);
 
-// Insertar datos a partir fila 5
+
 $row = 5;
+$zona_actual = '';
 
 while ($data = $result->fetch_assoc()) {
+    $zona = $data['zona'] ?? 'SIN ZONA';
+    if ($zona !== $zona_actual) {
+        $sheet->mergeCells("A{$row}:M{$row}");
+        $sheet->setCellValue("A{$row}", $zona);
+        $sheet->getStyle("A{$row}:M{$row}")->applyFromArray([
+            'font' => ['bold' => true],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFBFBFBF']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT],
+            'borders' => ['bottom' => ['borderStyle' => Border::BORDER_THIN]],
+        ]);
+        $row++;
+        $zona_actual = $zona;
+    }
+
     $sheet->setCellValue("A{$row}", $data['siic_inteligas']);
     $sheet->setCellValue("B{$row}", $data['zona']);
     $sheet->setCellValue("C{$row}", $data['estacion']);
+    $sheet->setCellValue("E{$row}", $data['vu_magna'] / 100);
+    $sheet->setCellValue("F{$row}", $data['vu_premium'] / 100);
+    $sheet->setCellValue("G{$row}", $data['vu_diesel'] / 100);
+    $sheet->setCellValue("H{$row}", $data['promedio_general_estacion'] / 100);
+    $sheet->setCellValue("J{$row}", $data['utilidad_magna']);
+    $sheet->setCellValue("K{$row}", $data['utilidad_premium']);
+    $sheet->setCellValue("L{$row}", $data['utilidad_diesel']);
+    $sheet->setCellValue("M{$row}", $data['utilidad_promedio_litro']);
 
-    $sheet->setCellValue("D{$row}", $data['vu_magna'] / 100);
-    $sheet->setCellValue("E{$row}", $data['vu_premium'] / 100);
-    $sheet->setCellValue("F{$row}", $data['vu_diesel'] / 100);
-    $sheet->setCellValue("G{$row}", $data['promedio_general_estacion'] / 100);
-
-    $sheet->setCellValue("H{$row}", $data['utilidad_magna']);
-    $sheet->setCellValue("I{$row}", $data['utilidad_premium']);
-    $sheet->setCellValue("J{$row}", $data['utilidad_diesel']);
-    $sheet->setCellValue("K{$row}", $data['utilidad_promedio_litro']);
+    // Colores por celda
+    $sheet->getStyle("A{$row}:C{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD9EAF7');
+    $sheet->getStyle("E{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD5EAD5');
+    $sheet->getStyle("F{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF4CCCC');
+    $sheet->getStyle("G{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD9D9D9');
+    $sheet->getStyle("J{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD5EAD5');
+    $sheet->getStyle("K{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFF4CCCC');
+    $sheet->getStyle("L{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD9D9D9');
 
     $row++;
 }
 
-// Última fila con datos (la que acabamos de insertar)
 $lastRow = $row - 1;
-
-// Aplicar formato porcentaje con 2 decimales a columnas D a G
-$sheet->getStyle("D5:G{$lastRow}")
+$sheet->getStyle("E5:H{$lastRow}")
       ->getNumberFormat()
       ->setFormatCode(\PhpOffice\PhpSpreadsheet\Style\NumberFormat::FORMAT_PERCENTAGE_00);
-
-// Aplicar formato moneda ($) con 2 decimales a columnas H a K
-$sheet->getStyle("H5:K{$lastRow}")
+$sheet->getStyle("J5:M{$lastRow}")
       ->getNumberFormat()
       ->setFormatCode('"$"#,##0.00');
 
-// Aplicar borde inferior a la última fila con datos en las columnas A a K
-$sheet->getStyle("A{$lastRow}:K{$lastRow}")->getBorders()->getBottom()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
-
-// Autoajustar ancho columnas
-foreach (range('A', 'K') as $col) {
+foreach (range('A', 'M') as $col) {
     $sheet->getColumnDimension($col)->setAutoSize(true);
 }
 
-// Eliminar filas vacías con estilos después de la última fila con datos
-$maxRow = 1000;
-if ($lastRow < $maxRow) {
-    $sheet->removeRow($lastRow + 1, $maxRow - $lastRow);
-}
-
-// Preparar salida del archivo Excel
 header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-header('Content-Disposition: attachment;filename="resumen_mensual_'.$inicio.'_a_'.$fin.'.xlsx"');
+header("Content-Disposition: attachment;filename=\"resumen_mensual_{$inicio}_a_{$fin}.xlsx\"");
 header('Cache-Control: max-age=0');
 
 $writer = new Xlsx($spreadsheet);
