@@ -189,4 +189,9 @@ $conn->close();
         background-color: #ef9a9a !important; /* Rojo claro */
         font-weight: bold;
     }
+
+    .table thead th,
+    .table tbody td {
+        white-space: nowrap;
+    }
 </style>
