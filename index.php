@@ -815,7 +815,6 @@ function cargarPromedios() {
   const selectorMensual = document.getElementById('selectorZonaMensual');
 
   if (!mes) {
-    //Desactiva el selector de zona
     selectorMensual.disabled = true;
     mensaje.textContent = 'Por favor selecciona un mes válido.';
     mensaje.classList.replace('d-none', 'alert-info');
@@ -831,7 +830,6 @@ function cargarPromedios() {
     .then(res => res.json())
     .then(data => {
       if (data.length === 0) {
-        //Desactiva el selector de zona
         selectorMensual.disabled = true;
         mensaje.textContent = 'No hay registros de precios para el mes seleccionado.';
         mensaje.classList.replace('d-none', 'alert-info');
@@ -839,32 +837,60 @@ function cargarPromedios() {
         return;
       }
 
+      selectorMensual.disabled = false;
+      mensaje.classList.add('d-none');
+      contenedorTabla.style.display = 'block';
+
       const tbody = tabla.querySelector('tbody');
       tbody.innerHTML = '';
-      //Activa el selector de zona
-      selectorMensual.disabled = false;
 
-      // Inicializa totales
-      let total = {
+      const zonaSeleccionada = zona.trim();
+      const zonas = {};
+
+      // Agrupar por zona si no hay filtro
+      if (!zonaSeleccionada) {
+        data.forEach(row => {
+          const z = row.zona_agrupada ?? 'Sin Zona';
+          if (!zonas[z]) zonas[z] = [];
+          zonas[z].push(row);
+        });
+      } else {
+        zonas[zonaSeleccionada] = data;
+      }
+
+      // Totales generales
+      const total = {
         vu_magna: 0, vu_premium: 0, vu_diesel: 0, promedio_general_estacion: 0,
         utilidad_magna: 0, utilidad_premium: 0, utilidad_diesel: 0, utilidad_promedio_litro: 0
       };
-      let count = data.length;
+      let count = 0;
 
-      data.forEach(row => {
-        // Suma totales
-        total.vu_magna += parseFloat(row.vu_magna || 0);
-        total.vu_premium += parseFloat(row.vu_premium || 0);
-        total.vu_diesel += parseFloat(row.vu_diesel || 0);
-        total.promedio_general_estacion += parseFloat(row.promedio_general_estacion || 0);
-        total.utilidad_magna += parseFloat(row.utilidad_magna || 0);
-        total.utilidad_premium += parseFloat(row.utilidad_premium || 0);
-        total.utilidad_diesel += parseFloat(row.utilidad_diesel || 0);
-        total.utilidad_promedio_litro += parseFloat(row.utilidad_promedio_litro || 0);
+      Object.entries(zonas).forEach(([nombreZona, registros]) => {
+        // if (!zonaSeleccionada) {
+          // Encabezado de zona
+          const encabezadoZona = document.createElement('tr');
+          encabezadoZona.innerHTML = `
+            <td colspan="11" class="text-start fw-bold bg-secondary text-white" style="font-size: 1.1rem; font-family: 'Oswald', sans-serif;">
+              ${nombreZona}
+            </td>
+          `;
+          tbody.appendChild(encabezadoZona);
+        // }
 
-        // Inserta fila de datos
-        tbody.innerHTML += `
-          <tr>
+        registros.forEach(row => {
+          // Sumar a totales generales
+          total.vu_magna += parseFloat(row.vu_magna || 0);
+          total.vu_premium += parseFloat(row.vu_premium || 0);
+          total.vu_diesel += parseFloat(row.vu_diesel || 0);
+          total.promedio_general_estacion += parseFloat(row.promedio_general_estacion || 0);
+          total.utilidad_magna += parseFloat(row.utilidad_magna || 0);
+          total.utilidad_premium += parseFloat(row.utilidad_premium || 0);
+          total.utilidad_diesel += parseFloat(row.utilidad_diesel || 0);
+          total.utilidad_promedio_litro += parseFloat(row.utilidad_promedio_litro || 0);
+          count++;
+
+          const fila = document.createElement('tr');
+          fila.innerHTML = `
             <td>${row.siic_inteligas ?? ''}</td>
             <td>${row.zona_original ?? ''}</td>
             <td>${row.estacion ?? ''}</td>
@@ -876,27 +902,26 @@ function cargarPromedios() {
             <td>${row.utilidad_premium !== null ? '$' + Number(row.utilidad_premium).toFixed(2) : '-'}</td>
             <td>${row.utilidad_diesel !== null ? '$' + Number(row.utilidad_diesel).toFixed(2) : '-'}</td>
             <td>${row.utilidad_promedio_litro !== null ? '$' + Number(row.utilidad_promedio_litro).toFixed(2) : '-'}</td>
-          </tr>
-        `;
+          `;
+          tbody.appendChild(fila);
+        });
       });
 
-      // Agrega fila de promedios
-      tbody.innerHTML += `
-        <tr style="font-weight: bold; background-color: #f2f2f2;">
-          <td colspan="3">Promedio</td>
-          <td>${(total.vu_magna / count).toFixed(2)}%</td>
-          <td>${(total.vu_premium / count).toFixed(2)}%</td>
-          <td>${(total.vu_diesel / count).toFixed(2)}%</td>
-          <td>${(total.promedio_general_estacion / count).toFixed(2)}%</td>
-          <td>$${(total.utilidad_magna / count).toFixed(2)}</td>
-          <td>$${(total.utilidad_premium / count).toFixed(2)}</td>
-          <td>$${(total.utilidad_diesel / count).toFixed(2)}</td>
-          <td>$${(total.utilidad_promedio_litro / count).toFixed(2)}</td>
-        </tr>
+      // Fila de promedio general
+      const filaPromedio = document.createElement('tr');
+      filaPromedio.style = 'font-weight: bold; background-color: #f2f2f2;';
+      filaPromedio.innerHTML = `
+        <td colspan="3">Promedio</td>
+        <td>${(total.vu_magna / count).toFixed(2)}%</td>
+        <td>${(total.vu_premium / count).toFixed(2)}%</td>
+        <td>${(total.vu_diesel / count).toFixed(2)}%</td>
+        <td>${(total.promedio_general_estacion / count).toFixed(2)}%</td>
+        <td>$${(total.utilidad_magna / count).toFixed(2)}</td>
+        <td>$${(total.utilidad_premium / count).toFixed(2)}</td>
+        <td>$${(total.utilidad_diesel / count).toFixed(2)}</td>
+        <td>$${(total.utilidad_promedio_litro / count).toFixed(2)}</td>
       `;
-
-      mensaje.classList.add('d-none');
-      contenedorTabla.style.display = 'block';
+      tbody.appendChild(filaPromedio);
     })
     .catch(err => {
       console.error(err);
@@ -905,6 +930,8 @@ function cargarPromedios() {
       contenedorTabla.style.display = 'none';
     });
 }
+
+
 
 
 //Exportar excel mensual
@@ -1069,16 +1096,37 @@ function filtrarPorZona() {
 
   let cuenta = 0;
 
+  let zonaActual = '';
+  let grupoVisible = false;
+  let filasZona = [];
+
   filas.forEach(fila => {
-    const zonaAgrupada = (fila.getAttribute('data-zona-agrupada') || '').toLowerCase();
-    const mostrar = !zonaSeleccionada || zonaAgrupada === zonaSeleccionada;
+    if (fila.classList.contains('table-group')) {
+      // Evaluar grupo anterior
+      if (zonaActual && !grupoVisible) {
+        filasZona.forEach(f => f.style.display = 'none');
+        if (zonaGrupoFila) zonaGrupoFila.style.display = 'none';
+      }
+      // Iniciar nuevo grupo
+      zonaActual = fila.textContent.trim().toLowerCase();
+      grupoVisible = false;
+      filasZona = [];
+      zonaGrupoFila = fila;
+      fila.style.display = ''; // Mostrar por ahora, se decidirá al final
+      return;
+    }
+
+    const zonaFila = (fila.getAttribute('data-zona-agrupada') || '').toLowerCase();
+    const mostrar = !zonaSeleccionada || zonaFila === zonaSeleccionada;
 
     fila.style.display = mostrar ? '' : 'none';
+    filasZona.push(fila);
 
     if (mostrar) {
+      grupoVisible = true;
       const celdas = fila.querySelectorAll('td');
+      if (celdas.length < 20) return;
 
-      // Usa los índices correctos según tu tabla
       suma.vu_magna       += parseFloat(celdas[4].textContent.replace(/[^0-9.-]+/g, "")) || 0;
       suma.vu_premium     += parseFloat(celdas[5].textContent.replace(/[^0-9.-]+/g, "")) || 0;
       suma.vu_diesel      += parseFloat(celdas[6].textContent.replace(/[^0-9.-]+/g, "")) || 0;
@@ -1095,42 +1143,47 @@ function filtrarPorZona() {
       suma.utilidad_litro_magna        += parseFloat(celdas[17].textContent.replace(/[^0-9.-]+/g, "")) || 0;
       suma.utilidad_litro_premium      += parseFloat(celdas[18].textContent.replace(/[^0-9.-]+/g, "")) || 0;
       suma.utilidad_litro_diesel       += parseFloat(celdas[19].textContent.replace(/[^0-9.-]+/g, "")) || 0;
-
       cuenta++;
     }
   });
 
-  const tbody = document.querySelector('#tablaPrecios tbody');
+  // Evaluar último grupo
+  if (!grupoVisible && zonaGrupoFila) {
+    filasZona.forEach(f => f.style.display = 'none');
+    zonaGrupoFila.style.display = 'none';
+  }
 
-  // Elimina fila promedio previa si existe
+  // Quitar fila promedio previa
+  const tbody = document.querySelector('#tablaPrecios tbody');
   const filasExistentes = tbody.querySelectorAll('tr');
   if (filasExistentes.length > 0 && filasExistentes[filasExistentes.length - 1].textContent.includes('Promedios')) {
     tbody.removeChild(filasExistentes[filasExistentes.length - 1]);
   }
 
-  // Agrega fila promedio nueva
-  const filaPromedio = document.createElement('tr');
-  filaPromedio.innerHTML = `
-    <td colspan="4"><strong>Promedios</strong></td>
-    <td><strong>$${(suma.vu_magna / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.vu_premium / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.vu_diesel / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.costo_flete / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.pf_magna / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.pf_premium / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.pf_diesel / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.precio_magna / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.precio_premium / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.precio_diesel / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>${(suma.porcentaje_utilidad_magna / cuenta || 0).toFixed(2)}%</strong></td>
-    <td><strong>${(suma.porcentaje_utilidad_premium / cuenta || 0).toFixed(2)}%</strong></td>
-    <td><strong>${(suma.porcentaje_utilidad_diesel / cuenta || 0).toFixed(2)}%</strong></td>
-    <td><strong>$${(suma.utilidad_litro_magna / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.utilidad_litro_premium / cuenta || 0).toFixed(2)}</strong></td>
-    <td><strong>$${(suma.utilidad_litro_diesel / cuenta || 0).toFixed(2)}</strong></td>
-
-  `;
-  tbody.appendChild(filaPromedio);
+  // Agregar nueva fila promedio si hay al menos una fila válida
+  if (cuenta > 0) {
+    const filaPromedio = document.createElement('tr');
+    filaPromedio.innerHTML = `
+      <td colspan="4"><strong>Promedios</strong></td>
+      <td><strong>$${(suma.vu_magna / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.vu_premium / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.vu_diesel / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.costo_flete / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.pf_magna / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.pf_premium / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.pf_diesel / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.precio_magna / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.precio_premium / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.precio_diesel / cuenta).toFixed(2)}</strong></td>
+      <td><strong>${(suma.porcentaje_utilidad_magna / cuenta).toFixed(2)}%</strong></td>
+      <td><strong>${(suma.porcentaje_utilidad_premium / cuenta).toFixed(2)}%</strong></td>
+      <td><strong>${(suma.porcentaje_utilidad_diesel / cuenta).toFixed(2)}%</strong></td>
+      <td><strong>$${(suma.utilidad_litro_magna / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.utilidad_litro_premium / cuenta).toFixed(2)}</strong></td>
+      <td><strong>$${(suma.utilidad_litro_diesel / cuenta).toFixed(2)}</strong></td>
+    `;
+    tbody.appendChild(filaPromedio);
+  }
 }
 
 //Metodo para exportar la tabla completa del día seleccionado en el selector de fecha

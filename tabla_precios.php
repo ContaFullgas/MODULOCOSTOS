@@ -109,9 +109,25 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
             </thead>
 
             <tbody>
-                <?php while($row = $result->fetch_assoc()): ?>
-                    <?php
+                <?php
+                    $zona_actual = '';
 
+                    while($row = $result->fetch_assoc()):
+                        $zonaAgrupada = $row['zona_agrupada'] ?? 'SIN ZONA';
+
+                        // Detectar si cambió la zona para insertar fila de agrupación
+                        if ($zonaAgrupada !== $zona_actual):
+                ?>
+                    <tr class="table-group">
+                        <td colspan="20" class="text-start fw-bold bg-secondary text-white" style="font-size: 1.1rem; font-family: 'Oswald', sans-serif;">
+                            <?= htmlspecialchars($zonaAgrupada, ENT_QUOTES, 'UTF-8') ?>
+                        </td>
+                    </tr>
+                <?php
+                            $zona_actual = $zonaAgrupada;
+                        endif;
+
+                        // Preparar clases de fila modificada
                         $clases = [];
                         $titulo = '';
 
@@ -127,11 +143,7 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
                         }
 
                         $claseFinal = implode(' ', $clases);
-
-
-                        // Si no hay zona agrupada (null), usar cadena vacía para evitar errores JS
-                        $zonaAgrupada = $row['zona_agrupada'] ?? '';
-                    ?>
+                ?>
                     <tr class="<?= $claseFinal ?>" title="<?= htmlspecialchars($titulo) ?>" data-zona-agrupada="<?= htmlspecialchars($zonaAgrupada, ENT_QUOTES, 'UTF-8') ?>">
                         <td><?= htmlspecialchars(substr($row['fecha'] ?? '', 0, 10)) ?></td>
                         <td><?= htmlspecialchars($row['siic_inteligas'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
@@ -160,7 +172,8 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
                         <td><?= $row['utilidad_litro_diesel'] !== null ? '$' . number_format($row['utilidad_litro_diesel'], 2) : '-' ?></td>
                     </tr>
                 <?php endwhile; ?>
-            </tbody>
+                </tbody>
+
            
         </table>
     </div>
@@ -193,5 +206,10 @@ $conn->close();
     .table thead th,
     .table tbody td {
         white-space: nowrap;
+    }
+
+    .table-group td {
+        background-color: #BFBFBF;
+        font-weight: bold;
     }
 </style>
