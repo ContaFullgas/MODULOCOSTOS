@@ -187,7 +187,7 @@ $conn->close();
 ?>
 
 <!-- Estilos para remarcar los registros que se modificaron -->
-<style>
+<!-- <style>
     .modificado-xml td {
         background-color: #ffe0b2 !important; /* Naranja claro */
         font-weight: bold;
@@ -212,4 +212,4 @@ $conn->close();
         background-color: #BFBFBF;
         font-weight: bold;
     }
-</style>
+</style> -->

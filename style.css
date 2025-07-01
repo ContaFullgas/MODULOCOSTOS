@@ -111,3 +111,28 @@ body:hover .lighting-effect {
     transform: scale(1.1);
     background-color: #495057;
   }
+
+  .modificado-xml td {
+        background-color: #ffe0b2 !important; /* Naranja claro */
+        font-weight: bold;
+    }
+
+    .modificado-excel td {
+        background-color: #c8e6c9 !important; /* Verde claro */
+        font-weight: bold;
+    }
+
+    .modificado-ambos td {
+        background-color: #ef9a9a !important; /* Rojo claro */
+        font-weight: bold;
+    }
+
+    .table thead th,
+    .table tbody td {
+        white-space: nowrap;
+    }
+
+    .table-group td {
+        background-color: #BFBFBF;
+        font-weight: bold;
+    }
