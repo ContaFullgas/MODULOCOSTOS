@@ -1,9 +1,0 @@
-CREATE DATABASE IF NOT EXISTS facturacion;
-USE facturacion;
-
-CREATE TABLE IF NOT EXISTS facturas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre_archivo VARCHAR(255),
-    tipo VARCHAR(10),
-    fecha_subida TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
