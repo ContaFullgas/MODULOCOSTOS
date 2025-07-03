@@ -14,9 +14,33 @@ date_default_timezone_set('America/Mexico_City');
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="container-fluid py-4" style="background-color: #3a3d41; width: 90%;">
-<div class="lighting-effect"></div>
-<h1 class="d-flex justify-content-center" style="color: white; font-family: 'Oswald', sans-serif;">PRECIOS COMBUSTIBLES FULLGAS</h1>
-<ul class="nav nav-tabs mt-4" id="myTabs" role="tablist">
+  <header class="p-2 text-bg-white fixed-top" style="background-color: #3B1C32; z-index: 1030; max-height: 80px;">
+    <div class="lighting-effect"></div>
+    <div class="container-fluid ">
+      <div class="row align-items-center">
+        <!-- Logo - columna izquierda -->
+        <div class="col-4 col-md-2">
+          <img class="img-fluid p-1" src="logo/image004.png" alt="logoFullgas" style="max-height: 50px;">
+        </div>
+
+        <!-- Título - columna central -->
+        <div class="col-4 col-md-8 d-flex align-items-center justify-content-center">
+          <div class="verificador fw-bold mb-0 fs-5 fs-md-4 fs-lg-3"
+            style="color: white; font-family: 'Oswald', sans-serif;">
+            PRECIOS COMBUSTIBLES FULLGAS
+          </div>
+        </div>
+
+        <!-- Espacio vacío para alinear -->
+        <div class="col-4 col-md-2"></div>
+      </div>
+    </div>   
+</header>
+
+<!-- Contenedor principal con padding superior para el header fijo -->
+  <main class="container-fluid mt-5 pt-4 pb-5"> <!-- Añadido mt-5 y pt-4 para espacio del header fijo -->
+
+<ul class="nav nav-tabs" id="myTabs" role="tablist">
   <li class="nav-item" role="presentation">
     <button class="nav-link active" id="diario-tab" data-bs-toggle="tab" data-bs-target="#diario" type="button" role="tab">Vista Diaria</button>
   </li>
@@ -208,5 +232,14 @@ date_default_timezone_set('America/Mexico_City');
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Llamada al archivo con las funciones javascript -->
     <script src="./funciones.js"></script>
+
+    <footer class="footer text-bg-white d-flex flex-column align-items-center"
+      style="background-color: black; position: fixed; bottom: 0; left: 0; right: 0; padding: 5px 0;">
+      <p class="position-absolute start-0 fw-bold p-3"
+        style="font-family: sans-serif; font-size: 0.8rem; margin-top: 0; color: white;">DEPARTAMENTO
+        CONTABILIDAD-SISTEMAS</p> <img class="footer-logo p-0 fs-1" src="logo/FG_GASOLINERAS-4.png"
+        alt="logoFullgas">
+    </footer>
+
 </body>
 </html>

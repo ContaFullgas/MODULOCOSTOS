@@ -136,3 +136,13 @@ body:hover .lighting-effect {
         background-color: #BFBFBF;
         font-weight: bold;
     }
+
+    footer {
+  background-color: #000;
+  font-size: 0.75rem;
+    color: white;
+  }
+
+  footer img {
+    height: 50px;
+  }
