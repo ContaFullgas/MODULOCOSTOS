@@ -164,39 +164,36 @@ date_default_timezone_set('America/Mexico_City');
    
 </div>
 
-    <div class="table-responsive rounded-4" id="tablaPromediosContainer" style="display: none;">
-        <table class="table table-bordered table-hover align-middle text-center mt-2" id="tablaPromedios" style="border-collapse: separate; border-spacing: 5px;">
-            <thead>
-                <tr>
-                <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: black; color: white;  padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">SIIC</th>
-                <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: #4F1C51; color: white; ; padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">ZONA</th>
-                <th class="Estacion border border-white rounded-4 text-center align-middle" style="background-color: #A55B4B; color: white; padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">ESTACIÓN</th>
-                <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO DE UTILIDAD</th>
-                <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO DE UTILIDAD POR LITRO</th>
-            
-                </tr>
-                <tr>
-                <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">MAGNA</th>
-                <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PREMIUM</th>
-                <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">DIESEL</th>
-                <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO GENERAL POR ESTACION</th>
-                <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">MAGNA</th>
-                <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PREMIUM</th>
-                <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">DIESEL</th>
-                <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">UTILIDAD PROMEDIO</th>
-                
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-    </div>
-
-    </div>
+<div class="tabla-scroll-vertical">
+  <div class="table-responsive rounded-4" id="tablaPromediosContainer" style="display: none;">
+    <table class="table table-bordered table-hover align-middle text-center mt-2" id="tablaPromedios" style="border-collapse: separate; border-spacing: 5px;">
+      <thead>
+          <tr>
+          <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: black; color: white;  padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">SIIC</th>
+          <th class="RazonSocial border border-white rounded-4  text-center align-middle" style="background-color: #4F1C51; color: white; ; padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">ZONA</th>
+          <th class="Estacion border border-white rounded-4 text-center align-middle" style="background-color: #A55B4B; color: white; padding: 10px; font-family: 'Oswald', sans-serif;" rowspan="2">ESTACIÓN</th>
+          <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO DE UTILIDAD</th>
+          <th class="border border-white rounded-4" colspan="4" style="background-color: #261FB3; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO DE UTILIDAD POR LITRO</th>
+      
+          </tr>
+          <tr>
+          <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">MAGNA</th>
+          <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PREMIUM</th>
+          <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">DIESEL</th>
+          <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PROMEDIO GENERAL POR ESTACION</th>
+          <th class="Magna border border-white rounded-4 text-center align-middle" style="background-color: #399918; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">MAGNA</th>
+          <th class="Premium border border-white rounded-4 text-center align-middle" style="background-color: #FF0000; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">PREMIUM</th>
+          <th class="Diesel border border-white rounded-4 text-center align-middle" style="background-color: black; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">DIESEL</th>
+          <th class="Estacion border border-white rounded-4 text-center align-middle" style="border-right-width: 8px; background-color: #DCA06D; color: white; padding: 10px; font-family: 'Oswald', sans-serif;">UTILIDAD PROMEDIO</th>
+          
+          </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 </div>
-
 <!-- Botón flotante scroll -->
-<button id="btnScroll" class="btn-scroll" title="Ir al final">↓</button>
+<!-- <button id="btnScroll" class="btn-scroll" title="Ir al final">↓</button> -->
 
 <script>
 

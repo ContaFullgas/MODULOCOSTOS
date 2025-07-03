@@ -146,3 +146,8 @@ body:hover .lighting-effect {
   footer img {
     height: 50px;
   }
+
+  .tabla-scroll-vertical {
+    max-height: 500px; 
+    overflow-y: auto;
+  }

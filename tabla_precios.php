@@ -72,7 +72,7 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
 <?php if ($result->num_rows > 0): ?>
 
     
-
+<div class="tabla-scroll-vertical">
     <div class="table-responsive rounded-4">
         <table class="table table-bordered table-hover align-middle  text-center table-hover" style="border-collapse: separate; border-spacing: 5px;">
             <thead>
@@ -177,6 +177,7 @@ echo '<div id="tablaWrapper" data-hay-datos="' . ($result->num_rows > 0 ? '1' : 
            
         </table>
     </div>
+</div>
 <?php else: ?>
     <div class="alert alert-info">No hay registros de precios para la fecha seleccionada.</div>
 <?php endif;
