@@ -171,9 +171,27 @@ while ($row = $result->fetch_assoc()) {
     $sheet->setCellValue("P$fila", $row['precio_magna']);
     $sheet->setCellValue("Q$fila", $row['precio_premium']);
     $sheet->setCellValue("R$fila", $row['precio_diesel']);
-    $sheet->setCellValue("T$fila", $row['porcentaje_utilidad_magna'] / 100);
-    $sheet->setCellValue("U$fila", $row['porcentaje_utilidad_premium'] / 100);
-    $sheet->setCellValue("V$fila", $row['porcentaje_utilidad_diesel'] / 100);
+    // $sheet->setCellValue("T$fila", $row['porcentaje_utilidad_magna'] / 100);
+    // $sheet->setCellValue("U$fila", $row['porcentaje_utilidad_premium'] / 100);
+    // $sheet->setCellValue("V$fila", $row['porcentaje_utilidad_diesel'] / 100);}
+    
+    //Calcular porcentaje de utilidad en celdas
+    $sheet->getCell("T$fila")->setValueExplicit(
+    "=IF(OR(P$fila=\"\", L$fila=0), \"\", IF((P$fila/L$fila)-1<0, \"\", (P$fila/L$fila)-1))", 
+    \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA
+    );
+    $sheet->getCell("U$fila")->setValueExplicit(
+        "=IF(OR(Q$fila=\"\", M$fila=0), \"\", IF((Q$fila/M$fila)-1<0, \"\", (Q$fila/M$fila)-1))", 
+        \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA
+    );
+    $sheet->getCell("V$fila")->setValueExplicit(
+        "=IF(OR(R$fila=\"\", N$fila=0), \"\", IF((R$fila/N$fila)-1<0, \"\", (R$fila/N$fila)-1))", 
+        \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA
+    );
+
+
+
+
     // $sheet->setCellValue("X$fila", $row['utilidad_litro_magna']);
     // $sheet->setCellValue("Y$fila", $row['utilidad_litro_premium']);
     // $sheet->setCellValue("Z$fila", $row['utilidad_litro_diesel']);

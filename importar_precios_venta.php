@@ -77,6 +77,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_excel'])) {
             $precio_premium = $sheet->getCell("Q$fila")->getCalculatedValue();
             $precio_diesel = $sheet->getCell("R$fila")->getCalculatedValue();
 
+            // Aqui se agrega el porcentaje de utilidad calculado
+            $valor_porcentaje_magna   = $sheet->getCell("T$fila")->getCalculatedValue();
+            $valor_porcentaje_premium = $sheet->getCell("U$fila")->getCalculatedValue();
+            $valor_porcentaje_diesel  = $sheet->getCell("V$fila")->getCalculatedValue();
+            // Si el valor no es numérico lo pasamos como NULL
+            $porcentaje_utilidad_magna   = (is_numeric($valor_porcentaje_magna)) ? $valor_porcentaje_magna * 100 : null;
+            $porcentaje_utilidad_premium = (is_numeric($valor_porcentaje_premium)) ? $valor_porcentaje_premium * 100 : null;
+            $porcentaje_utilidad_diesel  = (is_numeric($valor_porcentaje_diesel)) ? $valor_porcentaje_diesel * 100 : null;
+
             // Aquí agregas utilidad por litro calculada (columnas X, Y, Z)
             $valor_utilidad_magna = $sheet->getCell("X$fila")->getCalculatedValue();
             $valor_utilidad_premium = $sheet->getCell("Y$fila")->getCalculatedValue();
@@ -89,10 +98,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['archivo_excel'])) {
             $stmt = $conn->prepare("
                 UPDATE precios_combustible
                 SET precio_magna = ?, precio_premium = ?, precio_diesel = ?,
-                utilidad_litro_magna = ?, utilidad_litro_premium = ?, utilidad_litro_diesel = ?
+                utilidad_litro_magna = ?, utilidad_litro_premium = ?, utilidad_litro_diesel = ?,
+                porcentaje_utilidad_magna = ?, porcentaje_utilidad_premium = ?, porcentaje_utilidad_diesel = ?
                 WHERE DATE(fecha) = ? AND estacion = ?
             ");
-            $stmt->bind_param("ddddddss", $precio_magna, $precio_premium, $precio_diesel, $utilidad_litro_magna, $utilidad_litro_premium,  $utilidad_litro_diesel, $fecha, $estacion);
+            $stmt->bind_param(
+                "dddddddddss",
+                $precio_magna, $precio_premium, $precio_diesel, 
+                $utilidad_litro_magna, $utilidad_litro_premium,  $utilidad_litro_diesel,
+                $porcentaje_utilidad_magna, $porcentaje_utilidad_premium, $porcentaje_utilidad_diesel, 
+                $fecha, $estacion
+            );
             $stmt->execute();
 
             if ($stmt->affected_rows > 0) {
