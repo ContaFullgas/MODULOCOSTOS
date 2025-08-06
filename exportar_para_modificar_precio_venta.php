@@ -174,7 +174,7 @@ while ($row = $result->fetch_assoc()) {
     // $sheet->setCellValue("T$fila", $row['porcentaje_utilidad_magna'] / 100);
     // $sheet->setCellValue("U$fila", $row['porcentaje_utilidad_premium'] / 100);
     // $sheet->setCellValue("V$fila", $row['porcentaje_utilidad_diesel'] / 100);}
-    
+
     //Calcular porcentaje de utilidad en celdas
     $sheet->getCell("T$fila")->setValueExplicit(
     "=IF(OR(P$fila=\"\", L$fila=0), \"\", IF((P$fila/L$fila)-1<0, \"\", (P$fila/L$fila)-1))", 
@@ -195,6 +195,8 @@ while ($row = $result->fetch_assoc()) {
     // $sheet->setCellValue("X$fila", $row['utilidad_litro_magna']);
     // $sheet->setCellValue("Y$fila", $row['utilidad_litro_premium']);
     // $sheet->setCellValue("Z$fila", $row['utilidad_litro_diesel']);
+
+    //Calcular utilidad por litro
     $sheet->getCell("X$fila")->setValueExplicit("=IF(P$fila=\"\", \"\", IF(P$fila - L$fila < 0, \"\", P$fila - L$fila))", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA);
     $sheet->getCell("Y$fila")->setValueExplicit("=IF(Q$fila=\"\", \"\", IF(Q$fila - M$fila < 0, \"\", Q$fila - M$fila))", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA);
     $sheet->getCell("Z$fila")->setValueExplicit("=IF(R$fila=\"\", \"\", IF(R$fila - N$fila < 0, \"\", R$fila - N$fila))", \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_FORMULA);
