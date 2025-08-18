@@ -3,157 +3,212 @@ ini_set('display_errors', 1);
 error_reporting(E_ALL);
 header('Content-Type: application/json');
 
-// $conn = new mysqli('localhost', 'root', '', 'costos_raul_garcia');
-// if ($conn->connect_error) {
-//     echo json_encode(['success' => false, 'error' => 'Error de conexión a la base de datos']);
-//     exit;
-// }
 include 'db.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
+if (!$data) {
+    echo json_encode(['success' => false, 'error' => 'No se recibieron datos JSON válidos']);
+    exit;
+}
 
-//Variable para poner el mensaje de acuerdo a la acción realizada
 $mensaje = '';
 
 $razon_social = $conn->real_escape_string($data['razon_social'] ?? '');
 $estacion     = $conn->real_escape_string($data['estacion'] ?? '');
-$precio       = floatval($data['precio'] ?? 0);
+$precio       = floatval($data['precio'] ?? 0); // VU (sin flete)
 $tipo         = $conn->real_escape_string($data['tipo'] ?? '');
 $uuid         = $conn->real_escape_string($data['uuid'] ?? '');
-$fecha = $conn->real_escape_string($data['fecha'] ?? date('Y-m-d'));
+$fecha        = $conn->real_escape_string($data['fecha'] ?? date('Y-m-d'));
+$flete        = isset($data['flete']) ? floatval($data['flete']) : 0.25;
 
-// Se define el costo fijo del flete que se sumará al precio unitario
-// $flete = 0.25; // de momento fijo pero luego sera variable
-$flete = isset($data['flete']) ? floatval($data['flete']) : 0.25;
-
-// Obtener IVA de la estación
-$sqlIva = "SELECT iva FROM estaciones WHERE nombre = '$estacion'";
-$resIva = $conn->query($sqlIva);
-if ($resIva && $resIva->num_rows > 0) {
-    $rowIva = $resIva->fetch_assoc();
-    $iva = floatval($rowIva['iva']);
-} else {
-    //Respuesta si no tiene iva, sin iva asignado
-    echo json_encode(['success' => false, 'error' => 'SIN IVA ASIGNADO']);
+// Validación mínima
+if (!$razon_social || !$estacion || !$tipo || !$uuid) {
+    echo json_encode(['success' => false, 'error' => 'Faltan campos obligatorios: razon_social, estacion, tipo o uuid']);
     exit;
 }
 
-// Obtener IEPS para el tipo de combustible y año 2025
-$sqlIeps = "SELECT valor FROM ieps WHERE tipo_combustible = '$tipo' AND anio = 2025 LIMIT 1";
-$resIeps = $conn->query($sqlIeps);
-if ($resIeps && $resIeps->num_rows > 0) {
-    $rowIeps = $resIeps->fetch_assoc();
-    $ieps = floatval($rowIeps['valor']);
-} else {
-    echo json_encode(['success' => false, 'error' => 'SIN VALOR DE IEPS ASIGNADO']);
-    exit;
-}
-
-error_log("Revisando UUID: $uuid");
-// Verificar UUID duplicado
+// Evitar UUID duplicado
 $check = $conn->query("SELECT id FROM precios_uuid WHERE uuid = '$uuid'");
+if ($check === false) {
+    echo json_encode(['success' => false, 'error' => 'Error en consulta UUID: ' . $conn->error]);
+    exit;
+}
 if ($check->num_rows > 0) {
     echo json_encode(['success' => false, 'error' => 'UUID ya registrado']);
     exit;
 }
 
-// Se calcula el precio con flete sumando el costo fijo al precio base
-$precio_flete = $precio + $flete;
-
-// Calcular precio de venta
-// $precioVenta = ($precio_flete * (1 + $iva)) + $ieps;
-
-// Inicialización de variables que almacenarán los nombres de las columnas según el tipo de combustible
-$campo = '';
-$campo_flete = '';
-// $campo_vu = '';
-// $campo_pf = '';
-$campo_pv = '';
-
-// if ($tipo === 'Diesel') {
-//     $campo_vu = 'vu_diesel';
-//     $campo_pf = 'pf_diesel';
-//     $campo_pv = 'precio_diesel';
-// } elseif ($tipo === 'Magna') {
-//     $campo_vu = 'vu_magna';
-//     $campo_pf = 'pf_magna';
-//     $campo_pv = 'precio_magna';
-// } elseif ($tipo === 'Premium') {
-//     $campo_vu = 'vu_premium';
-//     $campo_pf = 'pf_premium';
-//     $campo_pv = 'precio_premium';
-// } else {
-//     echo json_encode(['success' => false, 'error' => 'Tipo de combustible no válido']);
-//     exit;
-// }
-
+// Mapear columnas según tipo
 if ($tipo === 'Diesel') {
-    $campo = 'vu_diesel';
-    $campo_flete = 'pf_diesel';
+    $campo_vu = 'vu_diesel';
+    $campo_pf = 'pf_diesel';
     $campo_pv = 'precio_diesel';
+    $campo_util = 'utilidad_litro_diesel';
+    $campo_por  = 'porcentaje_utilidad_diesel';
 } elseif ($tipo === 'Magna') {
-    $campo = 'vu_magna';
-    $campo_flete = 'pf_magna';
+    $campo_vu = 'vu_magna';
+    $campo_pf = 'pf_magna';
     $campo_pv = 'precio_magna';
+    $campo_util = 'utilidad_litro_magna';
+    $campo_por  = 'porcentaje_utilidad_magna';
 } elseif ($tipo === 'Premium') {
-    $campo = 'vu_premium';
-    $campo_flete = 'pf_premium';
+    $campo_vu = 'vu_premium';
+    $campo_pf = 'pf_premium';
     $campo_pv = 'precio_premium';
+    $campo_util = 'utilidad_litro_premium';
+    $campo_por  = 'porcentaje_utilidad_premium';
 } else {
     echo json_encode(['success' => false, 'error' => 'Tipo de combustible no válido']);
     exit;
 }
 
+// -----------------------------
+// Función: Recalcular posteriores
+// -----------------------------
+// Reglas:
+// - Día base ($fechaInicio):
+//     * Si VU y PF son válidos -> guardar referencia (vu y flete).
+//     * Si faltan -> referencia nula (corta cadena).
+// - Días posteriores (fecha > $fechaInicio) y NO modificados (xml/excel = 0):
+//     * Si NO hay referencia -> utilidad/% a NULL (no tocar VU/PF existentes).
+//     * Si hay referencia -> propagar VU/PF desde referencia y calcular utilidad/% con precio_*.
+//       - utilidad = precio - pf
+//       - % = ((precio/pf)-1)*100
+//       - Si precio es NULL, pf <= 0, o utilidad < 0 -> utilidad/% = NULL.
+// - Guardar NULL reales (no 0.00) en utilidad/%.
+function recalcularPreciosPosterioresDesdeFecha($conn, $estacion, $fechaInicio) {
+    $tipos = ['diesel', 'magna', 'premium'];
+    $ref = []; // ['comb' => ['vu' => float|NULL, 'flete' => float|NULL]]
 
-//De momento busca el registro para modificar de acuerdo a la fecha y el nombre de la estación    
-//Se debe checar que en la base de datos las dos tablas coincidan con los nombres de estación
-$sqlBuscar = "SELECT * FROM precios_combustible WHERE estacion = '$estacion' AND fecha = '$fecha'";
+    $sql = "SELECT * FROM precios_combustible WHERE estacion = ? AND fecha >= ? ORDER BY fecha ASC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('ss', $estacion, $fechaInicio);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-$resBuscar = $conn->query($sqlBuscar);
+    while ($row = $result->fetch_assoc()) {
+        $fechaActual = $row['fecha'];
+        $idFila = (int)$row['id'];
 
-// Si ya existe el registro
-if ($resBuscar->num_rows > 0) {
-    $row = $resBuscar->fetch_assoc();       // Obtener los datos actuales del registro
-    $precioId = $row['id'];                 // Guardar el ID del registro
+        foreach ($tipos as $c) {
+            $c_vu   = "vu_$c";
+            $c_pf   = "pf_$c";
+            $c_pv   = "precio_$c";
+            $c_util = "utilidad_litro_$c";
+            $c_por  = "porcentaje_utilidad_$c";
 
-    // Solo actualizar si el valor existente es nulo o diferente del nuevo precio
-    if (is_null($row[$campo]) || floatval($row[$campo]) != $precio) {
-        $conn->query("UPDATE precios_combustible 
-                      SET $campo = $precio, $campo_flete = $precio_flete, costo_flete = $flete, modificado_xml = 1, razon_social = '$razon_social'
-                      WHERE id = $precioId");
-        
-        $mensaje = 'se ha encontrado coincidencia con un registro y este ha sido modificado.';
+            // Día base: definir referencia
+            if ($fechaActual === $fechaInicio) {
+                if (!is_null($row[$c_vu]) && !is_null($row[$c_pf])) {
+                    $ref[$c] = [
+                        'vu'    => (float)$row[$c_vu],
+                        'flete' => (float)$row[$c_pf] - (float)$row[$c_vu],
+                    ];
+                } else {
+                    // Día base sin datos válidos: cortar cadena
+                    $ref[$c] = ['vu' => null, 'flete' => null];
+                }
+                continue;
+            }
+
+            // Respeta únicamente filas con costo fijado por XML en ese día.
+            // Si fue modificado por Excel, SÍ recalculamos (actualizamos VU/PF y utilidad/%).
+            if ((int)$row['modificado_xml'] === 1) {
+                continue;
+            }
+
+
+            // Si no hay referencia -> limpiar utilidad/% y seguir (no tocar VU/PF)
+            if (!isset($ref[$c]) || is_null($ref[$c]['vu']) || is_null($ref[$c]['flete'])) {
+                $sqlNull = "UPDATE precios_combustible SET $c_util = NULL, $c_por = NULL WHERE id = $idFila";
+                $conn->query($sqlNull);
+                continue;
+            }
+
+            // Hay referencia: propagar VU/PF de referencia
+            $nuevo_vu = $ref[$c]['vu'];
+            $nuevo_pf = $ref[$c]['vu'] + $ref[$c]['flete'];
+
+            // Calcular util/% con precio_* del registro según reglas (como Excel)
+            $precioVenta = $row[$c_pv]; // puede ser NULL
+            $utilidad = null;
+            $porcentaje = null;
+
+            if (!is_null($precioVenta) && !is_null($nuevo_pf) && $nuevo_pf > 0) {
+                $utilidadCalc = (float)$precioVenta - (float)$nuevo_pf;
+                if ($utilidadCalc >= 0) {
+                    $utilidad = $utilidadCalc;
+                    $porcentaje = ((float)$precioVenta / (float)$nuevo_pf - 1) * 100.0;
+                } // si negativa, se quedan NULL
+            }
+
+            // Guardar NULL reales en utilidad/% (no 0.00)
+            $util_sql = is_null($utilidad)   ? "NULL" : sprintf("%.4f", $utilidad);
+            $por_sql  = is_null($porcentaje) ? "NULL" : sprintf("%.4f", $porcentaje);
+            $vu_sql   = sprintf("%.4f", $nuevo_vu);
+            $pf_sql   = sprintf("%.4f", $nuevo_pf);
+
+            $sqlUp = "UPDATE precios_combustible 
+                      SET $c_vu = $vu_sql, $c_pf = $pf_sql, $c_util = $util_sql, $c_por = $por_sql
+                      WHERE id = $idFila";
+            $conn->query($sqlUp);
+        }
     }
-    else {
-        $mensaje = 'el valor es igual al del anterior registro, por lo tanto no se modifica.';
-    }
-} else {
-    // Si no existe registro, se inserta uno nuevo con los datos y precios correspondientes
-    $sqlInsert = "INSERT INTO precios_combustible 
-                  (razon_social, estacion, fecha, $campo, $campo_flete, costo_flete, modificado_xml)
-                  VALUES ('$razon_social', '$estacion', '$fecha', $precio, $precio_flete, $flete, $precioVenta, 1)";
-    
-    // Verifica si la inserción falló
-    if (!$conn->query($sqlInsert)) {
-        echo json_encode(['success' => false, 'error' => 'Error al insertar en precios_combustible: ' . $conn->error]);
-        exit;
-    }
 
-    // Guarda el ID del nuevo registro insertado
-    $precioId = $conn->insert_id;
-    $mensaje = 'no se ha encontrado coincidencia con ningún registro, por lo tanto se ingresó uno nuevo.';
-    
+    $stmt->close();
 }
 
-// Insertar UUID con referencia a precio_id
-// $conn->query("INSERT INTO precios_uuid (uuid, precio_id) VALUES ('$uuid', $precioId)");
-$sqlUuid = "INSERT INTO precios_uuid (uuid, precio_id) VALUES ('$uuid', $precioId)";
-if (!$conn->query($sqlUuid)) {
-    echo json_encode(['success' => false, 'error' => 'Error al insertar UUID: ' . $conn->error]);
+// -----------------------------
+// Guardar/actualizar el día base
+// -----------------------------
+$precio_flete = $precio + $flete;
+
+$sqlBuscar = "SELECT * FROM precios_combustible WHERE estacion = '$estacion' AND fecha = '$fecha'";
+$resBuscar = $conn->query($sqlBuscar);
+if ($resBuscar === false) {
+    echo json_encode(['success' => false, 'error' => 'Error al buscar registro: ' . $conn->error]);
     exit;
 }
 
+if ($resBuscar->num_rows === 0) {
+    // NO insertamos si no existe el día base
+    echo json_encode([
+        'success' => false,
+        'error' => 'No existe registro base para esa estación y fecha. Genera el día primero.'
+    ]);
+    exit;
+}
 
-// echo json_encode(['success' => true]);
-//Manda la respuesta de acuerdo al mensaje
+$row = $resBuscar->fetch_assoc();
+$precioId = (int)$row['id'];
+
+// Actualizar solo si cambió VU o PF del día base
+if (is_null($row[$campo_vu]) || (float)$row[$campo_vu] != $precio || (float)$row[$campo_pf] != $precio_flete) {
+    $sqlUpdate = "UPDATE precios_combustible 
+                  SET $campo_vu = $precio, $campo_pf = $precio_flete, costo_flete = $flete, modificado_xml = 1, razon_social = '$razon_social'
+                  WHERE id = $precioId";
+    $resUpdate = $conn->query($sqlUpdate);
+    if ($resUpdate === false) {
+        echo json_encode(['success' => false, 'error' => 'Error al actualizar registro: ' . $conn->error]);
+        exit;
+    }
+
+    // Recalcular posteriores
+    recalcularPreciosPosterioresDesdeFecha($conn, $estacion, $fecha);
+
+    $mensaje = 'Registro base actualizado y posteriores recalculados.';
+} else {
+    $mensaje = 'El valor es igual al del anterior registro; no se modificó el día base.';
+}
+
+// Registrar UUID SOLO si hubo registro base (existe $precioId)
+if (isset($precioId)) {
+    $sqlUuid = "INSERT INTO precios_uuid (uuid, precio_id) VALUES ('$uuid', $precioId)";
+    $resUuid = $conn->query($sqlUuid);
+    if ($resUuid === false) {
+        echo json_encode(['success' => false, 'error' => 'Error al insertar UUID: ' . $conn->error]);
+        exit;
+    }
+}
+
 echo json_encode(['success' => true, 'accion' => $mensaje]);
