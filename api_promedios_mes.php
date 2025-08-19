@@ -16,103 +16,117 @@ $fin = date("Y-m-t", strtotime($inicio));
 
 $whereZona = $zona ? " AND e.zona_agrupada = '" . $conn->real_escape_string($zona) . "'" : '';
 
-// $sql = "
-//   SELECT 
-//     id,               -- ID del registro (clave primaria)
-//     fecha,            -- Fecha del registro
-//     razon_social,     -- Razón social de la estación
-//     estacion,         -- Nombre o identificador de la estación
-//     siic_inteligas,   -- Código SIIC
-//     zona,             -- Zona geográfica de la estación
-
-//     -- Porcentaje de utilidad por litro para cada combustible
-//     -- Se calcula como: (precio_venta / (costo + flete)) - 1, convertido a porcentaje
-//     ROUND((precio_magna / NULLIF(pf_magna, 0) - 1) * 100, 2) AS vu_magna,
-//     ROUND((precio_premium / NULLIF(pf_premium, 0) - 1) * 100, 2) AS vu_premium,
-//     ROUND((precio_diesel / NULLIF(pf_diesel, 0) - 1) * 100, 2) AS vu_diesel,
-
-//     -- Promedio general de utilidad en porcentaje por estación
-//     -- Promedia los tres combustibles si tienen datos válidos
-//     ROUND((
-//       COALESCE((precio_magna / NULLIF(pf_magna, 0) - 1) * 100, 0) +
-//       COALESCE((precio_premium / NULLIF(pf_premium, 0) - 1) * 100, 0) +
-//       COALESCE((precio_diesel / NULLIF(pf_diesel, 0) - 1) * 100, 0)
-//     ) / NULLIF(
-//       -- Contador de cuántos combustibles tienen datos válidos
-//       (CASE WHEN pf_magna > 0 THEN 1 ELSE 0 END +
-//        CASE WHEN pf_premium > 0 THEN 1 ELSE 0 END +
-//        CASE WHEN pf_diesel > 0 THEN 1 ELSE 0 END), 0), 2
-//     ) AS promedio_general_estacion,
-
-//     -- Utilidad monetaria por litro para cada combustible
-//     -- Se calcula como: precio_venta - (costo + flete)
-//     ROUND(precio_magna - pf_magna, 4) AS utilidad_magna,
-//     ROUND(precio_premium - pf_premium, 4) AS utilidad_premium,
-//     ROUND(precio_diesel - pf_diesel, 4) AS utilidad_diesel,
-
-//     -- Promedio general de la utilidad monetaria (por litro) considerando los tres combustibles
-//     ROUND((
-//       COALESCE(precio_magna - pf_magna, 0) +
-//       COALESCE(precio_premium - pf_premium, 0) +
-//       COALESCE(precio_diesel - pf_diesel, 0)
-//     ) / NULLIF(
-//       -- Nuevamente, contamos cuántos valores son válidos para evitar dividir entre cero
-//       (CASE WHEN pf_magna > 0 THEN 1 ELSE 0 END +
-//        CASE WHEN pf_premium > 0 THEN 1 ELSE 0 END +
-//        CASE WHEN pf_diesel > 0 THEN 1 ELSE 0 END), 0), 4
-//     ) AS utilidad_promedio_litro
-
-//   FROM precios_combustible
-//   WHERE fecha BETWEEN '$inicio' AND '$fin'  -- Solo registros dentro del mes seleccionado
-//   ORDER BY id  -- Se ordenan cronológicamente por su ID de registro
-// ";
-
 $sql = "
-  SELECT 
-    pc.id,
-    pc.fecha,
-    pc.razon_social,
-    pc.estacion,
-    pc.siic_inteligas,
-    pc.zona AS zona_original,
-    e.zona_agrupada,
+  SELECT
+    b.estacion,
+    MAX(b.razon_social)   AS razon_social,
+    MAX(b.siic_inteligas) AS siic_inteligas,
+    MAX(b.zona_original)  AS zona_original,
+    MAX(b.zona_agrupada)  AS zona_agrupada,
 
-    -- Utilidad porcentual
-    ROUND((pc.precio_magna / NULLIF(pc.pf_magna, 0) - 1) * 100, 2) AS vu_magna,
-    ROUND((pc.precio_premium / NULLIF(pc.pf_premium, 0) - 1) * 100, 2) AS vu_premium,
-    ROUND((pc.precio_diesel / NULLIF(pc.pf_diesel, 0) - 1) * 100, 2) AS vu_diesel,
+    -- Promedios % por estación (AVG ignora NULLs)
+    ROUND(AVG(b.vu_magna),   2) AS vu_magna,
+    ROUND(AVG(b.vu_premium), 2) AS vu_premium,
+    ROUND(AVG(b.vu_diesel),  2) AS vu_diesel,
 
-    -- Promedio general utilidad
-    ROUND((
-      COALESCE((pc.precio_magna / NULLIF(pc.pf_magna, 0) - 1) * 100, 0) +
-      COALESCE((pc.precio_premium / NULLIF(pc.pf_premium, 0) - 1) * 100, 0) +
-      COALESCE((pc.precio_diesel / NULLIF(pc.pf_diesel, 0) - 1) * 100, 0)
-    ) / NULLIF(
-      (CASE WHEN pc.pf_magna > 0 THEN 1 ELSE 0 END +
-       CASE WHEN pc.pf_premium > 0 THEN 1 ELSE 0 END +
-       CASE WHEN pc.pf_diesel > 0 THEN 1 ELSE 0 END), 0), 2
-    ) AS promedio_general_estacion,
+    -- Promedio general % por estación (promedio del promedio-por-fila)
+    ROUND(AVG(b.promedio_por_fila), 2) AS promedio_general_estacion,
 
-    -- Utilidad monetaria por litro
-    ROUND(pc.precio_magna - pc.pf_magna, 4) AS utilidad_magna,
-    ROUND(pc.precio_premium - pc.pf_premium, 4) AS utilidad_premium,
-    ROUND(pc.precio_diesel - pc.pf_diesel, 4) AS utilidad_diesel,
+    -- Promedios $ por estación
+    ROUND(AVG(b.utilidad_magna),   4) AS utilidad_magna,
+    ROUND(AVG(b.utilidad_premium), 4) AS utilidad_premium,
+    ROUND(AVG(b.utilidad_diesel),  4) AS utilidad_diesel,
 
-    -- Promedio utilidad monetaria por litro
-    ROUND((
-      COALESCE(pc.precio_magna - pc.pf_magna, 0) +
-      COALESCE(pc.precio_premium - pc.pf_premium, 0) +
-      COALESCE(pc.precio_diesel - pc.pf_diesel, 0)
-    ) / NULLIF(
-      (CASE WHEN pc.pf_magna > 0 THEN 1 ELSE 0 END +
-       CASE WHEN pc.pf_premium > 0 THEN 1 ELSE 0 END +
-       CASE WHEN pc.pf_diesel > 0 THEN 1 ELSE 0 END), 0), 4
-    ) AS utilidad_promedio_litro
+    -- Promedio $ general por estación (promedio del promedio-por-fila)
+    ROUND(AVG(b.utilidad_prom_fila), 4) AS utilidad_promedio_litro
 
-  FROM precios_combustible pc
-  LEFT JOIN estaciones e ON pc.estacion = e.nombre
-  WHERE pc.fecha BETWEEN '$inicio' AND '$fin' $whereZona
-  ORDER BY id
+  FROM (
+    SELECT
+      pc.id,
+      pc.fecha,
+      pc.estacion,
+      pc.razon_social,
+      pc.siic_inteligas,
+      pc.zona AS zona_original,
+      e.zona_agrupada,
+
+      /* % utilidad por combustible: NULL si inválido/negativo */
+      CASE
+        WHEN pc.precio_magna IS NULL OR pc.pf_magna IS NULL OR pc.pf_magna <= 0 OR (pc.precio_magna - pc.pf_magna) < 0 THEN NULL
+        ELSE (pc.precio_magna / pc.pf_magna - 1) * 100
+      END AS vu_magna,
+      CASE
+        WHEN pc.precio_premium IS NULL OR pc.pf_premium IS NULL OR pc.pf_premium <= 0 OR (pc.precio_premium - pc.pf_premium) < 0 THEN NULL
+        ELSE (pc.precio_premium / pc.pf_premium - 1) * 100
+      END AS vu_premium,
+      CASE
+        WHEN pc.precio_diesel IS NULL OR pc.pf_diesel IS NULL OR pc.pf_diesel <= 0 OR (pc.precio_diesel - pc.pf_diesel) < 0 THEN NULL
+        ELSE (pc.precio_diesel / pc.pf_diesel - 1) * 100
+      END AS vu_diesel,
+
+      /* Promedio % por fila (solo válidos) */
+      (
+        (COALESCE(
+           CASE WHEN pc.precio_magna IS NULL OR pc.pf_magna IS NULL OR pc.pf_magna <= 0 OR (pc.precio_magna - pc.pf_magna) < 0 THEN NULL
+                ELSE (pc.precio_magna / pc.pf_magna - 1) * 100 END, 0)
+         + COALESCE(
+           CASE WHEN pc.precio_premium IS NULL OR pc.pf_premium IS NULL OR pc.pf_premium <= 0 OR (pc.precio_premium - pc.pf_premium) < 0 THEN NULL
+                ELSE (pc.precio_premium / pc.pf_premium - 1) * 100 END, 0)
+         + COALESCE(
+           CASE WHEN pc.precio_diesel IS NULL OR pc.pf_diesel IS NULL OR pc.pf_diesel <= 0 OR (pc.precio_diesel - pc.pf_diesel) < 0 THEN NULL
+                ELSE (pc.precio_diesel / pc.pf_diesel - 1) * 100 END, 0)
+        ) /
+        NULLIF(
+          ( (pc.precio_magna   IS NOT NULL AND pc.pf_magna   IS NOT NULL AND pc.pf_magna   > 0 AND (pc.precio_magna   - pc.pf_magna)   >= 0) +
+            (pc.precio_premium IS NOT NULL AND pc.pf_premium IS NOT NULL AND pc.pf_premium > 0 AND (pc.precio_premium - pc.pf_premium) >= 0) +
+            (pc.precio_diesel  IS NOT NULL AND pc.pf_diesel  IS NOT NULL AND pc.pf_diesel  > 0 AND (pc.precio_diesel  - pc.pf_diesel)  >= 0)
+          ), 0)
+      ) AS promedio_por_fila,
+
+      /* $ utilidad por litro: NULL si inválido/negativo */
+      CASE
+        WHEN pc.precio_magna IS NULL OR pc.pf_magna IS NULL OR pc.pf_magna <= 0 OR (pc.precio_magna - pc.pf_magna) < 0 THEN NULL
+        ELSE (pc.precio_magna - pc.pf_magna)
+      END AS utilidad_magna,
+      CASE
+        WHEN pc.precio_premium IS NULL OR pc.pf_premium IS NULL OR pc.pf_premium <= 0 OR (pc.precio_premium - pc.pf_premium) < 0 THEN NULL
+        ELSE (pc.precio_premium - pc.pf_premium)
+      END AS utilidad_premium,
+      CASE
+        WHEN pc.precio_diesel IS NULL OR pc.pf_diesel IS NULL OR pc.pf_diesel <= 0 OR (pc.precio_diesel - pc.pf_diesel) < 0 THEN NULL
+        ELSE (pc.precio_diesel - pc.pf_diesel)
+      END AS utilidad_diesel,
+
+      /* Promedio $ por fila (solo válidos) */
+      (
+        (COALESCE(
+           CASE WHEN pc.precio_magna IS NULL OR pc.pf_magna IS NULL OR pc.pf_magna <= 0 OR (pc.precio_magna - pc.pf_magna) < 0 THEN NULL
+                ELSE (pc.precio_magna - pc.pf_magna) END, 0)
+         + COALESCE(
+           CASE WHEN pc.precio_premium IS NULL OR pc.pf_premium IS NULL OR pc.pf_premium <= 0 OR (pc.precio_premium - pc.pf_premium) < 0 THEN NULL
+                ELSE (pc.precio_premium - pc.pf_premium) END, 0)
+         + COALESCE(
+           CASE WHEN pc.precio_diesel IS NULL OR pc.pf_diesel IS NULL OR pc.pf_diesel <= 0 OR (pc.precio_diesel - pc.pf_diesel) < 0 THEN NULL
+                ELSE (pc.precio_diesel - pc.pf_diesel) END, 0)
+        ) /
+        NULLIF(
+          ( (pc.precio_magna   IS NOT NULL AND pc.pf_magna   IS NOT NULL AND pc.pf_magna   > 0 AND (pc.precio_magna   - pc.pf_magna)   >= 0) +
+            (pc.precio_premium IS NOT NULL AND pc.pf_premium IS NOT NULL AND pc.pf_premium > 0 AND (pc.precio_premium - pc.pf_premium) >= 0) +
+            (pc.precio_diesel  IS NOT NULL AND pc.pf_diesel  IS NOT NULL AND pc.pf_diesel  > 0 AND (pc.precio_diesel  - pc.pf_diesel)  >= 0)
+          ), 0)
+      ) AS utilidad_prom_fila
+
+    FROM precios_combustible pc
+    LEFT JOIN (
+      /* Vista deduplicada por estación para evitar duplicados del JOIN */
+      SELECT nombre, MAX(zona_agrupada) AS zona_agrupada
+      FROM estaciones
+      GROUP BY nombre
+    ) e ON pc.estacion = e.nombre
+    WHERE pc.fecha BETWEEN '$inicio' AND '$fin' $whereZona
+  ) AS b
+  GROUP BY b.estacion
+  ORDER BY MIN(b.id)
 ";
 
 

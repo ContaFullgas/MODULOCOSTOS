@@ -17,44 +17,118 @@ if (!$inicio || !$fin) {
 }
 
 $sql = "
-SELECT 
-    razon_social,
-    estacion,
-    siic_inteligas,
-    zona,
+  SELECT
+    b.estacion,
+    MAX(b.razon_social)   AS razon_social,
+    MAX(b.siic_inteligas) AS siic_inteligas,
+    -- Usaremos esta como 'zona' para el título de grupo en el Excel
+    MAX(b.zona_agrupada)  AS zona,
 
-    ROUND((precio_magna / NULLIF(pf_magna, 0) - 1) * 100, 2) AS vu_magna,
-    ROUND((precio_premium / NULLIF(pf_premium, 0) - 1) * 100, 2) AS vu_premium,
-    ROUND((precio_diesel / NULLIF(pf_diesel, 0) - 1) * 100, 2) AS vu_diesel,
+    -- Promedios % por estación
+    ROUND(AVG(b.vu_magna),   2) AS vu_magna,
+    ROUND(AVG(b.vu_premium), 2) AS vu_premium,
+    ROUND(AVG(b.vu_diesel),  2) AS vu_diesel,
 
-    ROUND((
-      COALESCE((precio_magna / NULLIF(pf_magna, 0) - 1) * 100, 0) +
-      COALESCE((precio_premium / NULLIF(pf_premium, 0) - 1) * 100, 0) +
-      COALESCE((precio_diesel / NULLIF(pf_diesel, 0) - 1) * 100, 0)
-    ) / NULLIF(
-      (CASE WHEN pf_magna > 0 THEN 1 ELSE 0 END +
-       CASE WHEN pf_premium > 0 THEN 1 ELSE 0 END +
-       CASE WHEN pf_diesel > 0 THEN 1 ELSE 0 END), 0), 2
-    ) AS promedio_general_estacion,
+    -- Promedio general % por estación (promedio del promedio-por-fila)
+    ROUND(AVG(b.promedio_por_fila), 2) AS promedio_general_estacion,
 
-    ROUND(precio_magna - pf_magna, 4) AS utilidad_magna,
-    ROUND(precio_premium - pf_premium, 4) AS utilidad_premium,
-    ROUND(precio_diesel - pf_diesel, 4) AS utilidad_diesel,
+    -- Promedios $ por estación
+    ROUND(AVG(b.utilidad_magna),   4) AS utilidad_magna,
+    ROUND(AVG(b.utilidad_premium), 4) AS utilidad_premium,
+    ROUND(AVG(b.utilidad_diesel),  4) AS utilidad_diesel,
 
-    ROUND((
-      COALESCE(precio_magna - pf_magna, 0) +
-      COALESCE(precio_premium - pf_premium, 0) +
-      COALESCE(precio_diesel - pf_diesel, 0)
-    ) / NULLIF(
-      (CASE WHEN pf_magna > 0 THEN 1 ELSE 0 END +
-       CASE WHEN pf_premium > 0 THEN 1 ELSE 0 END +
-       CASE WHEN pf_diesel > 0 THEN 1 ELSE 0 END), 0), 4
-    ) AS utilidad_promedio_litro
+    -- Promedio $ general por estación
+    ROUND(AVG(b.utilidad_prom_fila), 4) AS utilidad_promedio_litro
 
-FROM precios_combustible
-WHERE fecha BETWEEN ? AND ?
-ORDER BY zona, id
+  FROM (
+    SELECT
+      pc.id,
+      pc.fecha,
+      pc.estacion,
+      pc.razon_social,
+      pc.siic_inteligas,
+      pc.zona AS zona_original,
+      e.zona_agrupada,
+
+      /* % utilidad por combustible: NULL si inválido/negativo */
+      CASE
+        WHEN pc.precio_magna IS NULL OR pc.pf_magna IS NULL OR pc.pf_magna <= 0 OR (pc.precio_magna - pc.pf_magna) < 0 THEN NULL
+        ELSE (pc.precio_magna / pc.pf_magna - 1) * 100
+      END AS vu_magna,
+      CASE
+        WHEN pc.precio_premium IS NULL OR pc.pf_premium IS NULL OR pc.pf_premium <= 0 OR (pc.precio_premium - pc.pf_premium) < 0 THEN NULL
+        ELSE (pc.precio_premium / pc.pf_premium - 1) * 100
+      END AS vu_premium,
+      CASE
+        WHEN pc.precio_diesel IS NULL OR pc.pf_diesel IS NULL OR pc.pf_diesel <= 0 OR (pc.precio_diesel - pc.pf_diesel) < 0 THEN NULL
+        ELSE (pc.precio_diesel / pc.pf_diesel - 1) * 100
+      END AS vu_diesel,
+
+      /* Promedio % por fila (solo válidos) */
+      (
+        (COALESCE(
+           CASE WHEN pc.precio_magna IS NULL OR pc.pf_magna IS NULL OR pc.pf_magna <= 0 OR (pc.precio_magna - pc.pf_magna) < 0 THEN NULL
+                ELSE (pc.precio_magna / pc.pf_magna - 1) * 100 END, 0)
+         + COALESCE(
+           CASE WHEN pc.precio_premium IS NULL OR pc.pf_premium IS NULL OR pc.pf_premium <= 0 OR (pc.precio_premium - pc.pf_premium) < 0 THEN NULL
+                ELSE (pc.precio_premium / pc.pf_premium - 1) * 100 END, 0)
+         + COALESCE(
+           CASE WHEN pc.precio_diesel IS NULL OR pc.pf_diesel IS NULL OR pc.pf_diesel <= 0 OR (pc.precio_diesel - pc.pf_diesel) < 0 THEN NULL
+                ELSE (pc.precio_diesel / pc.pf_diesel - 1) * 100 END, 0)
+        ) /
+        NULLIF(
+          ( (pc.precio_magna   IS NOT NULL AND pc.pf_magna   IS NOT NULL AND pc.pf_magna   > 0 AND (pc.precio_magna   - pc.pf_magna)   >= 0) +
+            (pc.precio_premium IS NOT NULL AND pc.pf_premium IS NOT NULL AND pc.pf_premium > 0 AND (pc.precio_premium - pc.pf_premium) >= 0) +
+            (pc.precio_diesel  IS NOT NULL AND pc.pf_diesel  IS NOT NULL AND pc.pf_diesel  > 0 AND (pc.precio_diesel  - pc.pf_diesel)  >= 0)
+          ), 0)
+      ) AS promedio_por_fila,
+
+      /* $ utilidad por litro: NULL si inválido/negativo */
+      CASE
+        WHEN pc.precio_magna IS NULL OR pc.pf_magna IS NULL OR pc.pf_magna <= 0 OR (pc.precio_magna - pc.pf_magna) < 0 THEN NULL
+        ELSE (pc.precio_magna - pc.pf_magna)
+      END AS utilidad_magna,
+      CASE
+        WHEN pc.precio_premium IS NULL OR pc.pf_premium IS NULL OR pc.pf_premium <= 0 OR (pc.precio_premium - pc.pf_premium) < 0 THEN NULL
+        ELSE (pc.precio_premium - pc.pf_premium)
+      END AS utilidad_premium,
+      CASE
+        WHEN pc.precio_diesel IS NULL OR pc.pf_diesel IS NULL OR pc.pf_diesel <= 0 OR (pc.precio_diesel - pc.pf_diesel) < 0 THEN NULL
+        ELSE (pc.precio_diesel - pc.pf_diesel)
+      END AS utilidad_diesel,
+
+      /* Promedio $ por fila (solo válidos) */
+      (
+        (COALESCE(
+           CASE WHEN pc.precio_magna IS NULL OR pc.pf_magna IS NULL OR pc.pf_magna <= 0 OR (pc.precio_magna - pc.pf_magna) < 0 THEN NULL
+                ELSE (pc.precio_magna - pc.pf_magna) END, 0)
+         + COALESCE(
+           CASE WHEN pc.precio_premium IS NULL OR pc.pf_premium IS NULL OR pc.pf_premium <= 0 OR (pc.precio_premium - pc.pf_premium) < 0 THEN NULL
+                ELSE (pc.precio_premium - pc.pf_premium) END, 0)
+         + COALESCE(
+           CASE WHEN pc.precio_diesel IS NULL OR pc.pf_diesel IS NULL OR pc.pf_diesel <= 0 OR (pc.precio_diesel - pc.pf_diesel) < 0 THEN NULL
+                ELSE (pc.precio_diesel - pc.pf_diesel) END, 0)
+        ) /
+        NULLIF(
+          ( (pc.precio_magna   IS NOT NULL AND pc.pf_magna   IS NOT NULL AND pc.pf_magna   > 0 AND (pc.precio_magna   - pc.pf_magna)   >= 0) +
+            (pc.precio_premium IS NOT NULL AND pc.pf_premium IS NOT NULL AND pc.pf_premium > 0 AND (pc.precio_premium - pc.pf_premium) >= 0) +
+            (pc.precio_diesel  IS NOT NULL AND pc.pf_diesel  IS NOT NULL AND pc.pf_diesel  > 0 AND (pc.precio_diesel  - pc.pf_diesel)  >= 0)
+          ), 0)
+      ) AS utilidad_prom_fila
+
+    FROM precios_combustible pc
+    LEFT JOIN (
+      /* Vista deduplicada por estación para evitar duplicados del JOIN */
+      SELECT nombre, MAX(zona_agrupada) AS zona_agrupada
+      FROM estaciones
+      GROUP BY nombre
+    ) e ON pc.estacion = e.nombre
+    WHERE pc.fecha BETWEEN ? AND ?
+  ) AS b
+  GROUP BY b.estacion
+  ORDER BY MIN(b.id)
 ";
+
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('ss', $inicio, $fin);
@@ -186,14 +260,17 @@ while ($data = $result->fetch_assoc()) {
     $sheet->setCellValue("A{$row}", $data['siic_inteligas']);
     $sheet->setCellValue("B{$row}", $data['zona']);
     $sheet->setCellValue("C{$row}", $data['estacion']);
-    $sheet->setCellValue("E{$row}", $data['vu_magna'] / 100);
-    $sheet->setCellValue("F{$row}", $data['vu_premium'] / 100);
-    $sheet->setCellValue("G{$row}", $data['vu_diesel'] / 100);
-    $sheet->setCellValue("H{$row}", $data['promedio_general_estacion'] / 100);
-    $sheet->setCellValue("J{$row}", $data['utilidad_magna']);
-    $sheet->setCellValue("K{$row}", $data['utilidad_premium']);
-    $sheet->setCellValue("L{$row}", $data['utilidad_diesel']);
-    $sheet->setCellValue("M{$row}", $data['utilidad_promedio_litro']);
+
+    $sheet->setCellValue("E{$row}", ($data['vu_magna'] ?? 0) / 100);
+    $sheet->setCellValue("F{$row}", ($data['vu_premium'] ?? 0) / 100);
+    $sheet->setCellValue("G{$row}", ($data['vu_diesel'] ?? 0) / 100);
+    $sheet->setCellValue("H{$row}", ($data['promedio_general_estacion'] ?? 0) / 100);
+
+    $sheet->setCellValue("J{$row}", $data['utilidad_magna'] ?? 0);
+    $sheet->setCellValue("K{$row}", $data['utilidad_premium'] ?? 0);
+    $sheet->setCellValue("L{$row}", $data['utilidad_diesel'] ?? 0);
+    $sheet->setCellValue("M{$row}", $data['utilidad_promedio_litro'] ?? 0);
+
 
     // Colores por celda
     $sheet->getStyle("A{$row}:C{$row}")->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFD9EAF7');
